@@ -95,9 +95,7 @@ El alcance del administrador está definido por el supuesto 5 del proposal:
 
 > **Supuesto**: Alcance del rol Administrador se limita a: moderación contenido, proveedores bloqueados, stats globales, disputas técnicas (no comerciales), comisión global. **NO** incluye soporte al cliente.
 
-Este supuesto fue **validado por revisión humana** (2026-08-11 — → ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) supuesto 5): se confirma que **no se incluye soporte al cliente**. Si en el futuro se requiere soporte al cliente, se crearía un rol adicional (no se extiende el de administrador).
-
-→ Ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) para el detalle del supuesto 5.
+Este supuesto fue **validado por revisión humana** (2026-08-11): se confirma que **no se incluye soporte al cliente**. Si en el futuro se requiere soporte al cliente, se crearía un rol adicional (no se extiende el de administrador).
 
 ## Documentos Relacionados
 

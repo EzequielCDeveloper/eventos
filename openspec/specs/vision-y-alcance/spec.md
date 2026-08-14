@@ -8,13 +8,13 @@ Definir el alcance del MVP, segmentos objetivo, modelo de ingresos y boundaries 
 
 ### Requirement: Stack de Implementación
 
-Cuando se pase a la fase de implementación, la aplicación SHALL desarrollarse con Next.js (frontend/backend) y Firebase (backend-as-a-service: autenticación, base de datos, almacenamiento, notificaciones), conforme a la decisión humana de revisión de simplificaciones.
+Cuando se pase a la fase de implementación, la aplicación SHALL desarrollarse con Node.js + Express + MariaDB (backend) y React + Vite (frontend).
 
-#### Scenario: Stack Next.js + Firebase en implementación
+#### Scenario: Stack Node.js + Express + MariaDB y React + Vite en implementación
 
 - GIVEN que el producto pasa a fase de implementación
 - WHEN se selecciona el stack tecnológico
-- THEN la aplicación SHALL desarrollarse con Next.js y Firebase
+- THEN la aplicación SHALL desarrollarse con Node.js + Express + MariaDB (backend) y React + Vite (frontend)
 - AND el stack SHALL documentarse como decisión técnica del MVP
 
 ### Requirement: MVP — Segmentos Objetivo

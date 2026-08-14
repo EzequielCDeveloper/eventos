@@ -113,7 +113,7 @@ Inbox centralizado para comunicarse con clientes durante todo el flujo de reserv
 
 ### Tab 3: Calendario (Gestión de Inventario, Precios y Ajuste Dinámico)
 
-Vista visual de disponibilidad y ocupación con gestión de inventario en tiempo real. El ajuste dinámico de precios es una **feature del MVP** (→ ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) supuesto 3): el proveedor define tarifas diferenciadas por temporada, fin de semana o demanda, aplicadas sobre el precio base.
+Vista visual de disponibilidad y ocupación con gestión de inventario en tiempo real. El ajuste dinámico de precios es una **feature del MVP**: el proveedor define tarifas diferenciadas por temporada, fin de semana o demanda, aplicadas sobre el precio base.
 
 | Elemento | Contenido |
 |----------|-----------|

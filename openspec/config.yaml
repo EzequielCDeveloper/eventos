@@ -1,10 +1,12 @@
 schema: spec-driven
 
 context: |
-  Project: web — Marketplace de servicios para eventos (salones, sonidos, servicios) en México.
+  Project: eventos — Marketplace de servicios para eventos en México (salones, sonido, servicios-persona).
   Modelo: Airbnb para eventos. Documentación de producto en markdown (español).
   Roles: usuario normal, prestador de servicio, administrador.
-  Sin código fuente; sin test runner; sin CI/CD.
+  Repo: documentation-only (no source code). 16 domain specs, 15 product docs, 2 archived changes.
+  Planned stack: Node.js + Express + MariaDB backend; React + Vite frontend; Socket.IO chat; Conekta payments; Docker + VPS + Nginx + Cloudflare deploy.
+  Database: MySQL 8.0+ / MariaDB 10.6+ (schema: eventos_db, 1051 lines).
   Artifact store: hybrid (openspec + engram).
 
 rules:

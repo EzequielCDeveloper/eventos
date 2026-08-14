@@ -66,11 +66,11 @@ El README SHALL mostrar estado de cada documento (completo/parcial) y versión (
 
 ### Requirement: Stack de Implementación
 
-El README SHALL incluir una sección que documente el stack de implementación futura: Next.js + Firebase, conforme a la decisión humana de revisión de simplificaciones.
+El README SHALL incluir una sección que documente el stack de implementación futura: Node.js + Express + MariaDB (backend) y React + Vite (frontend).
 
 #### Scenario: Stack documentado en README
 
 - GIVEN que un revisor consulta el README
 - WHEN busca información técnica
-- THEN SHALL encontrar sección "Stack de Implementación Futura" con Next.js + Firebase
-- AND SHALL tener enlace a areas_de_simplificacion.md y vision_y_alcance.md para contexto
+- THEN SHALL encontrar sección "Stack de Implementación Futura" con Node.js + Express + MariaDB (backend) y React + Vite (frontend)
+- AND SHALL tener enlace a vision_y_alcance.md para contexto

@@ -90,8 +90,6 @@ Los **precios dinámicos** son una **feature del MVP**: el proveedor **SHALL** p
 
 > Ejemplo: Salón "Las Palmas" configura precio base de $8,000 MXN por bloque de 4 horas y un ajuste dinámico de +20% para sábados en temporada alta (diciembre). El sábado de diciembre se cotiza en $9,600 MXN, mostrado al cliente antes de confirmar.
 
-→ Ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) supuesto 3 para la decisión humana.
-
 ## Concurrencia
 
 La concurrencia controla cuántos eventos simultáneos puede atender un proveedor en la misma fecha y horario. Para sonidos y servicios-persona se gestiona mediante inventario por slot (fecha + horario) en el calendario del proveedor.
@@ -128,8 +126,6 @@ Sonidos y servicios-persona **SHALL** gestionar su disponibilidad mediante un **
 > Ejemplo: Proveedor de sonido configura inventario por slot con límite 3. Puede atender hasta 3 eventos en el mismo slot (fecha + horario). Si el sábado tiene 3 eventos de 10:00–14:00, el slot de 14:00–18:00 permanece con cupo para otros 3 eventos.
 
 El calendario de inventario por slot **SHALL** reflejarse en la agenda del proveedor (→ ver [→ interfaces_proveedor.md#tab-3-calendario](interfaces_proveedor.md#tab-3-calendario)) y la verificación de disponibilidad del flujo de reserva (**SHALL** validarse por slot, no solo por fecha).
-
-→ Ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) supuesto 6 para la decisión humana.
 
 ## Mínimo de Fotos
 

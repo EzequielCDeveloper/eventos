@@ -32,9 +32,8 @@ La documentación sigue un orden de dependencias lineales. Cada documento es aut
 10. verificacion_de_identidad.md ← depende de: roles, normativa
 11. interfaces_cliente.md        ← depende de: flujo, taxonomía, pagos
 12. interfaces_proveedor.md      ← depende de: flujo, taxonomía, roles
-13. areas_de_simplificacion.md   ← depende de: todos los anteriores
-14. normativa_mexicana_2026.md   ← standalone
-15. verificamex_integracion.md   ← depende de: verificación, normativa
+13. normativa_mexicana_2026.md   ← standalone
+14. verificamex_integracion.md   ← depende de: verificación, normativa
 ```
 
 ## Índice de Documentos
@@ -54,9 +53,8 @@ La documentación sigue un orden de dependencias lineales. Cada documento es aut
 | 10 | [verificacion_de_identidad.md](verificacion_de_identidad.md) | INE presencial, KYC APIs, badges | ✅ Completo |
 | 11 | [interfaces_cliente.md](interfaces_cliente.md) | Explorar, buscar, filtros, favoritos, rentas | ✅ Completo |
 | 12 | [interfaces_proveedor.md](interfaces_proveedor.md) | Onboarding wizard, dashboard 5 tabs, agenda | ✅ Completo |
-| 13 | [areas_de_simplificacion.md](areas_de_simplificacion.md) | Trade-offs MVP, 10 supuestos (6 validados, 4 con decisión humana) | ✅ Completo |
-| 14 | [normativa_mexicana_2026.md](normativa_mexicana_2026.md) | LFPDPPP, Ley Consumer, Código Comercio | ✅ Completo |
-| 15 | [verificamex_integracion.md](verificamex_integracion.md) | API Verificamex, Lista Nominal, errores | ✅ Completo |
+| 13 | [normativa_mexicana_2026.md](normativa_mexicana_2026.md) | LFPDPPP, Ley Consumer, Código Comercio | ✅ Completo |
+| 14 | [verificamex_integracion.md](verificamex_integracion.md) | API Verificamex, Lista Nominal, errores | ✅ Completo |
 
 **Leyenda**: ✅ Completo | 🟡 Parcial | ⚠️ Pendiente
 
@@ -67,13 +65,12 @@ Los siguientes archivos originales fueron preservados como `_legacy` para rollba
 | Archivo Legacy | Derivado de | Contenido migrado a |
 |---------------|-------------|---------------------|
 | `eventos_legacy.md` | `eventos.md` | `interfaces_cliente.md`, `interfaces_proveedor.md` |
-| `arquitectura_legacy.md` | `arquitectura_interfaz_proveedores_eventos.md` | `interfaces_proveedor.md` (onboarding wizard, dashboard 5 tabs) |
 
 **Rollback**: Para restaurar, renombrar `*_legacy.md` → nombre original.
 
 ## Stack de Implementación Futura
 
-Cuando se pase a la fase de implementación, la aplicación será desarrollada en **Next.js + Firebase**, conforme a la decisión humana de revisión de simplificaciones (→ ver [→ areas_de_simplificacion.md#checklist-de-validación-general](areas_de_simplificacion.md#checklist-de-validación-general) y [→ vision_y_alcance.md#stack-de-implementación-futura](vision_y_alcance.md#stack-de-implementación-futura)).
+Cuando se pase a la fase de implementación, la aplicación será desarrollada en **Node.js + Express + MariaDB** (backend, con auth JWT propia) y **React + Vite** (frontend), con chat de texto en tiempo real vía **Socket.IO**, voz/video con **PeerJS (WebRTC) o Agora**, y pagos con **Conekta** (→ ver [→ vision_y_alcance.md#stack-de-implementación-futura](vision_y_alcance.md#stack-de-implementación-futura)).
 
 ## Tabla de Decisiones
 
@@ -104,7 +101,7 @@ Cuando se pase a la fase de implementación, la aplicación será desarrollada e
 | 23 | Ranking: 3 métricas | [roles_y_permisos.md#sistema-de-ranking](roles_y_permisos.md#sistema-de-ranking) | [x] |
 | 24 | Precios dinámicos: feature del MVP (temporada, demanda, día) | [taxonomia_de_servicios.md#precios-dinámicos—capacidad-del-proveedor-supuesto-3](taxonomia_de_servicios.md#precios-dinámicos—capacidad-del-proveedor-supuesto-3) | [x] |
 | 25 | Permiso alcohol: opcional, notificación consecuencias, SLRC Sonora | [flujo_de_reserva.md#permiso-de-alcohol—opcional-con-notificación-de-consecuencias-supuesto-9](flujo_de_reserva.md#permiso-de-alcohol—opcional-con-notificación-de-consecuencias-supuesto-9) | [x] |
-| 26 | Modo aprobación: editable post-setup | [areas_de_simplificacion.md](areas_de_simplificacion.md) | [x] |
+| 26 | Modo aprobación: editable post-setup | [interfaces_proveedor.md#paso-3-reglas-y-precios](interfaces_proveedor.md#paso-3-reglas-y-precios) | [x] |
 
 **Cobertura actual**: 26/26 decisiones documentadas (100%). ✅
 
@@ -126,7 +123,6 @@ Cuando se pase a la fase de implementación, la aplicación será desarrollada e
 | `verificacion_de_identidad.md` | `verificamex_integracion.md` | Método → integración API |
 | `normativa_mexicana_2026.md` | `verificamex_integracion.md` | LFPDPPP → seguridad datos |
 | `eventos_legacy.md` | `interfaces_cliente.md` | Skeleton original → contenido migrado |
-| `arquitectura_legacy.md` | `interfaces_proveedor.md` | Skeleton original → contenido migrado |
 
 ## Glosario
 

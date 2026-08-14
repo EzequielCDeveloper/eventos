@@ -114,7 +114,7 @@ Este documento documenta las leyes y regulaciones mexicanas que impactan directa
 
 #### Normativa Local de Referencia del MVP: San Luis Río Colorado, Sonora
 
-Para el MVP, la plataforma **SHALL** basarse en la normativa municipal de **San Luis Río Colorado, Sonora, México** (decisión humana — → ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) supuesto 9). Implicaciones para el producto:
+Para el MVP, la plataforma **SHALL** basarse en la normativa municipal de **San Luis Río Colorado, Sonora, México** (decisión humana). Implicaciones para el producto:
 
 | Regla MVP | Comportamiento |
 |-----------|----------------|
@@ -271,4 +271,3 @@ La edad legal para el consumo de bebidas alcohólicas en México es de **18 año
 | `verificamex_integracion.md` | Integración con Verificamex (LFPDPPP datos INE) |
 | `pagos_y_comisiones.md` | CFDI, impuestos, retenciones |
 | `flujo_de_reserva.md` | Contrato físico, permisos alcohol |
-| `areas_de_simplificacion.md` | Decisiones de simplificación que impactan cumplimiento |

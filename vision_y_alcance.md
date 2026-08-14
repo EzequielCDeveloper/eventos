@@ -78,11 +78,9 @@ El marketplace **SHALL** operar únicamente en territorio mexicano. Los pagos **
 - Transcripción automática de notas de voz
 - Cálculo automático de viáticos por kilómetro
 
-→ Ver [→ areas_de_simplificacion.md](areas_de_simplificacion.md) para trade-offs detallados del MVP.
-
 ## Stack de Implementación Futura
 
-Cuando se pase a la fase de implementación, la aplicación **SHALL** desarrollarse con **Next.js** (frontend/backend) y **Firebase** (backend-as-a-service: autenticación, base de datos, almacenamiento, notificaciones), conforme a la decisión humana de revisión de simplificaciones (→ ver [→ areas_de_simplificacion.md#checklist-de-validación-general](areas_de_simplificacion.md#checklist-de-validación-general)).
+Cuando se pase a la fase de implementación, la aplicación **SHALL** desarrollarse con **Node.js + Express + MariaDB** (backend) y **React + Vite** (frontend), con autenticación **JWT propia** a través del backend, chat de texto en tiempo real con **Socket.IO**, voz/video con **PeerJS (WebRTC) o Agora**, y pagos con **Conekta**.
 
 > **Nota**: Esta sección documenta la dirección tecnológica indicada en la revisión humana. El detalle técnico de la implementación queda fuera del alcance de esta documentación de producto.
 

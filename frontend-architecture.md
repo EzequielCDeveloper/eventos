@@ -6,7 +6,8 @@
 - React Router v6
 - Zustand (estado)
 - Tailwind CSS + Radix UI
-- Firebase (auth + realtime chat)
+- Socket.IO (chat tiempo real)
+- Auth JWT propia (POST /api/auth/login vía backend Express)
 - Conekta.js (pagos)
 
 ## Estructura de Carpetas
@@ -103,7 +104,7 @@ src/
 ├── lib/                           # Utilidades
 │   ├── api.ts                     # Cliente HTTP
 │   ├── conekta.ts                 # Wrapper pagos
-│   ├── firebase.ts                # Firebase config
+│   ├── socket.ts                  # Cliente Socket.IO (chat)
 │   ├── formatters.ts              # Formateo MXN, fechas
 │   └── constants.ts               # Enums, config
 │
@@ -123,7 +124,7 @@ src/
 ## Auth — Flujo
 
 ```
-Login (Firebase Auth)
+Login (POST /api/auth/login → JWT)
   ↓
 Token JWT → authStore
   ↓
