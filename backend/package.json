@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.16.0",
+    "agora-access-token": "^2.0.4",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.60.0",
     "cors": "^2.8.5",
