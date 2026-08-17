@@ -133,7 +133,11 @@ export function verifySignedUrl(currentUrl: string): boolean {
   } catch {
     return false;
   }
-  const urlPath = parsed.pathname;
+  // `signUrl` signs the storage path WITHOUT the `/uploads` serving prefix;
+  // strip it here so the token recomputation matches byte-for-byte.
+  const urlPath = parsed.pathname.startsWith('/uploads')
+    ? parsed.pathname.slice('/uploads'.length)
+    : parsed.pathname;
   const token = parsed.searchParams.get('token') ?? '';
   const expires = Number(parsed.searchParams.get('expires') ?? 0);
   if (!Number.isFinite(expires) || expires < Math.floor(Date.now() / 1000)) return false;
