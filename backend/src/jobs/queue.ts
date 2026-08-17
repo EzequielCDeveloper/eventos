@@ -67,8 +67,8 @@ export async function alreadyNotified(
 
 /** Quick connectivity probe that never blocks boot for long. */
 async function redisReachable(): Promise<boolean> {
+  const redis = getRedis();
   try {
-    const redis = getRedis();
     await Promise.race([
       redis.ping(),
       new Promise((_resolve, reject) => setTimeout(() => reject(new Error('redis ping timeout')), 3000)),
@@ -83,6 +83,9 @@ async function redisReachable(): Promise<boolean> {
         error: error instanceof Error ? error.message : 'unknown',
       }),
     );
+    // Stop the probe connection from retrying; workers will create a fresh
+    // one on the next boot.
+    redis.disconnect();
     return false;
   }
 }

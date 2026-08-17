@@ -17,6 +17,12 @@ export function getRedis(): Redis {
       maxRetriesPerRequest: null, // BullMQ requires this
       lazyConnect: true,
     });
+    // Consume connection errors: when Redis is down the client emits
+    // 'error' events; consumers observe failures via promises / their own
+    // handlers instead of the process crashing on an unhandled event.
+    redisClient.on('error', () => {
+      /* consumed — see comment above */
+    });
   }
   return redisClient;
 }
