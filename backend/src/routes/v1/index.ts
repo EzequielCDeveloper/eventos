@@ -10,6 +10,11 @@ import { packagesRouter } from './packages.routes';
 import { contractsRouter } from './contracts.routes';
 import { paymentsRouter } from './payments.routes';
 import { webhooksRouter } from './webhooks.routes';
+import { messagesRouter } from './messages.routes';
+import { notificationsRouter } from './notifications.routes';
+import { adminRouter } from './admin.routes';
+import { reviewsRouter } from './reviews.routes';
+import { favoritesRouter } from './favorites.routes';
 
 /**
  * Version 1 router (BR-001, UR-011). Mounted under `/api/v1` in app.ts.
@@ -24,6 +29,11 @@ import { webhooksRouter } from './webhooks.routes';
  *   - `/contracts/*`    → contractsRouter (bilateral confirmation, UR-002.8)
  *   - `/payments/*`     → paymentsRouter (Conekta charges/refunds, UR-002.9)
  *   - `/webhooks/*`     → webhooksRouter (PUBLIC, signature-verified, BR-013.1)
+ *   - `/conversations*` → messagesRouter (chat threads + messages, UR-002.10)
+ *   - `/notifications/*`→ notificationsRouter (inbox + read, UR-002.11)
+ *   - `/admin/*`        → adminRouter (5 admin functions, BR-002.4)
+ *   - `/reviews/*`      → reviewsRouter (post-payment review, UR-002.12)
+ *   - `/favorites/*`    → favoritesRouter (add/remove, UR-002.13)
  */
 export const v1Router: Router = Router();
 
@@ -38,6 +48,11 @@ v1Router.use('/packages', packagesRouter);
 v1Router.use('/contracts', contractsRouter);
 v1Router.use('/payments', paymentsRouter);
 v1Router.use('/webhooks', webhooksRouter);
+v1Router.use(messagesRouter);
+v1Router.use('/notifications', notificationsRouter);
+v1Router.use('/admin', adminRouter);
+v1Router.use(reviewsRouter);
+v1Router.use(favoritesRouter);
 
 v1Router.get('/version', (_req, res) => {
   res.json({ data: { version: 'v1' } });
