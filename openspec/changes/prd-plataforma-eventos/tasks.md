@@ -71,12 +71,12 @@ Chain strategy: stacked-to-main
 
 ## Phase 5: Reservations & Packages (Slice S3)
 
-- [ ] 5.1 Create `backend/src/services/reservation.service.ts` — 13-state lifecycle state machine (creado→...→completada/cancelada); validate transitions; transactional slot availability check with SELECT FOR UPDATE; salon concurrency forced to 1; generate reservation_status_history on every change; snapshot cancellation_policy_snapshot at creation; calculate total_price = base + extras + taxes + commission (BR-005.1–BR-005.6, D-007)
-- [ ] 5.2 Create `backend/src/services/package.service.ts` — 7-state package lifecycle; salon-only creation; cross-slot availability verification; price auto-computation; member invite/respond flow; replacement invitation (BR-011.1–BR-011.5)
-- [ ] 5.3 Create `backend/src/services/contract.service.ts` — Contract creation on salon booking; GET /contracts/:id; PUT /contracts/:id/confirm; bilateral confirmation logic (UR-002.8, BR-012.6)
-- [ ] 5.4 Create `backend/src/routes/v1/reservations.routes.ts` — POST /reservations, GET /reservations, PUT /reservations/:id/status, GET /reservations/:id/timeline (UR-002.7)
-- [ ] 5.5 Create `backend/src/routes/v1/packages.routes.ts` — POST /packages, POST /packages/:id/invite, PUT /packages/:id/members/:id/respond, GET /packages/:id/availability (UR-002.6)
-- [ ] 5.6 Create `backend/src/routes/v1/contracts.routes.ts` — GET /contracts/:id, PUT /contracts/:id/confirm (UR-002.8)
+- [x] 5.1 Create `backend/src/services/reservation.service.ts` — 13-state lifecycle state machine (creado→...→completada/cancelada); validate transitions; transactional slot availability check with SELECT FOR UPDATE; salon concurrency forced to 1; generate reservation_status_history on every change; snapshot cancellation_policy_snapshot at creation; calculate total_price = base + extras + taxes + commission (BR-005.1–BR-005.6, D-007)
+- [x] 5.2 Create `backend/src/services/package.service.ts` — 7-state package lifecycle; salon-only creation; cross-slot availability verification; price auto-computation; member invite/respond flow; replacement invitation (BR-011.1–BR-011.5)
+- [x] 5.3 Create `backend/src/services/contract.service.ts` — Contract creation on salon booking; GET /contracts/:id; PUT /contracts/:id/confirm; bilateral confirmation logic (UR-002.8, BR-012.6)
+- [x] 5.4 Create `backend/src/routes/v1/reservations.routes.ts` — POST /reservations, GET /reservations, PUT /reservations/:id/status, GET /reservations/:id/timeline (UR-002.7)
+- [x] 5.5 Create `backend/src/routes/v1/packages.routes.ts` — POST /packages, POST /packages/:id/invite, PUT /packages/:id/members/:id/respond, GET /packages/:id/availability (UR-002.6)
+- [x] 5.6 Create `backend/src/routes/v1/contracts.routes.ts` — GET /contracts/:id, PUT /contracts/:id/confirm (UR-002.8)
 
 ## Phase 6: Payments & Commissions (Slice S4)
 
