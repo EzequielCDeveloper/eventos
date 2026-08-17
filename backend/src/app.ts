@@ -32,7 +32,16 @@ export function createApp(): Express {
     }),
   );
 
-  app.use(express.json({ limit: '1mb' }));
+  app.use(
+    express.json({
+      limit: '1mb',
+      // Keep the raw request body for webhook signature verification
+      // (BR-013.1 — Conekta signs the exact bytes received).
+      verify: (req: Request, _res, buf: Buffer) => {
+        (req as Request & { rawBody?: Buffer }).rawBody = buf;
+      },
+    }),
+  );
 
   // Structured request logging (BR-014.2): method, path, status, duration,
   // user_id when authenticated.

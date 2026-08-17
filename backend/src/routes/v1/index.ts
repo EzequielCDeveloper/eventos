@@ -8,6 +8,8 @@ import { inventoryRouter } from './inventory.routes';
 import { reservationsRouter } from './reservations.routes';
 import { packagesRouter } from './packages.routes';
 import { contractsRouter } from './contracts.routes';
+import { paymentsRouter } from './payments.routes';
+import { webhooksRouter } from './webhooks.routes';
 
 /**
  * Version 1 router (BR-001, UR-011). Mounted under `/api/v1` in app.ts.
@@ -20,6 +22,8 @@ import { contractsRouter } from './contracts.routes';
  *   - `/reservations/*` → reservationsRouter (13-state lifecycle, UR-002.7)
  *   - `/packages/*`     → packagesRouter (collaborative packages, UR-002.6)
  *   - `/contracts/*`    → contractsRouter (bilateral confirmation, UR-002.8)
+ *   - `/payments/*`     → paymentsRouter (Conekta charges/refunds, UR-002.9)
+ *   - `/webhooks/*`     → webhooksRouter (PUBLIC, signature-verified, BR-013.1)
  */
 export const v1Router: Router = Router();
 
@@ -32,6 +36,8 @@ v1Router.use(inventoryRouter);
 v1Router.use('/reservations', reservationsRouter);
 v1Router.use('/packages', packagesRouter);
 v1Router.use('/contracts', contractsRouter);
+v1Router.use('/payments', paymentsRouter);
+v1Router.use('/webhooks', webhooksRouter);
 
 v1Router.get('/version', (_req, res) => {
   res.json({ data: { version: 'v1' } });
