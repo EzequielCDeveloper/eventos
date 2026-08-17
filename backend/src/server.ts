@@ -4,6 +4,7 @@ import { initSocket } from './socket';
 import { env } from './config/env';
 import { prisma } from './config/database';
 import { closeRedis } from './config/redis';
+import { ensureScheduledJobs } from './jobs';
 
 /**
  * HTTP server entrypoint (BR-014.5, D-010).
@@ -53,3 +54,13 @@ process.on('SIGINT', () => void shutdown('SIGINT'));
 httpServer.listen(env.PORT, () => {
   console.log(`[server] API listening on http://0.0.0.0:${env.PORT} (env=${env.NODE_ENV})`);
 });
+
+// BullMQ scheduled jobs (D-011). Redis-absent environments disable the
+// workers gracefully — boot and HTTP serving never depend on Redis.
+void ensureScheduledJobs()
+  .then(({ enabled }) => {
+    console.log(`[server] scheduled jobs ${enabled ? 'enabled' : 'disabled (Redis unavailable)'}`);
+  })
+  .catch((error) => {
+    console.warn('[server] failed to initialize scheduled jobs', error);
+  });
