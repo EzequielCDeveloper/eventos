@@ -57,17 +57,17 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: Auth Routes & Service (Slice S2)
 
-- [ ] 3.1 Create `backend/src/services/auth.service.ts` — register(): validate unique email, hash password (bcrypt), create user, issue JWT; login(): validate credentials, check deleted_at IS NULL, issue JWT; refresh(): validate current JWT, issue new, invalidate old (BR-002.7, UR-003.1–UR-003.7)
-- [ ] 3.2 Create `backend/src/routes/v1/auth.routes.ts` — POST /auth/register, POST /auth/login, POST /auth/logout, GET /auth/me, POST /auth/refresh; all under /api/v1 prefix (UR-002.1, BR-001.8)
-- [ ] 3.3 Create `backend/src/routes/v1/users.routes.ts` — GET /users/me, PUT /users/me, POST /users/verify-ine, POST /users/verify-kyc (UR-002.2)
-- [ ] 3.4 Create `backend/src/routes/v1/index.ts` — Mount all v1 routers under /api/v1 (BR-001.8, UR-011.1)
+- [x] 3.1 Create `backend/src/services/auth.service.ts` — register(): validate unique email, hash password (bcrypt), create user, issue JWT; login(): validate credentials, check deleted_at IS NULL, issue JWT; refresh(): validate current JWT, issue new, invalidate old (BR-002.7, UR-003.1–UR-003.7)
+- [x] 3.2 Create `backend/src/routes/v1/auth.routes.ts` — POST /auth/register, POST /auth/login, POST /auth/logout, GET /auth/me, POST /auth/refresh; all under /api/v1 prefix (UR-002.1, BR-001.8)
+- [x] 3.3 Create `backend/src/routes/v1/users.routes.ts` — GET /users/me, PUT /users/me, POST /users/verify-ine, POST /users/verify-kyc (UR-002.2)
+- [x] 3.4 Create `backend/src/routes/v1/index.ts` — Mount all v1 routers under /api/v1 (BR-001.8, UR-011.1)
 
 ## Phase 4: Services CRUD & Search (Slice S2 continued)
 
-- [ ] 4.1 Create `backend/src/services/search.service.ts` — List services with 8+ filter dimensions (date, capacity, zone, budget, event type, pool, internet, rating), pagination, sorting; query v_slot_availability view for availability (BR-001.6, BR-001.7, BR-004.9, D-002)
-- [ ] 4.2 Create `backend/src/routes/v1/services.routes.ts` — GET /services (search), GET /services/:id, POST /services, PUT /services/:id, DELETE /services/:id, GET /services/:id/slots, GET /services/:id/reviews (UR-002.3, UR-002.4, UR-002.5)
-- [ ] 4.3 Create `backend/src/routes/v1/pricing.routes.ts` — GET/POST/PUT /services/:id/pricing, GET/POST/DELETE /services/:id/extras, GET/POST/DELETE /services/:id/dynamic-rules (UR-002.4)
-- [ ] 4.4 Create `backend/src/routes/v1/inventory.routes.ts` — GET/POST/PUT/DELETE /services/:id/slots, GET/POST/DELETE /services/:id/blocks, GET/PUT /services/:id/hours (UR-002.5)
+- [x] 4.1 Create `backend/src/services/search.service.ts` — List services with 8+ filter dimensions (date, capacity, zone, budget, event type, pool, internet, rating), pagination, sorting; query v_slot_availability view for availability (BR-001.6, BR-001.7, BR-004.9, D-002)
+- [x] 4.2 Create `backend/src/routes/v1/services.routes.ts` — GET /services (search), GET /services/:id, POST /services, PUT /services/:id, DELETE /services/:id, GET /services/:id/slots, GET /services/:id/reviews (UR-002.3, UR-002.4, UR-002.5)
+- [x] 4.3 Create `backend/src/routes/v1/pricing.routes.ts` — GET/POST/PUT /services/:id/pricing, GET/POST/DELETE /services/:id/extras, GET/POST/DELETE /services/:id/dynamic-rules (UR-002.4)
+- [x] 4.4 Create `backend/src/routes/v1/inventory.routes.ts` — GET/POST/PUT/DELETE /services/:id/slots, GET/POST/DELETE /services/:id/blocks, GET/PUT /services/:id/hours (UR-002.5)
 
 ## Phase 5: Reservations & Packages (Slice S3)
 
