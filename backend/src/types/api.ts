@@ -17,6 +17,7 @@ export type ErrorCode =
   | 'CONFLICT'
   | 'UNPROCESSABLE_ENTITY'
   | 'RATE_LIMITED'
+  | 'SERVICE_UNAVAILABLE'
   | 'INTERNAL_ERROR';
 
 export interface ErrorBody {

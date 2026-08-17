@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { requireAuth } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import * as authService from '../../services/auth.service';
+import { runKycVerification } from '../../services/verification.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 
 /**
@@ -21,11 +22,24 @@ const updateProfileSchema = z.object({
 });
 
 const verifyDocumentSchema = z.object({
-  // Placeholder payload for the identity-verification request. The actual
-  // INE document / KYC capture executes server-side in the S5 slice.
+  // Placeholder payload for the INE-presencial request (physical delivery
+  // + contract signing, BR-010.3). The row is created with result
+  // `pendiente`; completion is an offline/admin action.
   document_url: z.string().url().max(500).optional(),
   notes: z.string().max(500).optional(),
 });
+
+// KYC submits the INE data that Verificamex checks against the Lista
+// Nominal (BR-010.4/BR-010.5). The values are used in-flight only and are
+// NEVER persisted or logged (BR-010.6).
+const kycSchema = z
+  .object({
+    curp: z.string().min(15).max(18),
+    clave_elector: z.string().min(5).max(20),
+    nombre_completo: z.string().min(2).max(255),
+    ocr: z.string().max(100).optional(),
+  })
+  .strict();
 
 usersRouter.get(
   '/me',
@@ -55,9 +69,12 @@ usersRouter.post(
 
 usersRouter.post(
   '/verify-kyc',
-  validate({ body: verifyDocumentSchema }),
+  validate({ body: kycSchema }),
   asyncHandler(async (req, res) => {
-    const verification = await authService.requestIdentityVerification(req.user!.id, 'kyc');
+    const body = req.body as z.infer<typeof kycSchema>;
+    // Full KYC flow (BR-010): consent gate → Verificamex (stub outside
+    // production, 10s timeout) → metadata-only result row → verified flag.
+    const verification = await runKycVerification(req.user!.id, body);
     res.status(201).json({ data: { verification } });
   }),
 );
