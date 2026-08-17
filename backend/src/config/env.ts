@@ -90,8 +90,13 @@ const envSchema = z.object({
     }),
   CONEKTA_WEBHOOK_PUBLIC_KEY: z.string().min(1).optional(),
   VERIFICAMEX_API_KEY: secret('VERIFICAMEX_API_KEY'),
+  // Verificamex endpoint (conceptual per verificamex_integracion.md; the
+  // exact path is verified with the provider's docs at integration time).
+  VERIFICAMEX_API_URL: z.string().url().default('https://api.verificamex.mx/v1/verificar'),
   FCM_SERVICE_ACCOUNT: jsonString('FCM_SERVICE_ACCOUNT'),
   RESEND_API_KEY: secret('RESEND_API_KEY'),
+  // Optional sender address override for Resend emails (BR-013.5).
+  RESEND_FROM: z.string().email().optional(),
   AGORA_APP_ID: secret('AGORA_APP_ID'),
   AGORA_APP_CERTIFICATE: secret('AGORA_APP_CERTIFICATE'),
 
