@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>FiestaExpert - Inicio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../shared/theme.js"></script>
+<link rel="stylesheet" href="../shared/states.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body data-role="usuario" class="bg-surface text-on-surface font-body-md antialiased min-h-screen pb-24 overflow-x-hidden">
+
+<!-- ============================================================
+     GLOBAL SHELL (desktop nav, mobile top bar, mobile bottom nav)
+     ============================================================ -->
+<!-- Mobile Top App Bar -->
+<header id="app-topbar" class="shell-nav fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface shadow-sm md:hidden" data-component="TopBar">
+  <button data-action="focus-search" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Buscar">
+    <span class="material-symbols-outlined">search</span>
+  </button>
+  <h1 class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</h1>
+  <button data-nav="notificaciones" class="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Notificaciones">
+    <span class="material-symbols-outlined">notifications</span>
+    <span id="notif-badge-mob" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-error text-on-error font-label-sm text-[10px] rounded-full flex items-center justify-center">0</span>
+  </button>
+</header>
+
+<!-- Desktop Nav / Header Shell -->
+<header id="app-desktopnav" class="shell-nav hidden md:flex fixed top-0 w-full z-50 justify-between items-center px-margin-desktop h-20 bg-surface shadow-sm" data-component="DesktopNav">
+  <h1 class="font-display-lg text-headline-lg text-primary tracking-tight">FiestaExpert</h1>
+  <nav class="flex gap-lg">
+    <button data-nav="inicio" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-primary font-bold bg-primary-fixed/20">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">home</span>
+      <span class="font-label-md text-label-md">Inicio</span>
+    </button>
+    <button data-nav="favoritos" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">favorite</span>
+      <span class="font-label-md text-label-md">Favoritos</span>
+    </button>
+    <button data-nav="rentas" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+      <span class="font-label-md text-label-md">Rentas</span>
+    </button>
+    <button data-nav="chat" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">chat</span>
+      <span class="font-label-md text-label-md">Chat</span>
+    </button>
+    <button data-nav="perfil" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">person</span>
+      <span class="font-label-md text-label-md">Perfil</span>
+    </button>
+    <button data-nav="notificaciones" class="relative flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">notifications</span>
+      <span class="font-label-md text-label-md">Notificaciones</span>
+      <span id="notif-badge-desk" class="hidden absolute top-0 right-0 min-w-[18px] h-[18px] px-1 bg-error text-on-error font-label-sm text-[10px] rounded-full flex items-center justify-center">0</span>
+    </button>
+  </nav>
+</header>
+
+<!-- Mobile Bottom Nav Bar -->
+<nav id="app-bottomnav" class="shell-nav fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest shadow-lg rounded-t-xl border-t border-outline-variant md:hidden h-16" data-component="BottomNav">
+  <button data-nav="inicio" class="flex flex-col items-center justify-center text-primary bg-primary-fixed rounded-full px-4 py-1 scale-90 transition-transform duration-200 min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">home</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1 font-bold">Inicio</span>
+  </button>
+  <button data-nav="favoritos" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">favorite</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Favoritos</span>
+  </button>
+  <button data-nav="rentas" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Rentas</span>
+  </button>
+  <button data-nav="chat" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">chat</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Chat</span>
+  </button>
+  <button data-nav="perfil" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">person</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Perfil</span>
+  </button>
+</nav>
+
+<!-- ============================================================
+     SCREEN: INICIO (home + search)
+     ============================================================ -->
+<section id="screen-inicio" class="screen" data-component="HomeScreen">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <!-- Search & Segments -->
+    <section class="mb-lg">
+      <div class="relative w-full max-w-2xl mx-auto md:mx-0">
+        <input id="search-input" class="w-full h-14 pl-12 pr-4 rounded-xl bg-surface-container-lowest border border-outline-variant shadow-[0px_4px_20px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none font-body-lg text-on-surface placeholder:text-outline transition-shadow" placeholder="Buscar lugares, servicios..." type="text"/>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+      </div>
+      <!-- Fila primaria: categorías de la taxonomía (C1) -->
+      <div class="flex gap-4 mt-md overflow-x-auto no-scrollbar pb-2">
+        <button data-category="salon" class="whitespace-nowrap px-6 py-2 rounded-full bg-primary text-on-primary font-label-md shadow-sm">Salones</button>
+        <button data-category="sonido" class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Sonidos</button>
+        <button data-category="servicio" class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Servicios</button>
+      </div>
+      <!-- Fila secundaria: segmento empresa/particular (solo visual en S1, sin handler) -->
+      <div class="flex gap-3 mt-sm overflow-x-auto no-scrollbar pb-2">
+        <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-colors">Empresas</button>
+        <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-sm hover:bg-surface-container-low transition-colors">Particulares</button>
+      </div>
+    </section>
+    <!-- Filters (Scrollable) -->
+    <section class="mb-xl">
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 items-center">
+        <button class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-lowest border border-outline-variant shadow-sm text-on-surface-variant hover:bg-surface-container-low transition-colors">
+          <span class="material-symbols-outlined">tune</span>
+        </button>
+        <div class="h-6 w-px bg-outline-variant mx-1"></div>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Fecha <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Capacidad <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Zona <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Presupuesto <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Tipo de Evento <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Alberca <span class="material-symbols-outlined text-[18px]">add</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Internet <span class="material-symbols-outlined text-[18px]">add</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Calificación <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+      </div>
+    </section>
+    <!-- Service Cards Grid (render desde FEStore; MS-008) -->
+    <div id="services-state" data-state="loading">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg" id="services-grid" data-component="ServiceCardGrid">
+        <!-- Skeleton de carga (data-state=loading) -->
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+      </div>
+      <!-- Sin resultados -->
+      <div class="fe-state hidden" data-empty="true">
+        <span class="material-symbols-outlined fe-state-icon">search_off</span>
+        <p class="fe-state-title font-label-md text-label-md">No encontramos resultados</p>
+        <p class="fe-state-copy font-body-md text-body-md">Sugerimos ampliar tus filtros para ver más opciones en esta zona.</p>
+        <button data-action="limpiar" class="mt-md bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full hover:bg-primary-container transition-all active:scale-95 flex items-center gap-2">
+          <span class="material-symbols-outlined">filter_alt_off</span> Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: BÚSQUEDA SIN RESULTADOS
+     ============================================================ -->
+<section id="screen-busqueda" class="screen hidden" data-component="SearchScreen">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto w-full pb-xl">
+    <!-- Mobile Header (Search focused) -->
+    <div class="md:hidden relative w-full h-12 bg-surface-container-lowest rounded-full border border-outline-variant flex items-center px-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] mb-6">
+      <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+      <input id="busqueda-input" class="flex-1 bg-transparent border-none outline-none font-body-md text-on-surface placeholder:text-on-surface-variant focus:ring-0 p-0" placeholder="Buscar salones, djs, catering..." type="text"/>
+      <div class="h-6 w-px bg-outline-variant mx-3"></div>
+      <button data-action="focus-search" class="text-primary flex items-center justify-center" aria-label="Filtros">
+        <span class="material-symbols-outlined">tune</span>
+      </button>
+    </div>
+    <!-- Filter Chips (Horizontal Scroll) -->
+    <div class="flex overflow-x-auto hide-scrollbar gap-sm pb-4 mb-8">
+      <button data-chip-close class="whitespace-nowrap px-4 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-md flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+        Bodas <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+      <button data-chip-close class="whitespace-nowrap px-4 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-md flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+        Ciudad de México <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Precio</button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Capacidad</button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Servicios</button>
+    </div>
+    <!-- Empty State Container -->
+    <div class="flex flex-col items-center justify-center text-center max-w-md mx-auto py-xl min-h-[50vh]">
+      <div class="w-48 h-48 mb-lg relative flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary-fixed opacity-30 rounded-full blur-3xl"></div>
+        <div class="relative z-10 w-32 h-32 bg-surface-container-lowest rounded-full shadow-lg flex items-center justify-center border border-surface-variant">
+          <span class="material-symbols-outlined text-6xl text-primary opacity-80" style="font-variation-settings: 'FILL' 0, 'wght' 200;">search_off</span>
+        </div>
+        <div class="absolute top-4 right-4 w-8 h-8 bg-error-container rounded-full flex items-center justify-center animate-bounce delay-100 shadow-sm">
+          <span class="material-symbols-outlined text-error text-sm">close</span>
+        </div>
+      </div>
+      <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-md">No encontramos resultados</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">Sugerimos ampliar tus filtros para ver más opciones en esta zona.</p>
+      <button data-action="limpiar" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:bg-primary-container transition-all active:scale-95 flex items-center gap-2">
+        <span class="material-symbols-outlined">filter_alt_off</span> Limpiar filtros
+      </button>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: DETALLE DE SERVICIO (dinámico desde FEStore; MU-004/005)
+     ============================================================ -->
+<section id="screen-detalle" class="screen hidden" data-component="DetailScreen">
+  <!-- Top Navigation (Mobile Transparent / Desktop Solid) -->
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-gradient-to-b from-black/50 to-transparent md:bg-surface md:shadow-sm transition-all duration-300">
+    <button data-action="back-inicio" aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-primary transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="hidden md:flex flex-1 justify-center">
+      <h1 class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</h1>
+    </div>
+    <div class="flex gap-2">
+      <button aria-label="Compartir" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-on-surface-variant transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+        <span class="material-symbols-outlined">share</span>
+      </button>
+      <button data-action="detail-fav" aria-label="Guardar Favorito" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-on-surface-variant transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+        <span id="detail-fav-icon" class="material-symbols-outlined">favorite_border</span>
+      </button>
+    </div>
+  </header>
+  <main class="max-w-[1280px] mx-auto md:grid md:grid-cols-12 md:gap-lg md:px-margin-desktop md:pt-24 md:pb-xl">
+    <!-- Left Column: Imagery & Details (Span 8) -->
+    <div class="md:col-span-8 space-y-lg">
+      <!-- Header: Image Carousel (>=5 fotos navegable) -->
+      <div class="relative w-full h-[350px] md:h-[500px] md:rounded-xl overflow-hidden group">
+        <div id="detail-gallery" class="flex h-full overflow-x-auto snap-x snap-mandatory hide-scrollbar" data-component="Gallery"></div>
+        <div id="detail-gallery-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full"></div>
+        <button data-action="gallery-prev" aria-label="Foto anterior" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 transition-colors z-10">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button data-action="gallery-next" aria-label="Foto siguiente" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 transition-colors z-10">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+      <!-- Content Container for Mobile Pacing -->
+      <div class="px-margin-mobile md:px-0 space-y-xl pb-6 md:pb-0">
+        <!-- Section 1: Title, Verification Badge, Rating -->
+        <section class="border-b border-outline-variant pb-lg">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span id="detail-categoria" class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-2 py-1 rounded flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span> Salón
+                </span>
+                <span class="text-primary font-label-md text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-primary">verified</span> Verificado
+                </span>
+              </div>
+              <h2 id="detail-titulo" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Salón Las Palmas</h2>
+              <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+                <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span id="detail-rating" class="font-bold text-on-surface">4.8</span>
+                <span id="detail-reviews-count">(120 reseñas)</span>
+                <span>·</span>
+                <span id="detail-ubicacion" class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">location_on</span> Polanco, CDMX
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Section 2: Description -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Acerca de este espacio</h3>
+          <div id="description-container">
+            <p id="detail-descripcion" class="font-body-md text-body-md text-on-surface-variant text-clamp-3 mb-2 transition-all duration-300"></p>
+            <button data-action="leer-mas" class="font-label-md text-label-md text-primary font-semibold hover:underline">Leer más</button>
+          </div>
+        </section>
+        <!-- Section: Amenities (desde services[]) -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Comodidades</h3>
+          <div id="detail-amenities" class="grid grid-cols-2 md:grid-cols-4 gap-md"></div>
+        </section>
+        <!-- Section: Extra Services (desde services[].extras) -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Servicios Extra (Opcional)</h3>
+          <div id="detail-extras" class="space-y-3"></div>
+        </section>
+        <!-- Section: Reviews (1-5 estrellas + comentario; MU-005) -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Reseñas</h3>
+          <div id="detail-reviews" class="space-y-md" data-component="ReviewList"></div>
+        </section>
+        <!-- Section: Cancellation Policy (visible antes de reservar; MU-004) -->
+        <section class="pb-xl md:pb-0">
+          <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg group">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-on-surface-variant">policy</span>
+              <div>
+                <span id="detail-politica-titulo" class="block font-label-md text-label-md text-on-surface font-semibold">Política de Cancelación</span>
+                <span id="detail-politica-copy" class="block font-body-md text-body-md text-on-surface-variant text-sm"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- Right Column: Booking Widget (Span 4, Sticky on Desktop) -->
+    <div class="hidden md:block md:col-span-4 relative">
+      <div class="sticky top-24 bg-surface-container-lowest p-lg rounded-xl shadow-lg border border-outline-variant">
+        <div class="mb-lg border-b border-outline-variant pb-md">
+          <span class="font-body-md text-body-md text-on-surface-variant block mb-1">Renta desde</span>
+          <div class="flex items-baseline gap-1">
+            <span id="detail-precio" class="font-headline-lg text-headline-lg text-on-surface">$8,000</span>
+            <span class="font-body-md text-body-md text-on-surface-variant">MXN</span>
+          </div>
+          <div class="mt-2 space-y-1 font-body-md text-body-md text-on-surface-variant text-sm">
+            <div class="flex justify-between">
+              <span id="detail-modelo">Bloque base:</span>
+              <span class="font-medium text-on-surface">4 horas</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Hora extra:</span>
+              <span id="detail-hora-extra" class="font-medium text-on-surface">$1,500 MXN</span>
+            </div>
+          </div>
+        </div>
+        <div class="mb-lg">
+          <h3 class="font-label-md text-label-md text-on-surface font-semibold mb-sm">Selecciona Fecha y Horario</h3>
+          <input id="detail-fecha" type="date" min="2026-01-01" class="w-full p-3 border border-outline-variant rounded-lg mb-4 bg-surface cursor-pointer hover:border-primary transition-colors font-body-md text-body-md text-on-surface"/>
+          <div id="time-slots" class="grid grid-cols-2 gap-2" data-component="SlotGrid"></div>
+        </div>
+        <button data-action="rentar" class="w-full bg-on-tertiary-container hover:bg-on-tertiary-container/90 text-white font-label-md text-label-md py-4 rounded-lg font-semibold transition-colors mb-4 flex justify-center items-center gap-2">
+          Rentar ahora
+        </button>
+        <button data-action="contactar" class="w-full bg-surface-container-lowest border border-primary text-primary hover:bg-primary-fixed/50 font-label-md text-label-md py-4 rounded-lg font-semibold transition-colors flex justify-center items-center gap-2">
+          <span class="material-symbols-outlined">chat</span> Contactar al Anfitrión
+        </button>
+        <p class="text-center font-body-md text-body-md text-on-surface-variant text-xs mt-4">No se te cobrará nada aún.</p>
+      </div>
+    </div>
+  </main>
+  <!-- Sticky Bottom Action Bar (Mobile Only) -->
+  <div class="fixed bottom-0 w-full z-40 bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-3 flex items-center justify-between md:hidden pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <div>
+      <span class="block font-label-sm text-label-sm text-on-surface-variant">Desde</span>
+      <span id="detail-precio-mob" class="block font-headline-md text-headline-md text-on-surface">$8,000 MXN</span>
+    </div>
+    <div class="flex gap-3">
+      <button data-action="contactar" aria-label="Chatear con el anfitrión" class="w-12 h-12 flex items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary-fixed/50 transition-colors">
+        <span class="material-symbols-outlined">chat</span>
+      </button>
+      <button data-action="rentar" class="px-6 h-12 bg-on-tertiary-container text-white rounded-lg font-label-md text-label-md font-semibold hover:bg-on-tertiary-container/90 transition-colors">Rentar ahora</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: RESERVA 6 PASOS (D-007; MU-007..09)
+     1 fecha/hora · 2 extras · 3 resumen (sin comisión) ·
+     4 pago Conekta simulado · 5 contrato (solo salones) · 6 confirmación
+     Estado en draftReservation del FEStore (volver atrás preserva).
+     ============================================================ -->
+<section id="screen-reserva" class="screen hidden" data-component="BookingScreen">
+  <!-- Top Navigation (Transactional - Minimal) -->
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-14 bg-surface shadow-sm">
+    <button data-action="reserva-back" aria-label="Volver" class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="font-display-lg text-headline-md md:text-headline-lg text-primary tracking-tight">FiestaExpert</div>
+    <div class="w-10"></div>
+  </header>
+  <main class="pt-20 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto flex flex-col gap-lg">
+    <!-- Stepper: 6 pasos con estado preservado -->
+    <div id="reserva-stepper" class="flex items-center gap-xs overflow-x-auto no-scrollbar pb-2" role="tablist" aria-label="Progreso de reserva" data-component="StepperReserva"></div>
+
+    <!-- Paso 1: Fecha y horario -->
+    <section id="reserva-paso-1" class="reserva-paso bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg">
+      <h2 class="font-headline-md text-headline-md mb-sm">Paso 1 · Fecha y horario</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-md" id="reserva-servicio-nombre"></p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="reserva-fecha">Fecha del evento</label>
+          <input id="reserva-fecha" type="date" min="2026-01-01" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"/>
+        </div>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm">Horario disponible</label>
+          <div id="reserva-slots" class="grid grid-cols-2 gap-2"></div>
+        </div>
+      </div>
+      <p class="font-body-md text-body-md text-sm text-on-surface-variant mt-md" id="reserva-capacidad"></p>
+      <div class="flex justify-end mt-lg">
+        <button data-action="reserva-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+    </section>
+
+    <!-- Paso 2: Extras -->
+    <section id="reserva-paso-2" class="reserva-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg">
+      <h2 class="font-headline-md text-headline-md mb-sm">Paso 2 · Servicios extra</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-md">Selecciona los extras opcionales para tu evento.</p>
+      <div id="reserva-extras" class="space-y-3"></div>
+      <div class="flex justify-between mt-lg">
+        <button data-action="reserva-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+        <button data-action="reserva-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+    </section>
+
+    <!-- Paso 3: Resumen (renta + impuestos, SIN comisión) + política -->
+    <section id="reserva-paso-3" class="reserva-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg">
+      <h2 class="font-headline-md text-headline-md mb-sm">Paso 3 · Resumen</h2>
+      <div id="reserva-resumen" class="space-y-3 font-body-md text-body-md mt-md"></div>
+      <div class="mt-md bg-surface-container-low rounded-lg p-md flex gap-3 items-start">
+        <span class="material-symbols-outlined text-primary mt-0.5">policy</span>
+        <div>
+          <p class="font-label-md text-label-md font-semibold text-primary">Política de cancelación del proveedor</p>
+          <p id="reserva-politica" class="font-body-md text-body-md text-sm text-on-surface-variant mt-1"></p>
+        </div>
+      </div>
+      <div class="flex justify-between mt-lg">
+        <button data-action="reserva-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+        <button data-action="reserva-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+    </section>
+
+    <!-- Paso 4: Pago Conekta simulado -->
+    <section id="reserva-paso-4" class="reserva-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg" data-component="PaymentForm">
+      <h2 class="font-headline-md text-headline-md mb-sm">Paso 4 · Método de pago</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-md">Pago simulado procesado por Conekta (demo).</p>
+      <div class="space-y-4">
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-name">Nombre en la tarjeta</label>
+          <input id="card-name" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" placeholder="Juan Pérez" type="text"/>
+        </div>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-number">Número de tarjeta</label>
+          <div class="relative">
+            <input id="card-number" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 pl-10 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" placeholder="0000 0000 0000 0000" type="text"/>
+            <span class="material-symbols-outlined absolute left-3 top-3.5 text-on-surface-variant">credit_card</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-expiry">Fecha de exp.</label>
+            <input id="card-expiry" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" placeholder="MM/YY" type="text"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-cvc">CVC</label>
+            <input id="card-cvc" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" placeholder="123" type="text"/>
+          </div>
+        </div>
+        <div class="flex items-center justify-center gap-2 text-on-surface-variant opacity-70">
+          <span class="material-symbols-outlined text-sm">lock</span>
+          <span class="font-label-sm text-label-sm">Pagos seguros procesados por Conekta (simulación)</span>
+        </div>
+      </div>
+      <div class="flex justify-between mt-lg">
+        <button data-action="reserva-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+        <button data-action="reserva-pagar" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Pagar anticipo</button>
+      </div>
+    </section>
+
+    <!-- Paso 5: Contrato (SOLO salones) -->
+    <section id="reserva-paso-5" class="reserva-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg" data-component="ContractStep">
+      <h2 class="font-headline-md text-headline-md mb-sm">Paso 5 · Contrato</h2>
+      <div class="mt-md bg-surface-container-low p-4 rounded-lg flex gap-3 items-start border border-outline-variant/50">
+        <span class="material-symbols-outlined text-primary mt-0.5">description</span>
+        <div>
+          <p class="font-label-md text-label-md font-semibold text-primary">Contrato físico requerido</p>
+          <p class="font-body-md text-body-md text-sm text-on-surface-variant mt-1">Este salón requiere firma de contrato físico presencial en las instalaciones del proveedor antes del evento.</p>
+        </div>
+      </div>
+      <label class="flex items-center gap-3 mt-md cursor-pointer">
+        <input id="reserva-contrato-check" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+        <span class="font-body-md text-body-md text-on-surface">Acepto firmar el contrato físico en las instalaciones del proveedor.</span>
+      </label>
+      <div class="flex justify-between mt-lg">
+        <button data-action="reserva-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+        <button data-action="reserva-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+    </section>
+
+    <!-- Paso 6: Confirmación + T&C -->
+    <section id="reserva-paso-6" class="reserva-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg">
+      <div class="text-center py-xl">
+        <span class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mt-md mb-sm">¡Listo! Tu reserva está confirmada</h2>
+        <p id="reserva-confirmacion-copy" class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto"></p>
+      </div>
+      <div class="bg-surface-container-low rounded-lg p-md space-y-2 font-body-md text-body-md" id="reserva-confirmacion-detalle"></div>
+      <label class="flex items-center gap-3 mt-md cursor-pointer">
+        <input id="reserva-tc-check" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+        <span class="font-body-md text-body-md text-on-surface">Acepto los <button data-action="abrir-tc" class="text-primary font-semibold hover:underline">Términos y Condiciones</button> de la plataforma.</span>
+      </label>
+      <div class="flex justify-between mt-lg">
+        <button data-action="reserva-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+        <button data-action="reserva-confirmar" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Confirmar reserva</button>
+      </div>
+    </section>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: MIS RENTAS (4 tabs desde reservations[]; MU-010/011)
+     ============================================================ -->
+<section id="screen-rentas" class="screen hidden" data-component="RentasScreen">
+  <main class="pt-20 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <div class="mb-lg">
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">Mis Rentas</h1>
+      <p class="text-on-surface-variant">Gestiona y revisa el historial de tus eventos.</p>
+    </div>
+    <!-- Segmented Control / Tabs -->
+    <div class="flex overflow-x-auto no-scrollbar gap-sm mb-lg border-b border-surface-variant pb-2">
+      <button data-tab="activas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-primary border-b-2 border-primary">Activas</button>
+      <button data-tab="en-curso" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">En curso</button>
+      <button data-tab="completadas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Completadas</button>
+      <button data-tab="canceladas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Canceladas</button>
+    </div>
+    <!-- Lista dinámica por tab -->
+    <div id="rentas-state" data-state="loading">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg" id="rentas-grid">
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+      </div>
+      <div id="rentas-vacio" class="hidden fe-state">
+        <span class="material-symbols-outlined fe-state-icon">event_busy</span>
+        <p class="fe-state-title font-label-md text-label-md">No hay rentas en esta categoría.</p>
+        <p class="fe-state-copy font-body-md text-body-md">Cuando reserves un servicio aparecerá aquí.</p>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     MODAL: DETALLE DE RESERVA (cancelación + review condicionada)
+     ============================================================ -->
+<div id="reserva-detalle-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-margin-mobile md:p-margin-desktop" data-component="ReservaDetalleModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="modal-close"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+      <h2 class="font-headline-md text-headline-md text-on-surface">Detalle de reserva</h2>
+      <button data-action="modal-close" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-lg flex flex-col gap-md" id="reserva-detalle-body"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: CANCELACIÓN (política de retención + aceptación explícita)
+     ============================================================ -->
+<div id="cancelar-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="cancelar-titulo" data-component="CancelModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="cancelar-cerrar"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden">
+    <div class="bg-error-container px-lg py-md flex items-center gap-md border-b border-outline-variant">
+      <span class="material-symbols-outlined text-on-error-container text-[28px]">cancel</span>
+      <h1 id="cancelar-titulo" class="font-headline-md text-headline-md text-on-error-container flex-1">Cancelar reserva</h1>
+      <button data-action="cancelar-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-error-container hover:bg-on-error-container/10 transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-lg flex flex-col gap-md">
+      <div class="bg-surface-container-low p-md rounded-lg flex items-start gap-md">
+        <span class="material-symbols-outlined text-outline mt-1">policy</span>
+        <div>
+          <p class="font-label-md text-label-md text-on-surface font-semibold">Política de retención del proveedor</p>
+          <p id="cancelar-politica" class="font-body-md text-body-md text-sm text-on-surface-variant mt-1"></p>
+        </div>
+      </div>
+      <p id="cancelar-reembolso" class="font-body-md text-body-md text-sm text-on-surface-variant"></p>
+      <label class="flex items-center gap-3 cursor-pointer">
+        <input id="cancelar-accept" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-error focus:ring-error"/>
+        <span class="font-body-md text-body-md text-on-surface">Entiendo la política de retención y confirmo la cancelación.</span>
+      </label>
+      <div class="flex gap-md">
+        <button data-action="cancelar-cerrar" class="flex-1 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-lg py-3 rounded-lg hover:bg-surface-container-low transition-colors">Seguir con la reserva</button>
+        <button data-action="cancelar-confirmar" class="flex-1 bg-error text-on-error font-label-md text-label-md px-lg py-3 rounded-lg hover:bg-error-container hover:text-on-error-container transition-colors">Cancelar reserva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: PERFIL DEL CLIENTE
+     ============================================================ -->
+<section id="screen-perfil" class="screen hidden" data-component="ProfileScreen">
+  <main class="pt-14 md:pt-20 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">
+    <!-- Profile Header -->
+    <section class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-10 mb-xxl bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container-highest">
+      <div class="relative group cursor-pointer">
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-surface-container shadow-md">
+          <img alt="Profile Avatar" class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBqYuBf0kLJF12p3yf7aYBGqN1mbUxeTTqrGy9QDI0WhRciAiF1NCm2blMe0mnY2VLdmZKqw8moStTt_TnNBiaGUdt_P0Os-Ug4br5qfRY2G0U2Os5CDlBEWxhsSQ1UmGSl0I0q769OdWRfbTKiwIw87wQAypdslwOod9X1W8L7QOFV4_fpY7c_lCbk8EU2obdCDJ-qi2s_1LvJf8-WsXm9aMlOtcQR-NVkCx7vKD2p7SVQM_j6lc-fQ"/>
+        </div>
+        <div class="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span class="material-symbols-outlined text-white">edit</span>
+          <span class="text-white font-label-sm text-label-sm mt-1">Cambiar Foto</span>
+        </div>
+      </div>
+      <div class="flex-grow text-center md:text-left flex flex-col justify-center h-full">
+        <div class="flex flex-col md:flex-row md:items-center md:space-x-4 mb-2">
+          <h2 id="perfil-nombre" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2 md:mb-0">Alejandro Mendoza</h2>
+          <span id="perfil-badge" class="inline-flex items-center space-x-1 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span>Identidad Verificada</span>
+          </span>
+        </div>
+        <p class="font-body-md text-body-md text-on-surface-variant flex items-center justify-center md:justify-start space-x-2 mb-1">
+          <span class="material-symbols-outlined text-[18px]">mail</span>
+          <span id="perfil-email">alejandro.mendoza@email.com</span>
+        </p>
+        <p class="font-body-md text-body-md text-on-surface-variant flex items-center justify-center md:justify-start space-x-2">
+          <span class="material-symbols-outlined text-[18px]">phone</span>
+          <span>+52 55 1234 5678</span>
+        </p>
+      </div>
+    </section>
+    <!-- Action List -->
+    <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-highest overflow-hidden">
+      <ul class="divide-y divide-surface-container-highest">
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">person_edit</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Editar Perfil</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="abrir-verificar" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed group-hover:bg-secondary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">shield</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-body-lg text-body-lg text-on-surface font-medium">Verificación de Identidad</span>
+                <span class="font-label-sm text-label-sm text-secondary font-medium" id="perfil-estado">Estado: Verificada</span>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="abrir-arco" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">privacy_tip</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-body-lg text-body-lg text-on-surface font-medium">Derechos ARCO</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant">Acceso, rectificación, cancelación y oposición</span>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="ir-notificaciones" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">notifications</span>
+              </div>
+              <div class="flex flex-col items-start">
+                <span class="font-body-lg text-body-lg text-on-surface font-medium">Centro de Notificaciones</span>
+                <span class="font-label-sm text-label-sm text-error font-medium" id="perfil-notif-count"></span>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">help_center</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Centro de Ayuda</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="logout" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-error-container transition-colors duration-200 text-left focus:outline-none focus:bg-error-container group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-on-error-container group-hover:bg-error group-hover:text-on-error transition-colors duration-200">
+                <span class="material-symbols-outlined">logout</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-error font-medium">Cerrar Sesión</span>
+            </div>
+          </button>
+        </li>
+      </ul>
+    </section>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: FAVORITOS (lista persistente desde FEStore; MU-006)
+     ============================================================ -->
+<section id="screen-favoritos" class="screen hidden" data-component="FavoritesScreen">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <div class="flex items-end justify-between gap-md mb-lg">
+      <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">Favoritos</h1>
+        <p class="text-on-surface-variant">Servicios que guardaste para tus próximos eventos.</p>
+      </div>
+      <button data-action="fav-ordenar" class="hidden sm:flex items-center gap-xs text-primary font-label-md text-label-md hover:underline transition-colors">
+        <span class="material-symbols-outlined text-[18px]">swap_vert</span> Ordenar
+      </button>
+    </div>
+    <div id="favoritos-state" data-state="loading">
+      <div id="favoritos-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+        <div class="fe-skeleton-card fe-skeleton rounded-xl" aria-busy="true"></div>
+      </div>
+      <div class="fe-state hidden" data-empty="true">
+        <div class="w-24 h-24 rounded-full bg-primary-fixed flex items-center justify-center mb-lg shadow-sm">
+          <span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+        </div>
+        <p class="fe-state-title font-headline-md text-headline-md">Aún no tienes favoritos</p>
+        <p class="fe-state-copy font-body-lg text-body-lg">Toca el corazón en cualquier servicio para guardarlo aquí.</p>
+        <button data-action="ir-inicio" class="mt-lg bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Explorar servicios</button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: CHAT (lista + hilo + voz + llamada; MU-012..15)
+     ============================================================ -->
+<section id="screen-chat" class="screen hidden" data-component="ChatScreen">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full pb-xl">
+    <div class="mb-lg">
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">Chat</h1>
+      <p class="text-on-surface-variant">Conversaciones con tus proveedores.</p>
+    </div>
+    <div id="chat-grid" class="chat-grid grid grid-cols-1 md:grid-cols-3 gap-lg">
+      <!-- Lista de conversaciones -->
+      <div id="chat-list-panel" class="md:col-span-1 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high flex flex-col overflow-hidden">
+        <div class="px-lg py-md border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">Conversaciones</div>
+        <div id="chat-list-items" class="flex flex-col overflow-y-auto max-h-[420px] md:max-h-[560px]"></div>
+        <div id="chat-list-vacio" class="hidden fe-state">
+          <span class="material-symbols-outlined fe-state-icon">chat_bubble_outline</span>
+          <p class="fe-state-title font-label-md text-label-md">Sin conversaciones</p>
+          <p class="fe-state-copy font-body-md text-body-md">Inicia contacto desde un detalle de servicio.</p>
+        </div>
+      </div>
+      <!-- Hilo -->
+      <div id="chat-thread-panel" class="hidden md:flex md:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high flex-col min-h-[420px] md:min-h-[560px]">
+        <div class="px-lg py-md border-b border-outline-variant flex items-center gap-sm">
+          <button data-action="chat-back" class="md:hidden text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors" aria-label="Volver a conversaciones">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="min-w-0 flex-1">
+            <h3 id="chat-thread-title" class="font-label-md text-label-md text-on-surface font-semibold"></h3>
+            <p id="chat-thread-subject" class="font-label-sm text-label-sm text-on-surface-variant"></p>
+          </div>
+          <button data-action="chat-llamar" class="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-primary-fixed/30 transition-colors" aria-label="Llamada de voz">
+            <span class="material-symbols-outlined">call</span>
+          </button>
+        </div>
+        <div id="chat-messages" class="flex-1 flex flex-col gap-md p-lg overflow-y-auto"></div>
+        <!-- Composer: notas de voz + texto -->
+        <div class="px-lg py-md border-t border-outline-variant flex flex-col gap-sm">
+          <div id="voice-recorder" class="hidden items-center gap-sm bg-error-container text-on-error-container rounded-lg px-md py-sm font-label-md text-label-md" data-component="VoiceNote">
+            <span class="material-symbols-outlined text-[18px]">mic</span>
+            <span id="voice-timer">0:00</span>
+            <span class="flex-1 text-xs">Grabando nota de voz…</span>
+            <button data-action="voice-stop" class="w-8 h-8 flex items-center justify-center rounded-full bg-error text-on-error" aria-label="Detener grabación">
+              <span class="material-symbols-outlined text-[18px]">stop</span>
+            </button>
+          </div>
+          <div class="flex gap-sm">
+            <button data-action="voice-start" class="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:text-error hover:border-error transition-colors" aria-label="Grabar nota de voz">
+              <span class="material-symbols-outlined">mic</span>
+            </button>
+            <input id="chat-input" class="flex-1 bg-surface-container rounded-lg border border-outline-variant px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Escribe un mensaje..." type="text"/>
+            <button data-action="chat-send" class="bg-primary text-on-primary w-11 h-11 shrink-0 flex items-center justify-center rounded-lg hover:bg-primary-container transition-colors" aria-label="Enviar mensaje">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: NOTIFICACIONES (centro + badges; MU-016)
+     ============================================================ -->
+<section id="screen-notificaciones" class="screen hidden" data-component="NotificationCenter">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full pb-xl">
+    <div class="flex items-end justify-between gap-md mb-lg">
+      <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">Notificaciones</h1>
+        <p class="text-on-surface-variant">Recordatorios, avisos y novedades de tus eventos.</p>
+      </div>
+      <button data-action="notif-marcar-todas" class="text-primary font-label-md text-label-md hover:underline transition-colors whitespace-nowrap">Marcar todas como leídas</button>
+    </div>
+    <div id="notificaciones-state" data-state="loading">
+      <div id="notificaciones-list" class="flex flex-col gap-md"></div>
+      <div class="fe-state hidden" data-empty="true">
+        <span class="material-symbols-outlined fe-state-icon">notifications_off</span>
+        <p class="fe-state-title font-label-md text-label-md">No tienes notificaciones</p>
+        <p class="fe-state-copy font-body-md text-body-md">Aquí aparecerán avisos de tus reservas y mensajes.</p>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     FOOTER LEGAL (F1): no-mediación de disputas + aviso LFPDPPP
+     ============================================================ -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant px-margin-mobile md:px-margin-desktop py-lg">
+  <div class="max-w-[1280px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-md">
+    <p class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</p>
+    <div class="space-y-sm md:text-right font-label-sm text-label-sm text-on-surface-variant">
+      <p>FiestaExpert es una plataforma de intermediación; no media en disputas comerciales entre usuarios y proveedores. Las controversias se resuelven directamente entre las partes.</p>
+      <p>Aviso de privacidad: tus datos personales serán tratados conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (versión demo).</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     MODAL: NOTIFICACIÓN DE ALCOHOL (H-5)
+     ============================================================ -->
+<div id="alcohol-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-margin-mobile md:p-margin-desktop" data-component="AlcoholPromptModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="modal-close"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-[0px_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <!-- Urgent Header Band -->
+    <div class="bg-error-container px-lg py-md flex items-center gap-md border-b border-outline-variant">
+      <span class="material-symbols-outlined text-on-error-container text-[32px]">warning</span>
+      <h1 class="font-headline-md text-headline-md md:text-headline-md text-on-error-container flex-1">Atención: Permiso de alcohol no confirmado</h1>
+      <button data-action="modal-close" class="w-8 h-8 flex items-center justify-center rounded-full text-on-error-container hover:bg-on-error-container/10 transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <!-- Content Area -->
+    <div class="p-lg flex flex-col gap-lg">
+      <div class="flex items-start gap-md bg-surface-container-low p-md rounded-lg">
+        <span class="material-symbols-outlined text-outline mt-1">info</span>
+        <p class="font-body-md text-body-md text-on-surface-variant">Según la normativa de SLRC, Sonora, para servir alcohol se requiere el permiso municipal. El permiso aún no ha sido reportado como aprobado.</p>
+      </div>
+      <!-- Options Section -->
+      <div class="flex flex-col gap-md">
+        <p class="font-label-md text-label-md text-on-surface">Seleccione una opción para su evento en 5 horas:</p>
+        <button data-action="modal-continuar" class="w-full flex items-center justify-between p-md border-2 border-primary rounded-lg bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors group">
+          <div class="flex flex-col items-start text-left">
+            <span class="font-label-md text-label-md text-on-primary font-bold">Continuar sin alcohol</span>
+            <span class="font-body-md text-body-md text-primary-fixed-dim text-sm opacity-90">Reserva se mantiene, evento sin alcohol</span>
+          </div>
+          <span class="material-symbols-outlined text-on-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+        <button data-action="modal-cancelar" class="w-full flex items-center justify-between p-md border border-outline-variant rounded-lg bg-surface-container-lowest text-error hover:bg-error-container transition-colors group">
+          <div class="flex flex-col items-start text-left">
+            <span class="font-label-md text-label-md font-bold">Cancelar reserva</span>
+            <span class="font-body-md text-body-md text-on-surface-variant text-sm">Aplica política de cancelación del proveedor</span>
+          </div>
+          <span class="material-symbols-outlined text-error">cancel</span>
+        </button>
+      </div>
+    </div>
+    <!-- Footer / Disclaimer -->
+    <div class="bg-surface-container px-lg py-md border-t border-outline-variant flex items-center gap-sm">
+      <span class="material-symbols-outlined text-outline text-[16px]">gavel</span>
+      <p class="font-label-sm text-label-sm text-on-surface-variant">La plataforma no se hace responsable por multas municipales.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: CONSENTIMIENTO DE PRIVACIDAD (primer uso; MU-017)
+     ============================================================ -->
+<div id="privacidad-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="privacidad-titulo" data-component="PrivacyModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center gap-md">
+      <span class="material-symbols-outlined text-primary text-[28px]">privacy_tip</span>
+      <h1 id="privacidad-titulo" class="font-headline-md text-headline-md text-on-surface flex-1">Aviso de privacidad</h1>
+    </div>
+    <div class="p-lg flex flex-col gap-md">
+      <p class="font-body-md text-body-md text-on-surface-variant">
+        FiestaExpert trata tus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP). Tus datos se utilizan para gestionar reservas, mensajes y pagos de la plataforma.
+      </p>
+      <p class="font-body-md text-body-md text-on-surface-variant">
+        Puedes ejercer tus derechos de acceso, rectificación, cancelación y oposición (ARCO) desde tu perfil en cualquier momento.
+      </p>
+      <label class="flex items-center gap-3 cursor-pointer">
+        <input id="privacidad-accept" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+        <span class="font-body-md text-body-md text-on-surface">Acepto el aviso de privacidad y el tratamiento de mis datos.</span>
+      </label>
+      <button data-action="privacidad-aceptar" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Aceptar y continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: TÉRMINOS Y CONDICIONES (MU-017)
+     ============================================================ -->
+<div id="tc-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="tc-titulo" data-component="TermsModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="tc-cerrar"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+      <h1 id="tc-titulo" class="font-headline-md text-headline-md text-on-surface">Términos y Condiciones</h1>
+      <button data-action="tc-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-lg flex flex-col gap-md font-body-md text-body-md text-on-surface-variant">
+      <p>FiestaExpert actúa como plataforma de intermediación entre clientes y proveedores de servicios para eventos.</p>
+      <p>1. La plataforma no media en disputas comerciales entre las partes.</p>
+      <p>2. Las cancelaciones se rigen por la política de cancelación de cada proveedor.</p>
+      <p>3. Los pagos se procesan mediante Conekta; FiestaExpert no almacena datos de tarjetas.</p>
+      <p>4. La venta de alcohol está sujeta a permisos municipales según la normativa local.</p>
+      <p>5. Versión demo: los términos aquí mostrados son una simulación para diseño.</p>
+      <button data-action="tc-cerrar" class="mt-md bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     BANNER: COOKIES (elección registrada; MU-017)
+     ============================================================ -->
+<div id="cookies-banner" class="hidden fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-[75] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg p-md flex flex-col sm:flex-row items-start sm:items-center gap-md" role="status" data-component="CookiesBanner">
+  <span class="material-symbols-outlined text-primary text-[28px] shrink-0">cookie</span>
+  <div class="flex-1">
+    <p class="font-label-md text-label-md text-on-surface font-semibold">Usamos cookies</p>
+    <p class="font-body-md text-body-md text-sm text-on-surface-variant">Para mejorar tu experiencia y recordar tus preferencias. Puedes elegir cómo navegar.</p>
+  </div>
+  <div class="flex gap-sm shrink-0">
+    <button data-action="cookies-rechazar" class="bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md px-md py-2 rounded-full hover:bg-surface-container-high transition-colors">Solo necesarias</button>
+    <button data-action="cookies-aceptar" class="bg-primary text-on-primary font-label-md text-label-md px-md py-2 rounded-full hover:bg-primary-container transition-colors">Aceptar todas</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: VERIFICACIÓN VOLUNTARIA DEL CLIENTE (MU-018)
+     ============================================================ -->
+<div id="verificar-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="verificar-titulo" data-component="VerifyModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="verificar-cerrar"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center gap-md">
+      <span class="material-symbols-outlined text-primary text-[28px]">verified_user</span>
+      <h1 id="verificar-titulo" class="font-headline-md text-headline-md text-on-surface flex-1">Verificación de identidad</h1>
+      <button data-action="verificar-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="verificar-body" class="p-lg flex flex-col gap-md">
+      <!-- Paso 1: consentimiento -->
+      <div id="verificar-paso-1">
+        <p class="font-body-md text-body-md text-on-surface-variant mb-md">La verificación es voluntaria y te permite mostrar el distintivo "Identidad verificada" a los proveedores, aumentando tu confianza al reservar.</p>
+        <label class="flex items-center gap-3 cursor-pointer mb-md">
+          <input id="verificar-consent" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+          <span class="font-body-md text-body-md text-on-surface">Acepto el tratamiento de mis datos para verificación de identidad.</span>
+        </label>
+        <button data-action="verificar-capturar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+      <!-- Paso 2: captura simulada -->
+      <div id="verificar-paso-2" class="hidden">
+        <div class="bg-surface-container-low rounded-lg p-md flex items-center gap-md mb-md">
+          <span class="material-symbols-outlined text-primary text-[32px]">camera</span>
+          <div class="flex-1">
+            <p class="font-label-md text-label-md text-on-surface font-semibold">Captura de identificación</p>
+            <p class="font-body-md text-body-md text-sm text-on-surface-variant">Simulación: en producción se captura INE o pasaporte.</p>
+          </div>
+        </div>
+        <button data-action="verificar-enviar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Enviar documentos (demo)</button>
+      </div>
+      <!-- Paso 3: resultado -->
+      <div id="verificar-paso-3" class="hidden text-center">
+        <span class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings: 'FILL' 1;">verified</span>
+        <h2 class="font-headline-md text-headline-md text-on-surface mt-md mb-sm">¡Identidad verificada!</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-md">Tu badge de verificación ya está activo en tu perfil.</p>
+        <button data-action="verificar-cerrar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Listo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     OVERLAY: LLAMADA SIMULADA (Agora; MU-015)
+     ============================================================ -->
+<div id="call-overlay" class="hidden fixed inset-0 z-[85] flex items-center justify-center bg-black/70 backdrop-blur-md" data-component="CallOverlay">
+  <div class="text-center text-white">
+    <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center mx-auto mb-md" id="call-avatar">
+      <span class="material-symbols-outlined text-[40px]">storefront</span>
+    </div>
+    <h2 id="call-titulo" class="font-headline-md text-headline-md mb-xs">Salón Las Palmas</h2>
+    <p id="call-estado" class="font-label-md text-label-md text-white/70 mb-lg">Llamando…</p>
+    <div class="flex items-center justify-center gap-md">
+      <button data-action="call-finalizar" class="w-14 h-14 rounded-full bg-error text-on-error flex items-center justify-center hover:scale-105 transition-transform" aria-label="Terminar llamada">
+        <span class="material-symbols-outlined">call_end</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: FORMULARIO ARCO (MU-017)
+     ============================================================ -->
+<div id="arco-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="arco-titulo" data-component="ARCOForm">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="arco-cerrar"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+      <h1 id="arco-titulo" class="font-headline-md text-headline-md text-on-surface">Derechos ARCO</h1>
+      <button data-action="arco-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <form id="arco-form" class="p-lg flex flex-col gap-md" onsubmit="return false;">
+      <p class="font-body-md text-body-md text-on-surface-variant">Ejerce tus derechos de acceso, rectificación, cancelación u oposición sobre tus datos personales conforme a la LFPDPPP.</p>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="arco-derecho">Derecho a ejercer</label>
+        <select id="arco-derecho" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow">
+          <option value="acceso">Acceso</option>
+          <option value="rectificacion">Rectificación</option>
+          <option value="cancelacion">Cancelación</option>
+          <option value="oposicion">Oposición</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="arco-correo">Correo de contacto</label>
+        <input id="arco-correo" type="email" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" placeholder="tu@correo.com"/>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="arco-motivo">Descripción de tu solicitud</label>
+        <textarea id="arco-motivo" class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary min-h-[100px] resize-y" placeholder="Detalla tu solicitud..."></textarea>
+      </div>
+      <p id="arco-error" class="fe-field-error hidden font-label-sm text-label-sm text-error" data-state="invalid"></p>
+      <button data-action="arco-enviar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Enviar solicitud</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed left-1/2 -translate-x-1/2 bottom-24 md:bottom-8 z-[80] bg-inverse-surface text-inverse-on-surface font-label-md text-label-md px-lg py-sm rounded-full shadow-lg whitespace-nowrap" role="status" aria-live="polite"></div>
+
+<script src="../shared/store.js"></script>
+<script src="../shared/api.js"></script>
+<script src="../shared/auth.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

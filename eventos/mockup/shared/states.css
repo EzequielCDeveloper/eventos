@@ -1,0 +1,180 @@
+/* ============================================
+   FiestaExpert — Estados de UI compartidos
+   (states.css)
+   Convención data-state canónica (MS-004):
+   loading | empty | no-results | error | offline |
+   unauthorized | forbidden | invalid
+   Reutilizable por los 3 roles. Cargar tras
+   theme.js y antes del style.css de cada rol.
+   ============================================ */
+
+/* ---------- Contenedores de vista con estado ---------- */
+[data-state] {
+  display: block;
+}
+
+/* Estado oculto por defecto si el contenedor no aplica estado */
+[data-state="hidden"] {
+  display: none;
+}
+
+/* ---------- Loading: skeleton con shimmer (aria-busy) ---------- */
+[data-state="loading"] .fe-skeleton,
+.fe-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--fe-skeleton-bg, #e0e3e6);
+  border-radius: 0.5rem;
+}
+[data-state="loading"] .fe-skeleton::after,
+.fe-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: fe-shimmer 1.4s infinite;
+}
+@keyframes fe-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+[data-state="loading"] .fe-skeleton-line {
+  height: 0.875rem;
+  margin-bottom: 0.625rem;
+}
+[data-state="loading"] .fe-skeleton-line:last-child {
+  width: 60%;
+}
+
+/* ---------- Empty ---------- */
+[data-state="empty"] .fe-state-icon {
+  font-size: 3rem;
+  color: var(--fe-state-icon, #767683);
+}
+[data-state="empty"] .fe-state-title {
+  font-weight: 600;
+  color: #191c1e;
+}
+[data-state="empty"] .fe-state-copy {
+  color: #454652;
+}
+
+/* ---------- No results ---------- */
+[data-state="no-results"] .fe-state-icon {
+  font-size: 3rem;
+  color: #767683;
+}
+[data-state="no-results"] .fe-state-title {
+  font-weight: 600;
+  color: #191c1e;
+}
+[data-state="no-results"] .fe-state-copy {
+  color: #454652;
+}
+
+/* ---------- Error (con reintentar) ---------- */
+[data-state="error"] .fe-state-icon {
+  font-size: 3rem;
+  color: #ba1a1a;
+}
+[data-state="error"] .fe-state-title {
+  font-weight: 600;
+  color: #191c1e;
+}
+[data-state="error"] .fe-state-copy {
+  color: #454652;
+}
+
+/* ---------- Offline: banner superior + estado de acciones ---------- */
+.fe-offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #191c1e;
+  color: #eff1f4;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+body.fe-offline [data-state="offline"] {
+  display: flex;
+}
+
+/* ---------- Unauthorized (401 → login) ---------- */
+[data-state="unauthorized"] .fe-state-icon {
+  font-size: 3rem;
+  color: #ba1a1a;
+}
+[data-state="unauthorized"] .fe-state-title {
+  font-weight: 600;
+  color: #191c1e;
+}
+
+/* ---------- Forbidden (403) ---------- */
+[data-state="forbidden"] .fe-state-icon {
+  font-size: 3rem;
+  color: #ba1a1a;
+}
+[data-state="forbidden"] .fe-state-title {
+  font-weight: 600;
+  color: #191c1e;
+}
+[data-state="forbidden"] .fe-state-copy {
+  color: #454652;
+}
+
+/* ---------- Invalid: error de formulario ---------- */
+[data-state="invalid"] .fe-field-error {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  color: #ba1a1a;
+}
+[data-state="invalid"] .fe-field-error::before {
+  content: "error";
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: "FILL" 1;
+  font-size: 1rem;
+}
+[aria-invalid="true"],
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #ba1a1a !important;
+}
+
+/* ---------- Contenedores de estado genérico (alineación) ---------- */
+.fe-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  min-height: 12rem;
+}
+
+/* Skeleton de tarjeta (grid de resultados) */
+.fe-skeleton-card {
+  height: 100%;
+  min-height: 18rem;
+}

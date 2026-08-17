@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Centro de Socios - FiestaExpert</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../shared/theme.js"></script>
+<link rel="stylesheet" href="../shared/states.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body data-role="proveedor" class="bg-surface text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:block">
+
+<!-- NavigationDrawer (Desktop) -->
+<aside id="drawer-desktop" class="hidden md:flex flex-col bg-surface shadow-xl inset-y-0 w-80 rounded-r-xl fixed left-0 z-[60] py-xl" data-component="ProviderDrawer">
+  <div class="px-lg pb-lg border-b border-surface-container-high">
+    <div class="flex items-center gap-md">
+      <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 ring-2 ring-primary-container">
+        <img alt="Provider Profile Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8nRHmsJqdNgzbIx5SdV519FHXpctYZfOkR3F9iIxmjcOAuYvGsFR_Gh_1-Bvq8wdfWi1nie8NRnC1qXaERmZLbW2bFRprkoZ2z8ttJpmD-VSW6-SMDoc0qvZR4_M2CPO8BQxdQRcmchJO2N17EeYDSEJpoJE7CvcrmZPLKWMth8Y8cQB_UafrnOenjO9mLlAiLQNCpEmzMLD8tEWnkTvhgHf0-8s7m0IexLGcNfz8Z2yV6jGcAS82lg"/>
+      </div>
+      <div>
+        <h2 class="font-headline-md text-headline-md text-primary">Centro de Socios</h2>
+        <p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+          Verificado • Nivel Oro
+        </p>
+      </div>
+    </div>
+    <div class="mt-lg">
+      <button data-action="toggle-proveedor" class="w-full flex items-center justify-between px-md py-sm bg-surface-container-low rounded-lg border border-outline-variant hover:bg-surface-container-highest transition-colors">
+        <span class="font-label-md text-label-md text-on-surface">Modo Proveedor</span>
+        <span class="material-symbols-outlined text-on-surface-variant" data-icon="toggle">swap_horiz</span>
+      </button>
+    </div>
+  </div>
+  <nav class="flex-1 px-md py-lg flex flex-col gap-xs overflow-y-auto">
+    <a data-nav="hoy" class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all translate-x-1 duration-200" href="#">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings:'FILL' 1;">dashboard</span>
+      <span class="font-label-md text-label-md">Hoy</span>
+    </a>
+    <a data-nav="mensajes" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">mail</span>
+      <span class="font-label-md text-label-md">Mensajes</span>
+      <span class="unread-total ml-auto bg-error text-on-error font-label-sm text-[10px] px-2 py-0.5 rounded-full">3</span>
+    </a>
+    <a data-nav="calendario" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">event_note</span>
+      <span class="font-label-md text-label-md">Calendario</span>
+    </a>
+    <a data-nav="anuncios" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">campaign</span>
+      <span class="font-label-md text-label-md">Anuncios</span>
+    </a>
+    <a data-nav="estadisticas" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">analytics</span>
+      <span class="font-label-md text-label-md">Estadísticas</span>
+    </a>
+  </nav>
+  <div class="px-lg pt-md mt-auto">
+    <button data-action="logout" class="flex items-center gap-sm text-on-surface-variant hover:text-error transition-colors font-label-md text-label-md">
+      <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+    </button>
+  </div>
+</aside>
+
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface shadow-sm transition-colors duration-150">
+  <button data-action="abrir-menu" class="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors" aria-label="Abrir menú">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+  <div class="font-display-lg text-headline-md text-primary tracking-tight font-bold">FiestaExpert</div>
+  <div class="flex items-center gap-sm">
+    <button data-action="logout" class="text-on-surface-variant hover:text-error p-2 rounded-full transition-colors" aria-label="Cerrar sesión">
+      <span class="material-symbols-outlined">logout</span>
+    </button>
+    <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+      <img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3bG8xD_nYSkdekBorBoOG_6idDTpKQ-SskeMwmKb5V_2HIZEs6de_S09EoYGpaQh9TXU8JLsCT3vupxSvkr7qpik71uwdyOh_WEEhiG8mbpfIEJXb1OLxF-sBPdOXrYPR8mfJTsgPTiua6J_KhyH7sx-ZAiPJpF0IVT-3YE5IOKBfQVzuPSQDzw5ncVHKyx1RJjpXUyQga1ZhGFXcHB7DyyCJJ4_gsfkA2tpbP709WkAUOG8SzGo2rA"/>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-80 pt-[72px] md:pt-0 min-h-screen pb-[90px] md:pb-0 bg-background">
+
+  <!-- ============================================================
+       SCREEN: HOY (dashboard)
+       ============================================================ -->
+  <section id="screen-hoy" class="screen" data-component="HoyScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <!-- Header Section -->
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h1 id="saludo-proveedor" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hola, Juan.</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Tienes <strong class="text-primary">2 reservas pendientes</strong> para revisar hoy.</p>
+        </div>
+        <div class="flex gap-sm">
+          <button data-nav="onboarding" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container shadow-md transition-colors flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[18px]">add</span> Nuevo Anuncio
+          </button>
+        </div>
+      </section>
+      <!-- Bento Grid Content -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+        <!-- Action Required (Spans 8 columns on desktop) -->
+        <div class="md:col-span-8 flex flex-col gap-md">
+          <h3 class="font-headline-md text-headline-md text-on-surface">Atención Requerida</h3>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg flex-1 flex flex-col sm:flex-row gap-md items-start sm:items-center relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container"></div>
+            <div class="w-full sm:w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-surface-container-low">
+              <img alt="Boda Event" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-mI6HduYfH9VRzlHuAqNOgwrxZj_AfLjuUYUzgkIaDcNK6---wNTjxsOMqKBlBryLou6EvLzY-5JGgrfKRAMWMicMmvp4GsFAoJhJgaFx5vpcwag3GwStPLPl7l5B13R16VV-0Or2eYdrPcJXsO7brm6SUml-AD_KzALHFSurkmks2vTsgzbEAYoAS5tn7SNv1cqMTLqexQVbAKtN4-qJGkXP45Rmb4FrUGFm5i7KF8bIo5oZroRmOw"/>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-sm mb-xs">
+                <span class="bg-error-container text-on-error-container font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">Pendiente</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">schedule</span> Mañana, 17:00</span>
+              </div>
+              <h4 class="font-headline-md text-[20px] text-on-surface leading-tight">Boda Familia García</h4>
+              <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Paquete Platino • 150 Invitados</p>
+            </div>
+            <div class="flex sm:flex-col gap-sm w-full sm:w-auto mt-sm sm:mt-0">
+              <button data-action="aprobar" class="flex-1 sm:flex-none bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary-container transition-colors text-center">Aprobar</button>
+              <button data-action="ver-detalles" class="flex-1 sm:flex-none bg-surface-container-lowest text-primary border border-outline-variant font-label-md text-label-md px-md py-sm rounded-lg hover:bg-surface-container-low transition-colors text-center">Ver Detalles</button>
+            </div>
+          </div>
+        </div>
+        <!-- Revenue Summary (Spans 4 columns on desktop) -->
+        <div class="md:col-span-4 flex flex-col gap-md">
+          <h3 class="font-headline-md text-headline-md text-on-surface">Resumen de Ingresos</h3>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg flex flex-col h-full justify-between">
+            <div>
+              <p class="font-label-md text-label-md text-on-surface-variant mb-xs">Esta Semana</p>
+              <div class="flex items-baseline gap-sm">
+                <h4 class="font-display-lg text-[36px] text-primary leading-none">$12,450</h4>
+                <span class="font-label-sm text-label-sm text-green-600 flex items-center bg-green-50 px-1.5 py-0.5 rounded text-[10px]"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+              </div>
+              <p class="font-label-sm text-label-sm text-on-surface-variant mt-2">vs. $11,100 semana anterior</p>
+            </div>
+            <div class="mt-lg">
+              <div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant mb-xs">
+                <span>Meta Mensual</span>
+                <span>65%</span>
+              </div>
+              <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+                <div class="bg-secondary h-2 rounded-full" style="width: 65%"></div>
+              </div>
+            </div>
+            <button data-action="reporte" class="mt-md w-full text-center text-primary font-label-md text-label-md py-sm hover:bg-primary-fixed-dim rounded-lg transition-colors">Ver Reporte Completo</button>
+          </div>
+        </div>
+        <!-- Quick Actions / Tools -->
+        <div class="md:col-span-12 grid grid-cols-2 md:grid-cols-4 gap-md mt-md">
+          <button data-nav="mensajes" class="bg-surface-container-lowest border border-surface-container-high rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:shadow-md transition-shadow group">
+            <div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-on-primary-fixed group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">chat</span>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface">Ver Mensajes</span>
+          </button>
+          <button data-action="placeholder" class="bg-surface-container-lowest border border-surface-container-high rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:shadow-md transition-shadow group">
+            <div class="w-12 h-12 bg-secondary-fixed rounded-full flex items-center justify-center text-on-secondary-fixed group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface">Pagos</span>
+          </button>
+          <button data-action="placeholder" class="bg-surface-container-lowest border border-surface-container-high rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:shadow-md transition-shadow group">
+            <div class="w-12 h-12 bg-tertiary-fixed rounded-full flex items-center justify-center text-on-tertiary-fixed group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">reviews</span>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface">Reseñas</span>
+          </button>
+          <button data-action="placeholder" class="bg-surface-container-lowest border border-surface-container-high rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:shadow-md transition-shadow group">
+            <div class="w-12 h-12 bg-surface-variant rounded-full flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">settings</span>
+            </div>
+            <span class="font-label-md text-label-md text-on-surface">Configuración</span>
+          </button>
+        </div>
+        <!-- Recordatorios y pendientes (MP-007) -->
+        <div class="md:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-lg">
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Alertas urgentes</h3>
+            <div id="hoy-alertas" class="flex flex-col gap-sm"></div>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Recordatorios</h3>
+            <div id="hoy-recordatorios" class="flex flex-col gap-sm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN: MENSAJES
+       ============================================================ -->
+  <section id="screen-mensajes" class="screen hidden" data-component="MessagesScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Mensajes</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Consultas y confirmaciones de tus clientes.</p>
+        </div>
+      </section>
+      <div id="chat-grid" class="chat-grid grid grid-cols-1 md:grid-cols-3 gap-lg">
+        <!-- Conversation list -->
+        <div id="chat-list-panel" class="md:col-span-1 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high flex flex-col overflow-hidden">
+          <div class="px-lg py-md border-b border-outline-variant font-label-md text-label-md text-on-surface-variant">Conversaciones</div>
+          <div id="chat-list-items" class="flex flex-col overflow-y-auto max-h-[420px] md:max-h-[560px]" data-component="ConversationList"></div>
+        </div>
+        <!-- Thread -->
+        <div id="chat-thread-panel" class="hidden md:flex md:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high flex-col min-h-[420px] md:min-h-[560px]">
+          <div class="px-lg py-md border-b border-outline-variant flex items-center gap-sm">
+            <button data-action="chat-back" class="md:hidden text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors" aria-label="Volver a conversaciones">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="min-w-0">
+              <h3 id="chat-thread-title" class="font-label-md text-label-md text-on-surface font-semibold"></h3>
+              <p id="chat-thread-subject" class="font-label-sm text-label-sm text-on-surface-variant"></p>
+            </div>
+            <button data-action="chat-llamar" class="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-primary-fixed/30 transition-colors" aria-label="Llamada de voz">
+              <span class="material-symbols-outlined">call</span>
+            </button>
+          </div>
+          <div id="chat-messages" class="flex-1 flex flex-col gap-md p-lg overflow-y-auto" data-component="ChatThread"></div>
+          <div class="px-lg py-md border-t border-outline-variant flex flex-col gap-sm">
+            <!-- Respuestas rápidas (MP-008) -->
+            <div id="quick-replies" class="flex gap-sm overflow-x-auto no-scrollbar pb-1" data-component="QuickReplies"></div>
+            <div id="voice-recorder" class="hidden items-center gap-sm bg-error-container text-on-error-container rounded-lg px-md py-sm font-label-md text-label-md" data-component="VoiceNote">
+              <span class="material-symbols-outlined text-[18px]">mic</span>
+              <span id="voice-timer">0:00</span>
+              <span class="flex-1 text-xs">Grabando nota de voz…</span>
+              <button data-action="voice-stop" class="w-8 h-8 flex items-center justify-center rounded-full bg-error text-on-error" aria-label="Detener grabación">
+                <span class="material-symbols-outlined text-[18px]">stop</span>
+              </button>
+            </div>
+            <div class="flex gap-sm">
+              <button data-action="voice-start" class="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:text-error hover:border-error transition-colors" aria-label="Grabar nota de voz">
+                <span class="material-symbols-outlined">mic</span>
+              </button>
+              <input id="chat-input" class="flex-1 bg-surface-container rounded-lg border border-outline-variant px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Escribe un mensaje..." type="text"/>
+              <button data-action="chat-send" class="bg-primary text-on-primary w-11 h-11 shrink-0 flex items-center justify-center rounded-lg hover:bg-primary-container transition-colors" aria-label="Enviar mensaje">
+                <span class="material-symbols-outlined">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN: CALENDARIO
+       ============================================================ -->
+  <section id="screen-calendario" class="screen hidden" data-component="CalendarScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Calendario</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Tus reservas y eventos del mes.</p>
+        </div>
+      </section>
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+        <div class="flex items-center justify-between mb-lg">
+          <button data-action="cal-prev" class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Mes anterior">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <h3 id="cal-header" class="font-headline-md text-headline-md text-on-surface"></h3>
+          <button data-action="cal-next" class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Mes siguiente">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+        <div id="cal-weekdays" class="grid grid-cols-7 gap-xs mb-sm font-label-sm text-label-sm text-on-surface-variant text-center"></div>
+        <div id="cal-grid" class="grid grid-cols-7 gap-xs"></div>
+        <div class="flex flex-wrap items-center gap-x-md gap-y-xs mt-lg font-label-sm text-label-sm text-on-surface-variant">
+          <span class="w-3 h-3 rounded bg-secondary-container inline-block"></span> Reservas
+          <span class="w-3 h-3 rounded bg-error-container inline-block"></span> Bloqueado
+          <span class="w-3 h-3 rounded bg-primary-fixed inline-block"></span> Disponible
+          <span class="w-3 h-3 rounded bg-tertiary-fixed-dim inline-block"></span> Parcial / Lleno
+        </div>
+      </div>
+      <!-- Inventario por slot del día seleccionado (MP-009) -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg" data-state="empty">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-md">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">Inventario por slot</h3>
+            <p id="inventario-fecha" class="font-body-md text-body-md text-sm text-on-surface-variant mt-xs">Selecciona un día en el calendario.</p>
+          </div>
+          <button data-action="bloqueo-abrir" class="bg-surface-container-lowest border border-error text-error font-label-md text-label-md px-md py-sm rounded-lg hover:bg-error-container transition-colors flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[16px]">block</span> Bloquear fecha
+          </button>
+        </div>
+        <div id="inventario-slots" class="grid grid-cols-1 md:grid-cols-3 gap-md" data-component="SlotGrid"></div>
+      </div>
+      <!-- Precios dinámicos (MP-011) -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-md">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">Precios dinámicos</h3>
+            <p class="font-body-md text-body-md text-sm text-on-surface-variant mt-xs">Ajustes por temporada, día de la semana o demanda. Sin reglas = tasa fija.</p>
+          </div>
+          <button data-action="precio-abrir" class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg hover:bg-primary-container transition-colors flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[16px]">add</span> Nueva regla
+          </button>
+        </div>
+        <div id="precios-lista" class="flex flex-col gap-sm" data-component="PricingRuleList"></div>
+        <p id="precio-vigente" class="font-label-md text-label-md text-on-surface-variant mt-md"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN: ANUNCIOS
+       ============================================================ -->
+  <section id="screen-anuncios" class="screen hidden" data-component="ListingsScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Anuncios</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Administra tus anuncios publicados.</p>
+        </div>
+        <button data-nav="onboarding" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container shadow-md transition-colors flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[18px]">add</span> Nuevo Anuncio
+        </button>
+      </section>
+      <div id="anuncios-list" class="flex flex-col gap-md"></div>
+      <div id="anuncios-vacio" class="hidden bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-xl flex flex-col items-center justify-center text-center gap-sm min-h-[240px]">
+        <span class="material-symbols-outlined text-[40px] text-on-surface-variant">campaign</span>
+        <p class="font-label-md text-label-md text-on-surface-variant">Aún no tienes anuncios publicados.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN: ESTADISTICAS
+       ============================================================ -->
+  <section id="screen-estadisticas" class="screen hidden" data-component="StatsScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Estadísticas</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Desempeño de tu negocio esta semana.</p>
+        </div>
+      </section>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-primary">payments</span> Ingresos semana</p>
+          <div class="flex items-baseline gap-sm">
+            <h4 class="font-display-lg text-[28px] leading-none text-primary">$12,450</h4>
+            <span class="font-label-sm text-label-sm text-green-600 bg-green-50 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-secondary">event_available</span> Reservas pendientes</p>
+          <h4 class="font-display-lg text-[28px] leading-none text-on-surface">2</h4>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-secondary" style="font-variation-settings:'FILL' 1;">star</span> Reseñas</p>
+          <div class="flex items-baseline gap-xs">
+            <h4 class="font-display-lg text-[28px] leading-none text-on-surface">4.8</h4>
+            <span class="material-symbols-outlined text-[18px] text-secondary" style="font-variation-settings:'FILL' 1;">star</span>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-primary">flag</span> Meta mensual</p>
+          <div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant mb-xs">
+            <span>Progreso</span>
+            <span>65%</span>
+          </div>
+          <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+            <div class="bg-secondary h-2 rounded-full" style="width: 65%"></div>
+          </div>
+        </div>
+        <!-- Métricas de ranking (MP-013) -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-secondary">quick_reply</span> Tasa de respuesta</p>
+          <h4 class="font-display-lg text-[28px] leading-none text-on-surface">92%</h4>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <p class="font-label-md text-label-md text-on-surface-variant mb-xs flex items-center gap-sm"><span class="material-symbols-outlined text-[18px] text-secondary">event_available</span> Tasa de aceptación</p>
+          <h4 class="font-display-lg text-[28px] leading-none text-on-surface">78%</h4>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Ingresos por día</h3>
+        <div id="revenue-chart" class="flex items-end gap-sm md:gap-md h-48"></div>
+      </div>
+      <!-- Reporte mensual (MP-014; SIN CFDI) -->
+      <div id="stats-state" data-state="loading">
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-md">
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface">Reporte mensual</h3>
+              <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Resumen de transacciones del mes. La generación de CFDI está diferida.</p>
+            </div>
+            <span id="reporte-mes" class="font-label-md text-label-md bg-surface-container-low px-md py-sm rounded-full text-on-surface-variant"></span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-md" id="reporte-metricas" data-component="MonthlyReport">
+            <div class="bg-surface-container-low rounded-lg p-md">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Transacciones</p>
+              <h4 id="rep-transacciones" class="font-display-lg text-[24px] leading-none text-on-surface">—</h4>
+            </div>
+            <div class="bg-surface-container-low rounded-lg p-md">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Bruto</p>
+              <h4 id="rep-bruto" class="font-display-lg text-[24px] leading-none text-on-surface">—</h4>
+            </div>
+            <div class="bg-surface-container-low rounded-lg p-md">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Impuestos</p>
+              <h4 id="rep-impuestos" class="font-display-lg text-[24px] leading-none text-on-surface">—</h4>
+            </div>
+            <div class="bg-surface-container-low rounded-lg p-md">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Comisión</p>
+              <h4 id="rep-comision" class="font-display-lg text-[24px] leading-none text-on-surface">—</h4>
+            </div>
+            <div class="bg-surface-container-low rounded-lg p-md">
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-xs">Neto</p>
+              <h4 id="rep-neto" class="font-display-lg text-[24px] leading-none text-primary">—</h4>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-lg gap-y-xs mt-md font-label-sm text-label-sm text-on-surface-variant">
+            <span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">receipt_long</span> Sin generación de CFDI (diferido)</span>
+            <span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">lock</span> Montos simulados para diseño</span>
+          </div>
+          <button data-action="reporte" class="mt-md bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container transition-colors flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[18px]">download</span> Ver Reporte Completo
+          </button>
+        </div>
+      </div>
+      <!-- Historial de pagos (MP-013) -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Historial de pagos</h3>
+        <div id="pagos-historial" class="flex flex-col gap-sm" data-component="PaymentHistory"></div>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg flex flex-col md:flex-row items-center justify-between gap-md">
+        <div>
+          <h3 class="font-headline-md text-headline-md text-on-surface">Reporte Completo</h3>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Consulta el detalle de ingresos, reservas y reseñas.</p>
+        </div>
+        <button data-action="reporte" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container transition-colors flex items-center gap-xs">
+          <span class="material-symbols-outlined text-[18px]">download</span> Ver Reporte Completo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCREEN: NUEVO ANUNCIO
+       ============================================================ -->
+  <section id="screen-nuevo-anuncio" class="screen hidden">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Nuevo Anuncio</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Publica o actualiza tu oferta para los clientes.</p>
+        </div>
+      </section>
+      <form class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg flex flex-col gap-lg max-w-2xl" onsubmit="return false;">
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="anuncio-titulo">Título</label>
+          <input id="anuncio-titulo" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Ej. Salón Las Palmas — Fin de semana" type="text"/>
+        </div>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="anuncio-categoria">Categoría</label>
+          <select id="anuncio-categoria" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="salones">Salón</option>
+            <option value="sonido">Sonido</option>
+            <option value="servicios-persona">Servicio</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="anuncio-descripcion">Descripción</label>
+          <textarea id="anuncio-descripcion" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary min-h-[120px] resize-y" placeholder="Describe los detalles de tu oferta..."></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="anuncio-precio">Precio (MXN)</label>
+            <input id="anuncio-precio" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 8000" type="number" min="0"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="anuncio-imagen">Imagen (URL opcional)</label>
+            <input id="anuncio-imagen" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://..." type="text"/>
+          </div>
+        </div>
+        <div class="flex gap-sm md:justify-end">
+          <button data-action="anuncio-cancelar" class="flex-1 md:flex-none bg-surface-container-lowest text-primary border border-outline-variant font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-surface-container-low transition-colors text-center">Cancelar</button>
+          <button id="anuncio-submit" data-action="anuncio-publicar" class="flex-1 md:flex-none bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container transition-colors text-center">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SCREEN: ONBOARDING WIZARD 3 PASOS (MP-001..005)
+       Paso 1 tipo/ubicación/capacidad · Paso 2 fotos >=5/título/
+       descripción · Paso 3 tarifas/políticas/cancelación/depósito
+       Autoguardado en wizardOnboarding (FEStore).
+       ============================================================ -->
+  <section id="screen-onboarding" class="screen hidden" data-component="WizardScreen">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col gap-xxl">
+      <section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+        <div>
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Alta de servicio</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Completa los 3 pasos para publicar tu anuncio.</p>
+        </div>
+      </section>
+      <!-- Indicador de progreso -->
+      <div id="wizard-progress" class="flex items-center gap-sm overflow-x-auto no-scrollbar pb-2" role="tablist" aria-label="Progreso del alta"></div>
+      <!-- Paso 1 -->
+      <section id="wizard-paso-1" class="wizard-paso bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg" data-component="WizardStep">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Paso 1 · Tipo de servicio, ubicación y capacidad</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+          <button data-wizard-tipo="salones" class="wizard-tipo-btn border border-outline-variant rounded-xl p-md flex flex-col items-center gap-sm hover:border-primary transition-colors">
+            <span class="material-symbols-outlined text-[32px] text-primary">meeting_room</span>
+            <span class="font-label-md text-label-md text-on-surface">Salón</span>
+          </button>
+          <button data-wizard-tipo="sonido" class="wizard-tipo-btn border border-outline-variant rounded-xl p-md flex flex-col items-center gap-sm hover:border-primary transition-colors">
+            <span class="material-symbols-outlined text-[32px] text-primary">speaker</span>
+            <span class="font-label-md text-label-md text-on-surface">Sonido</span>
+          </button>
+          <button data-wizard-tipo="servicios-persona" class="wizard-tipo-btn border border-outline-variant rounded-xl p-md flex flex-col items-center gap-sm hover:border-primary transition-colors">
+            <span class="material-symbols-outlined text-[32px] text-primary">person</span>
+            <span class="font-label-md text-label-md text-on-surface">Servicio</span>
+          </button>
+        </div>
+        <p id="wizard-tipo-help" class="font-body-md text-body-md text-sm text-on-surface-variant mb-lg"></p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-ubicacion">Ubicación</label>
+            <input id="wizard-ubicacion" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Ej. Polanco, CDMX" type="text"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-capacidad">Capacidad</label>
+            <input id="wizard-capacidad" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Ej. 300" type="number" min="1"/>
+            <p id="wizard-capacidad-help" class="font-label-sm text-label-sm text-on-surface-variant mt-xs"></p>
+          </div>
+        </div>
+        <div class="flex justify-end mt-lg">
+          <button data-action="wizard-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+        </div>
+      </section>
+      <!-- Paso 2 -->
+      <section id="wizard-paso-2" class="wizard-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg" data-component="WizardStep">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Paso 2 · Fotos, título y descripción</h3>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm">Fotos del servicio <span id="wizard-fotos-count" class="text-primary font-semibold">(0/5)</span></label>
+          <div id="wizard-fotos" class="grid grid-cols-3 md:grid-cols-5 gap-sm"></div>
+          <button data-action="wizard-foto-agregar" class="mt-sm w-full md:w-auto border border-dashed border-outline-variant rounded-lg px-md py-sm font-label-md text-label-md text-primary hover:bg-primary-fixed/20 transition-colors flex items-center justify-center gap-xs">
+            <span class="material-symbols-outlined text-[18px]">add_photo_alternate</span> Agregar foto (demo)
+          </button>
+          <p id="wizard-fotos-error" class="fe-field-error hidden font-label-sm text-label-sm text-error mt-xs">Mínimo 5 fotos requeridas</p>
+        </div>
+        <div class="mt-lg grid grid-cols-1 gap-lg">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-titulo">Título del anuncio</label>
+            <input id="wizard-titulo" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-shadow" placeholder="Ej. Salón Las Palmas — Fines de semana" type="text"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-descripcion">Descripción</label>
+            <textarea id="wizard-descripcion" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary min-h-[120px] resize-y" placeholder="Describe los detalles de tu oferta..."></textarea>
+          </div>
+        </div>
+        <div class="flex justify-between mt-lg">
+          <button data-action="wizard-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+          <button data-action="wizard-next" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+        </div>
+      </section>
+      <!-- Paso 3 -->
+      <section id="wizard-paso-3" class="wizard-paso hidden bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high p-lg" data-component="WizardStep">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Paso 3 · Tarifas, políticas y cancelación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-precio">Precio base (MXN)</label>
+            <input id="wizard-precio" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 8000" type="number" min="0"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-deposito">Depósito de garantía (MXN)</label>
+            <input id="wizard-deposito" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 2000" type="number" min="0"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-retencion">Retención por cancelación (%)</label>
+            <input id="wizard-retencion" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 50" type="number" min="0" max="100"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-sm" for="wizard-ventana">Ventana sin penalización (días)</label>
+            <input id="wizard-ventana" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 30" type="number" min="0"/>
+          </div>
+        </div>
+        <div class="mb-lg">
+          <label class="block font-label-md text-label-md text-on-surface mb-sm">Modo de aprobación</label>
+          <div class="flex flex-wrap gap-sm">
+            <button data-wizard-aprobacion="manual" class="wizard-aprobacion-btn border border-outline-variant rounded-full px-md py-sm font-label-md text-label-md text-on-surface hover:border-primary transition-colors">Manual (revisión humana)</button>
+            <button data-wizard-aprobacion="inmediata" class="wizard-aprobacion-btn border border-outline-variant rounded-full px-md py-sm font-label-md text-label-md text-on-surface hover:border-primary transition-colors">Inmediata (automática)</button>
+          </div>
+        </div>
+        <div class="bg-surface-container-low rounded-lg p-md">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input id="wizard-politicas-check" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+            <span class="font-body-md text-body-md text-on-surface">Acepto las políticas de la plataforma para publicar este servicio.</span>
+          </label>
+        </div>
+        <div class="flex justify-between mt-lg">
+          <button data-action="wizard-prev" class="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md px-xl py-3 rounded-full hover:bg-surface-container-low transition-colors">Volver</button>
+          <button data-action="wizard-publicar" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95 flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[18px]">publish</span> Publicar servicio
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<!-- BottomNavBar (Mobile) -->
+<nav id="bottom-nav" class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest border-t border-outline-variant shadow-lg rounded-t-xl" data-component="ProviderTabs">
+  <a data-nav="hoy" class="flex flex-col items-center justify-center text-primary bg-primary-fixed rounded-full px-4 py-1 scale-90 duration-200" href="#">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings:'FILL' 1;">dashboard</span>
+    <span class="font-label-sm text-label-sm mt-1">Hoy</span>
+  </a>
+  <a data-nav="mensajes" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+    <span class="material-symbols-outlined nav-icon">mail</span>
+    <span class="font-label-sm text-label-sm mt-1">Mensajes</span>
+  </a>
+  <a data-nav="calendario" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+    <span class="material-symbols-outlined nav-icon">event_note</span>
+    <span class="font-label-sm text-label-sm mt-1">Calendario</span>
+  </a>
+  <a data-action="abrir-menu" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+    <span class="material-symbols-outlined">analytics</span>
+    <span class="font-label-sm text-label-sm mt-1">Más</span>
+  </a>
+</nav>
+
+<!-- MenuOffCanvas (Mobile) -->
+<div id="menu-overlay" data-action="cerrar-menu" class="md:hidden fixed inset-0 z-[70] bg-black/40 opacity-0 pointer-events-none transition-opacity duration-200"></div>
+<aside id="menu-drawer" aria-hidden="true" class="md:hidden fixed inset-y-0 left-0 z-[80] w-80 max-w-[85vw] flex flex-col bg-surface shadow-xl rounded-r-xl -translate-x-full transition-transform duration-200" data-component="ProviderDrawerMobile">
+  <div class="flex items-center justify-between px-lg py-md border-b border-surface-container-high">
+    <div class="font-display-lg text-headline-md text-primary tracking-tight font-bold">FiestaExpert</div>
+    <button data-action="cerrar-menu" class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors" aria-label="Cerrar menú">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <nav class="flex-1 px-md py-lg flex flex-col gap-xs overflow-y-auto">
+    <a data-nav="hoy" class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all translate-x-1 duration-200" href="#">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings:'FILL' 1;">dashboard</span>
+      <span class="font-label-md text-label-md">Hoy</span>
+    </a>
+    <a data-nav="mensajes" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">mail</span>
+      <span class="font-label-md text-label-md">Mensajes</span>
+      <span class="unread-total ml-auto bg-error text-on-error font-label-sm text-[10px] px-2 py-0.5 rounded-full">3</span>
+    </a>
+    <a data-nav="calendario" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">event_note</span>
+      <span class="font-label-md text-label-md">Calendario</span>
+    </a>
+    <a data-nav="anuncios" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">campaign</span>
+      <span class="font-label-md text-label-md">Anuncios</span>
+    </a>
+    <a data-nav="estadisticas" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+      <span class="material-symbols-outlined nav-icon">analytics</span>
+      <span class="font-label-md text-label-md">Estadísticas</span>
+    </a>
+  </nav>
+  <div class="px-lg pt-md mt-auto pb-6">
+    <button data-action="logout" class="flex items-center gap-sm text-on-surface-variant hover:text-error transition-colors font-label-md text-label-md">
+      <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+    </button>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MODAL: BLOQUEO DE FECHA (MP-010)
+     ============================================================ -->
+<div id="bloqueo-modal" class="hidden fixed inset-0 z-[85] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="bloqueo-titulo" data-component="BlockDateModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="bloqueo-cerrar"></div>
+  <div class="relative z-10 w-full max-w-md bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+      <h1 id="bloqueo-titulo" class="font-headline-md text-headline-md text-on-surface">Bloquear fecha</h1>
+      <button data-action="bloqueo-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-lg flex flex-col gap-md">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="bloqueo-fecha">Fecha</label>
+        <input id="bloqueo-fecha" type="date" min="2026-01-01" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"/>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="bloqueo-motivo">Motivo</label>
+        <select id="bloqueo-motivo" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
+          <option value="mantenimiento">Mantenimiento</option>
+          <option value="inoperacion">Inoperación</option>
+          <option value="privado">Evento privado</option>
+        </select>
+      </div>
+      <button data-action="bloqueo-guardar" class="w-full bg-error text-on-error font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-error-container hover:text-on-error-container transition-colors">Bloquear fecha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: NUEVA REGLA DE PRECIO DINÁMICO (MP-011)
+     ============================================================ -->
+<div id="precio-modal" class="hidden fixed inset-0 z-[85] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="precio-titulo" data-component="PricingRuleForm">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="precio-cerrar"></div>
+  <div class="relative z-10 w-full max-w-md bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+      <h1 id="precio-titulo" class="font-headline-md text-headline-md text-on-surface">Nueva regla de precio</h1>
+      <button data-action="precio-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-lg flex flex-col gap-md">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="precio-tipo">Tipo de ajuste</label>
+        <select id="precio-tipo" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary">
+          <option value="temporada">Temporada</option>
+          <option value="dia">Día de la semana</option>
+          <option value="demanda">Demanda</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="precio-nombre">Nombre</label>
+        <input id="precio-nombre" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. Temporada alta" type="text"/>
+      </div>
+      <div class="grid grid-cols-2 gap-md">
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="precio-ajuste">Ajuste (%)</label>
+          <input id="precio-ajuste" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. 20" type="number" min="-100" max="500"/>
+        </div>
+        <div>
+          <label class="block font-label-md text-label-md text-on-surface mb-sm" for="precio-inicio">Inicio (AAAA-MM-DD)</label>
+          <input id="precio-inicio" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary" placeholder="2026-11-01" type="text"/>
+        </div>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface mb-sm" for="precio-fin">Fin (AAAA-MM-DD)</label>
+        <input id="precio-fin" class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary" placeholder="2026-12-31" type="text"/>
+      </div>
+      <button data-action="precio-guardar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-colors">Guardar regla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: KYC (MP-015) — consentimiento → captura → resultado
+     ============================================================ -->
+<div id="kyc-modal" class="hidden fixed inset-0 z-[85] flex items-center justify-center p-margin-mobile md:p-margin-desktop" role="dialog" aria-modal="true" aria-labelledby="kyc-titulo" data-component="KYCModal">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="kyc-cerrar"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <div class="px-lg py-md border-b border-outline-variant flex items-center gap-md">
+      <span class="material-symbols-outlined text-primary text-[28px]">badge</span>
+      <h1 id="kyc-titulo" class="font-headline-md text-headline-md text-on-surface flex-1">Verificación de proveedor (KYC)</h1>
+      <button data-action="kyc-cerrar" class="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="kyc-body" class="p-lg flex flex-col gap-md">
+      <!-- Paso 1: consentimiento -->
+      <div id="kyc-paso-1">
+        <p class="font-body-md text-body-md text-on-surface-variant mb-md">Para operar como proveedor en FiestaExpert debes verificar tu identidad. Tus documentos se procesan de forma segura por un proveedor KYC certificado.</p>
+        <div class="bg-surface-container-low rounded-lg p-md mb-md">
+          <p class="font-label-md text-label-md text-on-surface font-semibold mb-sm">Proveedor KYC</p>
+          <div class="flex flex-wrap gap-sm">
+            <button data-kyc-proveedor="Verificamex" class="kyc-prov-btn border border-primary bg-primary-fixed/30 text-primary font-label-md text-label-md px-md py-sm rounded-full">Verificamex</button>
+            <button data-kyc-proveedor="Truora" class="kyc-prov-btn border border-outline-variant text-on-surface font-label-md text-label-md px-md py-sm rounded-full hover:border-primary transition-colors">Truora</button>
+            <button data-kyc-proveedor="Veriff" class="kyc-prov-btn border border-outline-variant text-on-surface font-label-md text-label-md px-md py-sm rounded-full hover:border-primary transition-colors">Veriff</button>
+          </div>
+        </div>
+        <label class="flex items-center gap-3 cursor-pointer mb-md">
+          <input id="kyc-consent" type="checkbox" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"/>
+          <span class="font-body-md text-body-md text-on-surface">Acepto compartir mis documentos de identidad para verificación.</span>
+        </label>
+        <button data-action="kyc-capturar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Continuar</button>
+      </div>
+      <!-- Paso 2: captura simulada -->
+      <div id="kyc-paso-2" class="hidden">
+        <div class="bg-surface-container-low rounded-lg p-md flex items-center gap-md mb-md">
+          <span class="material-symbols-outlined text-primary text-[32px]">camera</span>
+          <div class="flex-1">
+            <p class="font-label-md text-label-md text-on-surface font-semibold">Captura de identificación</p>
+            <p class="font-body-md text-body-md text-sm text-on-surface-variant">Simulación: en producción se captura INE, pasaporte o cédula.</p>
+          </div>
+        </div>
+        <button data-action="kyc-enviar" class="w-full bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Enviar documentos (demo)</button>
+      </div>
+      <!-- Paso 3: resultado -->
+      <div id="kyc-paso-3" class="hidden text-center">
+        <span id="kyc-resultado-icono" class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+        <h2 id="kyc-resultado-titulo" class="font-headline-md text-headline-md text-on-surface mt-md mb-sm">Verificado</h2>
+        <p id="kyc-resultado-copy" class="font-body-md text-body-md text-on-surface-variant mb-md">Tu badge de proveedor verificado está activo.</p>
+        <button id="kyc-reintentar" data-action="kyc-reintentar" class="hidden w-full bg-surface-container-lowest border border-primary text-primary font-label-md text-label-md px-lg py-3 rounded-full hover:bg-primary-fixed/20 transition-colors">Reintentar verificación</button>
+        <button data-action="kyc-cerrar" class="w-full mt-sm bg-primary text-on-primary font-label-md text-label-md px-lg py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Listo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     OVERLAY: LLAMADA SIMULADA (Agora; MP-008)
+     ============================================================ -->
+<div id="call-overlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/70 backdrop-blur-md" data-component="CallOverlay">
+  <div class="text-center text-white">
+    <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center mx-auto mb-md">
+      <span class="material-symbols-outlined text-[40px]">person</span>
+    </div>
+    <h2 id="call-titulo" class="font-headline-md text-headline-md mb-xs">Cliente</h2>
+    <p id="call-estado" class="font-label-md text-label-md text-white/70 mb-lg">Llamando…</p>
+    <div class="flex items-center justify-center gap-md">
+      <button data-action="call-finalizar" class="w-14 h-14 rounded-full bg-error text-on-error flex items-center justify-center hover:scale-105 transition-transform" aria-label="Terminar llamada">
+        <span class="material-symbols-outlined">call_end</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast (demo) -->
+<div id="toast" class="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-[90] bg-on-surface text-surface px-lg py-sm rounded-full font-label-md text-label-md shadow-xl opacity-0 pointer-events-none transition-opacity duration-300" role="status" aria-live="polite"></div>
+
+<!-- ============================================================
+     FOOTER LEGAL (F1): no-mediación de disputas + aviso LFPDPPP
+     ============================================================ -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant px-margin-mobile md:px-margin-desktop pt-lg pb-24 md:pb-lg md:ml-80">
+  <div class="max-w-[1280px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-md">
+    <p class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</p>
+    <div class="space-y-sm md:text-right font-label-sm text-label-sm text-on-surface-variant">
+      <p>FiestaExpert es una plataforma de intermediación; no media en disputas comerciales entre usuarios y proveedores. Las controversias se resuelven directamente entre las partes.</p>
+      <p>Aviso de privacidad: tus datos personales serán tratados conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (versión demo).</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../shared/store.js"></script>
+<script src="../shared/api.js"></script>
+<script src="../shared/auth.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

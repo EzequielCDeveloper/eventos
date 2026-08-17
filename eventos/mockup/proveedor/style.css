@@ -1,0 +1,41 @@
+/* ============================================
+   FiestaExpert — Centro de Socios (Proveedor)
+   Utilidades y overrides extraídos de las demos
+   ============================================ */
+
+.hide-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0;
+}
+
+body {
+  min-height: max(884px, 100dvh);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mensajes: en móvil, al abrir un hilo se oculta la lista de conversaciones */
+@media (max-width: 767.98px) {
+  .chat-grid.chat-thread-open #chat-list-panel {
+    display: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}

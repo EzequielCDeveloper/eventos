@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Panel de Admin - FiestaExpert</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-surface": "#191c1e",
+          "on-error": "#ffffff",
+          "tertiary-container": "#5d1600",
+          "surface-variant": "#e0e3e6",
+          "on-tertiary-fixed": "#3a0a00",
+          "on-secondary-container": "#745c00",
+          "on-primary-container": "#8690ee",
+          "inverse-surface": "#2d3133",
+          "tertiary-fixed-dim": "#ffb59f",
+          "surface-container": "#eceef1",
+          "primary": "#000666",
+          "primary-fixed": "#e0e0ff",
+          "surface-container-highest": "#e0e3e6",
+          "error-container": "#ffdad6",
+          "on-primary-fixed-variant": "#343d96",
+          "secondary-container": "#fed65b",
+          "tertiary": "#390a00",
+          "tertiary-fixed": "#ffdbd0",
+          "surface-bright": "#f7f9fc",
+          "on-secondary-fixed": "#241a00",
+          "background": "#f7f9fc",
+          "secondary-fixed-dim": "#e9c349",
+          "primary-fixed-dim": "#bdc2ff",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed-variant": "#852300",
+          "inverse-primary": "#bdc2ff",
+          "surface": "#f7f9fc",
+          "on-background": "#191c1e",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low": "#f2f4f7",
+          "error": "#ba1a1a",
+          "on-secondary-fixed-variant": "#574500",
+          "inverse-on-surface": "#eff1f4",
+          "on-error-container": "#93000a",
+          "secondary": "#735c00",
+          "secondary-fixed": "#ffe088",
+          "surface-container-high": "#e6e8eb",
+          "outline-variant": "#c6c5d4",
+          "primary-container": "#1a237e",
+          "on-tertiary-container": "#f96b3f",
+          "on-surface-variant": "#454652",
+          "outline": "#767683",
+          "surface-tint": "#4c56af",
+          "surface-dim": "#d8dadd",
+          "on-primary-fixed": "#000767",
+          "on-primary": "#ffffff",
+          "on-secondary": "#ffffff"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin-mobile": "16px",
+          "lg": "24px",
+          "md": "16px",
+          "margin-desktop": "64px",
+          "gutter": "16px",
+          "max-width": "1280px",
+          "sm": "12px",
+          "xl": "32px",
+          "xxl": "48px",
+          "base": "8px",
+          "xs": "4px",
+          "safe": "env(safe-area-inset-bottom)"
+        },
+        "fontFamily": {
+          "label-sm": ["Inter"],
+          "label-md": ["Inter"],
+          "headline-md": ["Montserrat"],
+          "body-lg": ["Inter"],
+          "body-md": ["Inter"],
+          "display-lg": ["Montserrat"],
+          "headline-lg": ["Montserrat"],
+          "headline-lg-mobile": ["Montserrat"]
+        },
+        "fontSize": {
+          "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+          "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+          "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+          "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+          "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col md:flex-row">
+
+<!-- Sidebar (Desktop) -->
+<aside class="hidden md:flex flex-col bg-surface shadow-xl h-full w-72 rounded-r-xl fixed left-0 top-0 z-[60] py-xl">
+  <div class="px-lg pb-lg border-b border-surface-container-high">
+    <h1 class="font-display-lg text-headline-lg text-primary tracking-tight">FiestaExpert</h1>
+    <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Panel de Admin</p>
+  </div>
+  <nav class="flex-1 px-md py-lg flex flex-col gap-xs overflow-y-auto">
+    <a class="admin-nav flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all translate-x-1 duration-200" href="#" data-nav="panel">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+      <span class="font-label-md text-label-md">Panel</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="usuarios">
+      <span class="material-symbols-outlined">group</span>
+      <span class="font-label-md text-label-md">Usuarios</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="servicios">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="font-label-md text-label-md">Servicios</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="reservas">
+      <span class="material-symbols-outlined">event_note</span>
+      <span class="font-label-md text-label-md">Reservas</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="pagos">
+      <span class="material-symbols-outlined">payments</span>
+      <span class="font-label-md text-label-md">Pagos</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="reportes">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="font-label-md text-label-md">Reportes</span>
+    </a>
+    <a class="admin-nav flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg" href="#" data-nav="configuracion">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-md text-label-md">Configuración</span>
+    </a>
+  </nav>
+  <div class="px-lg pt-md mt-auto">
+    <button data-action="placeholder" class="flex items-center gap-sm text-on-surface-variant hover:text-error transition-colors font-label-md text-label-md">
+      <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+    </button>
+  </div>
+</aside>
+
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface shadow-sm">
+  <button data-action="placeholder" class="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+  <div class="font-display-lg text-headline-md-mobile text-primary tracking-tight font-bold">FiestaExpert</div>
+  <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-primary-container flex items-center justify-center">
+    <span class="material-symbols-outlined text-on-primary-container text-[18px]">admin_panel_settings</span>
+  </div>
+</header>
+
+<!-- TopBar (Desktop) -->
+<header class="hidden md:flex fixed top-0 left-72 right-0 z-40 h-16 items-center justify-between px-margin-desktop bg-surface-container-lowest border-b border-surface-container-high">
+  <h2 class="font-headline-md text-headline-md text-on-surface">Panel de Admin</h2>
+  <div class="flex items-center gap-md">
+    <button data-action="placeholder" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Buscar">
+      <span class="material-symbols-outlined">search</span>
+    </button>
+    <button data-action="placeholder" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Notificaciones">
+      <span class="material-symbols-outlined">notifications</span>
+    </button>
+    <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-primary-container flex items-center justify-center">
+      <span class="material-symbols-outlined text-on-primary-container text-[22px]">admin_panel_settings</span>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-1 md:ml-72 pt-[72px] md:pt-16 min-h-screen pb-[90px] md:pb-0 bg-background">
+  <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl">
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center text-center max-w-md mx-auto py-xxl min-h-[60vh]">
+      <div class="w-28 h-28 mb-lg relative flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary-fixed opacity-40 rounded-full blur-3xl"></div>
+        <div class="relative z-10 w-24 h-24 bg-surface-container-lowest rounded-full shadow-lg flex items-center justify-center border border-surface-variant">
+          <span class="material-symbols-outlined text-5xl text-primary opacity-80" style="font-variation-settings: 'FILL' 0, 'wght' 200;">admin_panel_settings</span>
+        </div>
+      </div>
+      <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-md">Panel de Admin</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">No hay pantallas de administración definidas aún.</p>
+      <button data-action="placeholder" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:bg-primary-container transition-all active:scale-95 flex items-center gap-2">
+        <span class="material-symbols-outlined">add</span> Crear pantalla
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest border-t border-outline-variant shadow-lg rounded-t-xl">
+  <a class="admin-nav-mob flex flex-col items-center justify-center text-primary bg-primary-fixed rounded-full px-4 py-1 scale-90 duration-200" href="#" data-nav="panel">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+    <span class="font-label-sm text-label-sm mt-1 font-bold">Panel</span>
+  </a>
+  <a class="admin-nav-mob flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#" data-nav="usuarios">
+    <span class="material-symbols-outlined">group</span>
+    <span class="font-label-sm text-label-sm mt-1">Usuarios</span>
+  </a>
+  <a class="admin-nav-mob flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#" data-nav="reservas">
+    <span class="material-symbols-outlined">event_note</span>
+    <span class="font-label-sm text-label-sm mt-1">Reservas</span>
+  </a>
+  <a class="admin-nav-mob flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#" data-nav="configuracion">
+    <span class="material-symbols-outlined">settings</span>
+    <span class="font-label-sm text-label-sm mt-1">Más</span>
+  </a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

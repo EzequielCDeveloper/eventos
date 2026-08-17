@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>FiestaExpert - Inicio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-surface": "#191c1e",
+          "on-error": "#ffffff",
+          "tertiary-container": "#5d1600",
+          "surface-variant": "#e0e3e6",
+          "on-tertiary-fixed": "#3a0a00",
+          "on-secondary-container": "#745c00",
+          "on-primary-container": "#8690ee",
+          "inverse-surface": "#2d3133",
+          "tertiary-fixed-dim": "#ffb59f",
+          "surface-container": "#eceef1",
+          "primary": "#000666",
+          "primary-fixed": "#e0e0ff",
+          "surface-container-highest": "#e0e3e6",
+          "error-container": "#ffdad6",
+          "on-primary-fixed-variant": "#343d96",
+          "secondary-container": "#fed65b",
+          "tertiary": "#390a00",
+          "tertiary-fixed": "#ffdbd0",
+          "surface-bright": "#f7f9fc",
+          "on-secondary-fixed": "#241a00",
+          "background": "#f7f9fc",
+          "secondary-fixed-dim": "#e9c349",
+          "primary-fixed-dim": "#bdc2ff",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed-variant": "#852300",
+          "inverse-primary": "#bdc2ff",
+          "surface": "#f7f9fc",
+          "on-background": "#191c1e",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low": "#f2f4f7",
+          "error": "#ba1a1a",
+          "on-secondary-fixed-variant": "#574500",
+          "inverse-on-surface": "#eff1f4",
+          "on-error-container": "#93000a",
+          "secondary": "#735c00",
+          "secondary-fixed": "#ffe088",
+          "surface-container-high": "#e6e8eb",
+          "outline-variant": "#c6c5d4",
+          "primary-container": "#1a237e",
+          "on-tertiary-container": "#f96b3f",
+          "on-surface-variant": "#454652",
+          "outline": "#767683",
+          "surface-tint": "#4c56af",
+          "surface-dim": "#d8dadd",
+          "on-primary-fixed": "#000767",
+          "on-primary": "#ffffff",
+          "on-secondary": "#ffffff"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin-mobile": "16px",
+          "lg": "24px",
+          "md": "16px",
+          "margin-desktop": "64px",
+          "gutter": "16px",
+          "max-width": "1280px",
+          "sm": "12px",
+          "xl": "32px",
+          "xxl": "48px",
+          "base": "8px",
+          "xs": "4px",
+          "safe": "env(safe-area-inset-bottom)"
+        },
+        "fontFamily": {
+          "label-sm": ["Inter"],
+          "label-md": ["Inter"],
+          "headline-md": ["Montserrat"],
+          "body-lg": ["Inter"],
+          "body-md": ["Inter"],
+          "display-lg": ["Montserrat"],
+          "headline-lg": ["Montserrat"],
+          "headline-lg-mobile": ["Montserrat"]
+        },
+        "fontSize": {
+          "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+          "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+          "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+          "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+          "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen pb-24 overflow-x-hidden">
+
+<!-- ============================================================
+     GLOBAL SHELL (desktop nav, mobile top bar, mobile bottom nav)
+     ============================================================ -->
+<!-- Mobile Top App Bar -->
+<header id="app-topbar" class="shell-nav fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-surface shadow-sm md:hidden">
+  <button data-action="focus-search" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Buscar">
+    <span class="material-symbols-outlined">search</span>
+  </button>
+  <h1 class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</h1>
+  <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" aria-label="Filtros">
+    <span class="material-symbols-outlined">tune</span>
+  </button>
+</header>
+
+<!-- Desktop Nav / Header Shell -->
+<header id="app-desktopnav" class="shell-nav hidden md:flex fixed top-0 w-full z-50 justify-between items-center px-margin-desktop h-20 bg-surface shadow-sm">
+  <h1 class="font-display-lg text-headline-lg text-primary tracking-tight">FiestaExpert</h1>
+  <nav class="flex gap-lg">
+    <button data-nav="inicio" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-primary font-bold bg-primary-fixed/20">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">home</span>
+      <span class="font-label-md text-label-md">Inicio</span>
+    </button>
+    <button data-nav="favoritos" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">favorite</span>
+      <span class="font-label-md text-label-md">Favoritos</span>
+    </button>
+    <button data-nav="rentas" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+      <span class="font-label-md text-label-md">Rentas</span>
+    </button>
+    <button data-nav="chat" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">chat</span>
+      <span class="font-label-md text-label-md">Chat</span>
+    </button>
+    <button data-nav="perfil" class="flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-on-surface-variant hover:bg-surface-container-low">
+      <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">person</span>
+      <span class="font-label-md text-label-md">Perfil</span>
+    </button>
+  </nav>
+</header>
+
+<!-- Mobile Bottom Nav Bar -->
+<nav id="app-bottomnav" class="shell-nav fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest shadow-lg rounded-t-xl border-t border-outline-variant md:hidden h-16">
+  <button data-nav="inicio" class="flex flex-col items-center justify-center text-primary bg-primary-fixed rounded-full px-4 py-1 scale-90 transition-transform duration-200 min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 1;">home</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1 font-bold">Inicio</span>
+  </button>
+  <button data-nav="favoritos" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">favorite</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Favoritos</span>
+  </button>
+  <button data-nav="rentas" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Rentas</span>
+  </button>
+  <button data-nav="chat" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">chat</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Chat</span>
+  </button>
+  <button data-nav="perfil" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]">
+    <span class="material-symbols-outlined nav-icon" style="font-variation-settings: 'FILL' 0;">person</span>
+    <span class="font-label-sm text-label-sm nav-label mt-1">Perfil</span>
+  </button>
+</nav>
+
+<!-- ============================================================
+     SCREEN: INICIO (home + search)
+     ============================================================ -->
+<section id="screen-inicio" class="screen">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <!-- Search & Segments -->
+    <section class="mb-lg">
+      <div class="relative w-full max-w-2xl mx-auto md:mx-0">
+        <input id="search-input" class="w-full h-14 pl-12 pr-4 rounded-xl bg-surface-container-lowest border border-outline-variant shadow-[0px_4px_20px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none font-body-lg text-on-surface placeholder:text-outline transition-shadow" placeholder="Buscar lugares, servicios..." type="text"/>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+      </div>
+      <div class="flex gap-4 mt-md overflow-x-auto no-scrollbar pb-2">
+        <button data-segment class="whitespace-nowrap px-6 py-2 rounded-full bg-primary text-on-primary font-label-md shadow-sm">Todos</button>
+        <button data-segment class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Empresas</button>
+        <button data-segment class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Particulares</button>
+      </div>
+    </section>
+    <!-- Filters (Scrollable) -->
+    <section class="mb-xl">
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 items-center">
+        <button class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-surface-container-lowest border border-outline-variant shadow-sm text-on-surface-variant hover:bg-surface-container-low transition-colors">
+          <span class="material-symbols-outlined">tune</span>
+        </button>
+        <div class="h-6 w-px bg-outline-variant mx-1"></div>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Fecha <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Capacidad <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Zona <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Presupuesto <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Tipo de Evento <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Alberca <span class="material-symbols-outlined text-[18px]">add</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Internet <span class="material-symbols-outlined text-[18px]">add</span></button>
+        <button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1">Calificación <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span></button>
+      </div>
+    </section>
+    <!-- Service Cards Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+      <!-- Card 1 -->
+      <article data-open-detail data-card="Salón Las Palmas" class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col cursor-pointer">
+        <div class="relative h-56 w-full">
+          <img class="w-full h-full object-cover" alt="Salón Las Palmas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCq4X8Gy-oex5q9DlY5cOCde8-L4Ll39-k7reImCjQ8Vqe5EaMMg8wSdwNVJThrT-21QKYnKCHYNrC0ufoC0H6MG72KaJS4-4pexzifwnETkxZDKdTDZUK32HbWmeQhDJmth9u7AuyBrsbs3yeFkWXXRVKr5R6A080CXhpz2SHE3n5_R083Y0CyYvOZ4idjV37lJ0gfelibyb9hfrg682DyDEeQEuqcCflm_DYrQiN9P8vuy1pGLWeVwg"/>
+          <div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container font-label-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> Gold
+          </div>
+          <button data-fav class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error transition-colors">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+          </button>
+        </div>
+        <div class="p-lg flex-1 flex flex-col">
+          <div class="flex justify-between items-start mb-sm">
+            <h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface group-hover:text-primary transition-colors">Salón Las Palmas</h2>
+            <div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md">
+              <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="font-label-md text-on-surface">4.8</span>
+            </div>
+          </div>
+          <p class="font-body-md text-on-surface-variant mb-md flex-1">Capacidad hasta 300 personas. Incluye mobiliario básico y alberca climatizada.</p>
+          <div class="flex items-center gap-2 mb-md bg-surface-container-low w-fit px-3 py-1.5 rounded-full border border-[#1b5e20]/20">
+            <span class="material-symbols-outlined text-[#1b5e20] text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span class="font-label-sm text-[#1b5e20]">Identidad Verificada</span>
+          </div>
+          <div class="flex justify-between items-end mt-auto pt-4 border-t border-surface-variant">
+            <div>
+              <p class="font-label-sm text-on-surface-variant">Desde</p>
+              <p class="font-headline-md text-[20px] text-primary">$8,000 MXN <span class="font-body-md text-on-surface-variant">/ bloque</span></p>
+            </div>
+            <span class="material-symbols-outlined text-primary bg-primary-fixed w-10 h-10 flex items-center justify-center rounded-full group-hover:bg-primary group-hover:text-on-primary transition-colors">arrow_forward</span>
+          </div>
+        </div>
+      </article>
+      <!-- Card 2 -->
+      <article data-open-detail data-card="Espacio Industrial Miraluz" class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col cursor-pointer">
+        <div class="relative h-56 w-full">
+          <img class="w-full h-full object-cover" alt="Espacio Industrial Miraluz" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApAd-5f70Cqqpbpu7gUM2nkmQsvaHWEg-26W7yBngxbi6DERfx6rxiScTL-fV3hl_2MLfVsPJneQ7REVzaouszW4omK8lbtqHQRgWPuODfj8CiajMFVECv-T8-Y7N-j7VBF5BOkf96zO5gunsOBfKK-beARNpX2rMsQm1oWv36kOWxHTUNDpQKkLBoRCbHJbItr8f_D7m_xLv_jz40hNpVHRjpR2Gclvu2PGAVFjNigQFNg_ZrH8ncGQ"/>
+          <button data-fav class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error transition-colors">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+          </button>
+        </div>
+        <div class="p-lg flex-1 flex flex-col">
+          <div class="flex justify-between items-start mb-sm">
+            <h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface group-hover:text-primary transition-colors">Espacio Industrial Miraluz</h2>
+            <div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md">
+              <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="font-label-md text-on-surface">4.5</span>
+            </div>
+          </div>
+          <p class="font-body-md text-on-surface-variant mb-md flex-1">Loft moderno para eventos corporativos y presentaciones. Internet de alta velocidad.</p>
+          <div class="flex items-center gap-2 mb-md bg-surface-container-low w-fit px-3 py-1.5 rounded-full border border-[#1b5e20]/20">
+            <span class="material-symbols-outlined text-[#1b5e20] text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span class="font-label-sm text-[#1b5e20]">Identidad Verificada</span>
+          </div>
+          <div class="flex justify-between items-end mt-auto pt-4 border-t border-surface-variant">
+            <div>
+              <p class="font-label-sm text-on-surface-variant">Desde</p>
+              <p class="font-headline-md text-[20px] text-primary">$12,500 MXN <span class="font-body-md text-on-surface-variant">/ día</span></p>
+            </div>
+            <span class="material-symbols-outlined text-primary bg-primary-fixed w-10 h-10 flex items-center justify-center rounded-full group-hover:bg-primary group-hover:text-on-primary transition-colors">arrow_forward</span>
+          </div>
+        </div>
+      </article>
+      <!-- Card 3 -->
+      <article data-open-detail data-card="Jardín Los Encinos" class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col cursor-pointer">
+        <div class="relative h-56 w-full">
+          <img class="w-full h-full object-cover" alt="Jardín Los Encinos" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuEPm6XftA8obkZpwcMhs0fy2FfQr7Zm8Jc3x1xwZr8BFD_SG0DO60rAuXT0nk0u0Jr7PB-XQ4OW_3ksWlw-6bGFYU0T2FOzEl461eoVYfMOjIqNvx1RMNGgDt7ymhkJlstkrbsJy-xzGSADPC-XCHTn5m2eHuL35l0r6VpXhNZSSZAOtt-ky7KYRX3WhBh3FCNLmKEg0Qhq-MZrx-T-SgLQaSmI8CVjr8AsN1odzsVAZswh2NrdTN4w"/>
+          <div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container font-label-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> Gold
+          </div>
+          <button data-fav class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error transition-colors">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+          </button>
+        </div>
+        <div class="p-lg flex-1 flex flex-col">
+          <div class="flex justify-between items-start mb-sm">
+            <h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface group-hover:text-primary transition-colors">Jardín Los Encinos</h2>
+            <div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md">
+              <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="font-label-md text-on-surface">4.9</span>
+            </div>
+          </div>
+          <p class="font-body-md text-on-surface-variant mb-md flex-1">Exclusivo jardín para bodas y galas. Estacionamiento privado y valet parking.</p>
+          <div class="flex items-center gap-2 mb-md bg-surface-container-low w-fit px-3 py-1.5 rounded-full border border-[#1b5e20]/20">
+            <span class="material-symbols-outlined text-[#1b5e20] text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span class="font-label-sm text-[#1b5e20]">Identidad Verificada</span>
+          </div>
+          <div class="flex justify-between items-end mt-auto pt-4 border-t border-surface-variant">
+            <div>
+              <p class="font-label-sm text-on-surface-variant">Desde</p>
+              <p class="font-headline-md text-[20px] text-primary">$35,000 MXN <span class="font-body-md text-on-surface-variant">/ evento</span></p>
+            </div>
+            <span class="material-symbols-outlined text-primary bg-primary-fixed w-10 h-10 flex items-center justify-center rounded-full group-hover:bg-primary group-hover:text-on-primary transition-colors">arrow_forward</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: BÚSQUEDA SIN RESULTADOS
+     ============================================================ -->
+<section id="screen-busqueda" class="screen hidden">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto w-full pb-xl">
+    <!-- Mobile Header (Search focused) -->
+    <div class="md:hidden relative w-full h-12 bg-surface-container-lowest rounded-full border border-outline-variant flex items-center px-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] mb-6">
+      <span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+      <input id="busqueda-input" class="flex-1 bg-transparent border-none outline-none font-body-md text-on-surface placeholder:text-on-surface-variant focus:ring-0 p-0" placeholder="Buscar salones, djs, catering..." type="text"/>
+      <div class="h-6 w-px bg-outline-variant mx-3"></div>
+      <button data-action="focus-search" class="text-primary flex items-center justify-center" aria-label="Filtros">
+        <span class="material-symbols-outlined">tune</span>
+      </button>
+    </div>
+    <!-- Filter Chips (Horizontal Scroll) -->
+    <div class="flex overflow-x-auto hide-scrollbar gap-sm pb-4 mb-8">
+      <button data-chip-close class="whitespace-nowrap px-4 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-md flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+        Bodas <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+      <button data-chip-close class="whitespace-nowrap px-4 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-md flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+        Ciudad de México <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Precio</button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Capacidad</button>
+      <button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">Servicios</button>
+    </div>
+    <!-- Empty State Container -->
+    <div class="flex flex-col items-center justify-center text-center max-w-md mx-auto py-xl min-h-[50vh]">
+      <div class="w-48 h-48 mb-lg relative flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary-fixed opacity-30 rounded-full blur-3xl"></div>
+        <div class="relative z-10 w-32 h-32 bg-surface-container-lowest rounded-full shadow-lg flex items-center justify-center border border-surface-variant">
+          <span class="material-symbols-outlined text-6xl text-primary opacity-80" style="font-variation-settings: 'FILL' 0, 'wght' 200;">search_off</span>
+        </div>
+        <div class="absolute top-4 right-4 w-8 h-8 bg-error-container rounded-full flex items-center justify-center animate-bounce delay-100 shadow-sm">
+          <span class="material-symbols-outlined text-error text-sm">close</span>
+        </div>
+      </div>
+      <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-md">No encontramos resultados</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">Sugerimos ampliar tus filtros para ver más opciones en esta zona.</p>
+      <button data-action="limpiar" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:bg-primary-container transition-all active:scale-95 flex items-center gap-2">
+        <span class="material-symbols-outlined">filter_alt_off</span> Limpiar filtros
+      </button>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: DETALLE DE SERVICIO (Salón Las Palmas)
+     ============================================================ -->
+<section id="screen-detalle" class="screen hidden">
+  <!-- Top Navigation (Mobile Transparent / Desktop Solid) -->
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-14 bg-gradient-to-b from-black/50 to-transparent md:bg-surface md:shadow-sm transition-all duration-300">
+    <button data-action="back-inicio" aria-label="Volver" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-primary transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="hidden md:flex flex-1 justify-center">
+      <h1 class="font-display-lg text-headline-md text-primary tracking-tight">FiestaExpert</h1>
+    </div>
+    <div class="flex gap-2">
+      <button aria-label="Compartir" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-on-surface-variant transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+        <span class="material-symbols-outlined">share</span>
+      </button>
+      <button aria-label="Guardar Favorito" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface/20 md:bg-transparent backdrop-blur-sm text-white md:text-on-surface-variant transition-colors hover:bg-surface/30 md:hover:bg-surface-container-low">
+        <span class="material-symbols-outlined">favorite_border</span>
+      </button>
+    </div>
+  </header>
+  <main class="max-w-[1280px] mx-auto md:grid md:grid-cols-12 md:gap-lg md:px-margin-desktop md:pt-24 md:pb-xl">
+    <!-- Left Column: Imagery & Details (Span 8) -->
+    <div class="md:col-span-8 space-y-lg">
+      <!-- Header: Image Carousel -->
+      <div class="relative w-full h-[350px] md:h-[500px] md:rounded-xl overflow-hidden group">
+        <div class="flex h-full overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+          <img alt="Salón Las Palmas Interior 1" class="w-full h-full object-cover shrink-0 snap-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD84702IokLoNr9AFwxEjZ5a0OK0uInRGSDcyX-gvd5Ijmcr8T4Hy6UhAHpesOZVbriIQoIy_RTE8M_Lz-65SwFvGfkYgGobDyE0gfg0BqMJbIFUgZeCFJmAMjfBodLgkKl1L4P-W982iZFB8j1mnxFqMZ1J6HnSQ6GTCAiGutcgbpSgKvHFA4Tu-esxe_erNRNSBJdC3avBrc2Xlnd0nglOf1QTSszfRR9oSYt42obOmY2FX8IxfWd4g"/>
+          <img alt="Salón Las Palmas Detail 2" class="w-full h-full object-cover shrink-0 snap-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtAbHBEMW-8jM9rMmmcrQeriGqt4MyWXQVP-GzK81yZeAI-5jKVDnA5uX8YP93G4wYpwJmA1eWFOWi0Hh1W3Q8chuX6bkrQ2I-Pue9CbPFpAuC8MCyklNuF2KGS6ZYkSy-cex6N-PfDwvVyVRdQdF4KamU4igH0n3b05lIuhj_G-cZduIRCRJ8Hrfs3FjCLnLGNVPJhLzXXSTSZS-JVIqSRC-_PsHGEzWKvFImtphhAa8m4z8jaY-9oA"/>
+        </div>
+        <!-- Pagination Indicator -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full">
+          <div class="w-2 h-2 rounded-full bg-white"></div>
+          <div class="w-2 h-2 rounded-full bg-white/50"></div>
+          <div class="w-2 h-2 rounded-full bg-white/50"></div>
+          <div class="w-2 h-2 rounded-full bg-white/50"></div>
+          <div class="w-2 h-2 rounded-full bg-white/50"></div>
+        </div>
+      </div>
+      <!-- Content Container for Mobile Pacing -->
+      <div class="px-margin-mobile md:px-0 space-y-xl pb-6 md:pb-0">
+        <!-- Section 1: Title, Verification Badge, Rating -->
+        <section class="border-b border-outline-variant pb-lg">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-2 py-1 rounded flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span> Proveedor Oro
+                </span>
+                <span class="text-primary font-label-md text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-primary">verified</span> Verificado
+                </span>
+              </div>
+              <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Salón Las Palmas</h2>
+              <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+                <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="font-bold text-on-surface">4.8</span>
+                <span>(120 reseñas)</span>
+                <span>·</span>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">location_on</span> Polanco, CDMX
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Section 2: Description -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Acerca de este espacio</h3>
+          <div id="description-container">
+            <p class="font-body-md text-body-md text-on-surface-variant text-clamp-3 mb-2 transition-all duration-300">
+              Salón Las Palmas ofrece un ambiente inigualable de elegancia y modernidad para tus eventos más especiales. Con una arquitectura contemporánea y ventanales panorámicos, este espacio se inunda de luz natural durante el día y se transforma en un entorno sofisticado por la noche gracias a su sistema de iluminación inteligente. Ideal para bodas, graduaciones, y eventos corporativos de alto perfil. Contamos con acústica premium y áreas climatizadas para el máximo confort de tus invitados.
+            </p>
+            <button data-action="leer-mas" class="font-label-md text-label-md text-primary font-semibold hover:underline">Leer más</button>
+          </div>
+        </section>
+        <!-- Section 4: Amenities -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Comodidades</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+            <div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg border border-outline-variant/30">
+              <span class="material-symbols-outlined text-primary text-[24px]">wifi</span>
+              <span class="font-body-md text-body-md text-on-surface">Wi-Fi de Alta Velocidad</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg border border-outline-variant/30">
+              <span class="material-symbols-outlined text-primary text-[24px]">music_note</span>
+              <span class="font-body-md text-body-md text-on-surface">Pista de Baile</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg border border-outline-variant/30">
+              <span class="material-symbols-outlined text-primary text-[24px]">ac_unit</span>
+              <span class="font-body-md text-body-md text-on-surface">Aire Acondicionado</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg border border-outline-variant/30">
+              <span class="material-symbols-outlined text-primary text-[24px]">local_parking</span>
+              <span class="font-body-md text-body-md text-on-surface">Estacionamiento Privado</span>
+            </div>
+          </div>
+        </section>
+        <!-- Section 5: Extra Services -->
+        <section class="pb-lg border-b border-outline-variant">
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Servicios Extra (Opcional)</h3>
+          <div class="space-y-3">
+            <label class="flex items-start justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors">
+              <div class="flex items-start gap-3">
+                <input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+                <div>
+                  <span class="block font-label-md text-label-md text-on-surface font-semibold">Catering Premium</span>
+                  <span class="block font-body-md text-body-md text-on-surface-variant text-sm">Menú de 3 tiempos, incluye degustación.</span>
+                </div>
+              </div>
+              <span class="font-label-md text-label-md text-on-surface">+$250/pers</span>
+            </label>
+            <label class="flex items-start justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors">
+              <div class="flex items-start gap-3">
+                <input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+                <div>
+                  <span class="block font-label-md text-label-md text-on-surface font-semibold">Decoración Temática</span>
+                  <span class="block font-body-md text-body-md text-on-surface-variant text-sm">Arreglos florales e iluminación arquitectónica.</span>
+                </div>
+              </div>
+              <span class="font-label-md text-label-md text-on-surface">+$3,000</span>
+            </label>
+            <label class="flex items-start justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors">
+              <div class="flex items-start gap-3">
+                <input class="mt-1 w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0" type="checkbox"/>
+                <div>
+                  <span class="block font-label-md text-label-md text-on-surface font-semibold">Bartender Profesional</span>
+                  <span class="block font-body-md text-body-md text-on-surface-variant text-sm">Servicio por 5 horas (no incluye destilados).</span>
+                </div>
+              </div>
+              <span class="font-label-md text-label-md text-on-surface">+$1,200</span>
+            </label>
+          </div>
+        </section>
+        <!-- Section 7: Cancellation Policy -->
+        <section class="pb-xl md:pb-0">
+          <a class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg hover:bg-surface-container-highest transition-colors group" href="#">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-on-surface-variant">policy</span>
+              <div>
+                <span class="block font-label-md text-label-md text-on-surface font-semibold">Política de Cancelación Estricta</span>
+                <span class="block font-body-md text-body-md text-on-surface-variant text-sm">Reembolso parcial hasta 30 días antes.</span>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+          </a>
+        </section>
+      </div>
+    </div>
+    <!-- Right Column: Booking Widget (Span 4, Sticky on Desktop) -->
+    <div class="hidden md:block md:col-span-4 relative">
+      <div class="sticky top-24 bg-surface-container-lowest p-lg rounded-xl shadow-lg border border-outline-variant">
+        <!-- Pricing Block -->
+        <div class="mb-lg border-b border-outline-variant pb-md">
+          <span class="font-body-md text-body-md text-on-surface-variant block mb-1">Renta desde</span>
+          <div class="flex items-baseline gap-1">
+            <span class="font-headline-lg text-headline-lg text-on-surface">$8,000</span>
+            <span class="font-body-md text-body-md text-on-surface-variant">MXN</span>
+          </div>
+          <div class="mt-2 space-y-1 font-body-md text-body-md text-on-surface-variant text-sm">
+            <div class="flex justify-between">
+              <span>Bloque base:</span>
+              <span class="font-medium text-on-surface">4 horas</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Hora extra:</span>
+              <span class="font-medium text-on-surface">$1,500 MXN</span>
+            </div>
+          </div>
+        </div>
+        <!-- Horarios Rentables -->
+        <div class="mb-lg">
+          <h3 class="font-label-md text-label-md text-on-surface font-semibold mb-sm">Selecciona Fecha y Horario</h3>
+          <div class="w-full flex items-center justify-between p-3 border border-outline-variant rounded-lg mb-4 bg-surface cursor-pointer hover:border-primary transition-colors">
+            <span class="font-body-md text-body-md text-on-surface">15 de Noviembre, 2024</span>
+            <span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+          </div>
+          <div id="time-slots" class="grid grid-cols-2 gap-2">
+            <button data-slot class="py-2 px-3 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface text-center hover:bg-surface-container-low transition-colors">10:00 - 14:00</button>
+            <button data-slot class="py-2 px-3 border-2 border-primary bg-primary/5 rounded-lg font-label-md text-label-md text-primary font-semibold text-center transition-colors">16:00 - 20:00</button>
+            <button disabled class="py-2 px-3 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant opacity-50 bg-surface-container-high text-center cursor-not-allowed">21:00 - 01:00</button>
+          </div>
+        </div>
+        <button data-action="rentar" class="w-full bg-on-tertiary-container hover:bg-on-tertiary-container/90 text-white font-label-md text-label-md py-4 rounded-lg font-semibold transition-colors mb-4 flex justify-center items-center gap-2">
+          Rentar ahora
+        </button>
+        <button data-action="contactar" class="w-full bg-surface-container-lowest border border-primary text-primary hover:bg-primary-fixed/50 font-label-md text-label-md py-4 rounded-lg font-semibold transition-colors flex justify-center items-center gap-2">
+          <span class="material-symbols-outlined">chat</span> Contactar al Anfitrión
+        </button>
+        <p class="text-center font-body-md text-body-md text-on-surface-variant text-xs mt-4">No se te cobrará nada aún.</p>
+      </div>
+    </div>
+  </main>
+  <!-- Sticky Bottom Action Bar (Mobile Only) -->
+  <div class="fixed bottom-0 w-full z-40 bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-3 flex items-center justify-between md:hidden pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <div>
+      <span class="block font-label-sm text-label-sm text-on-surface-variant">Desde</span>
+      <span class="block font-headline-md text-headline-md text-on-surface">$8,000 MXN</span>
+    </div>
+    <div class="flex gap-3">
+      <button data-action="contactar" aria-label="Chatear con el anfitrión" class="w-12 h-12 flex items-center justify-center rounded-lg border border-primary text-primary hover:bg-primary-fixed/50 transition-colors">
+        <span class="material-symbols-outlined">chat</span>
+      </button>
+      <button data-action="rentar" class="px-6 h-12 bg-on-tertiary-container text-white rounded-lg font-label-md text-label-md font-semibold hover:bg-on-tertiary-container/90 transition-colors">Rentar ahora</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: RESUMEN DE RESERVA Y PAGO
+     ============================================================ -->
+<section id="screen-reserva" class="screen hidden">
+  <!-- Top Navigation (Transactional - Minimal) -->
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-14 bg-surface shadow-sm">
+    <button data-action="back-detalle" aria-label="Volver" class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="font-display-lg text-headline-md md:text-headline-lg text-primary tracking-tight">FiestaExpert</div>
+    <div class="w-10"></div>
+  </header>
+  <main class="pt-20 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto flex flex-col lg:flex-row gap-lg md:gap-xxl">
+    <!-- Left Column: Reservation Details & Payment -->
+    <div class="flex-1 flex flex-col gap-lg">
+      <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg overflow-hidden">
+        <div class="flex items-start gap-md mb-md">
+          <img alt="Salón Las Palmas" class="w-24 h-24 object-cover rounded-lg shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEN7iLlGhnbnsCvgKVjT0M-ty7pE6sz8OoqcmjVYZhiDtMcZZoGwecwa_KTc4rl327sUd4u8L8EHXxhrsU2VtqGDEbMEoeQWmUAEBddLj205L5grgvdqzknvZ7740dAholHnrXB-MvJu0_l-_7Cuv4rkpdNGQA6cfRMQcpCkfoMG8Jtyvp3tBxAkBFvKwsoboVo10Lm7J0h_aJjBp-Firmi_NNSCWg2iX7IK3MmP6rT9WH3RZfHtkIEA"/>
+          <div>
+            <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-xs">Salón Las Palmas</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">location_on</span> Ciudad de México
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-6 border-t border-outline-variant/30 pt-6">
+          <div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Fecha</p>
+            <p class="font-body-md text-body-md font-medium">20 Dic 2026</p>
+          </div>
+          <div>
+            <p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Horario</p>
+            <p class="font-body-md text-body-md font-medium">18:00 - 22:00</p>
+          </div>
+        </div>
+        <div class="mt-6 bg-surface-container-low p-4 rounded-lg flex gap-3 items-start border border-outline-variant/50">
+          <span class="material-symbols-outlined text-primary mt-0.5">info</span>
+          <div>
+            <p class="font-label-md text-label-md font-semibold text-primary">Contrato Físico Requerido</p>
+            <p class="font-body-md text-body-md text-sm text-on-surface-variant mt-1">Este servicio requiere firma de contrato físico presencial en las instalaciones del proveedor.</p>
+          </div>
+        </div>
+      </section>
+      <!-- Payment Form (Conekta Simulation) -->
+      <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-lg">
+        <h2 class="font-headline-md text-headline-md mb-6">Método de Pago</h2>
+        <form class="space-y-4" onsubmit="return false;">
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-name">Nombre en la tarjeta</label>
+            <input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="card-name" placeholder="Juan Pérez" type="text"/>
+          </div>
+          <div>
+            <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-number">Número de tarjeta</label>
+            <div class="relative">
+              <input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 pl-10 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="card-number" placeholder="0000 0000 0000 0000" type="text"/>
+              <span class="material-symbols-outlined absolute left-3 top-3.5 text-on-surface-variant">credit_card</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-expiry">Fecha de exp.</label>
+              <input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="card-expiry" placeholder="MM/YY" type="text"/>
+            </div>
+            <div>
+              <label class="block font-label-md text-label-md text-on-surface mb-2" for="card-cvc">CVC</label>
+              <div class="relative">
+                <input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 pr-10 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="card-cvc" placeholder="123" type="text"/>
+                <span class="material-symbols-outlined absolute right-3 top-3.5 text-on-surface-variant cursor-help" title="Código de 3 o 4 dígitos en el reverso">help</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 flex items-center justify-center gap-2 text-on-surface-variant opacity-70">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span class="font-label-sm text-label-sm">Pagos seguros procesados por Conekta</span>
+          </div>
+        </form>
+        <!-- Demo trigger: alcohol notice modal -->
+        <button data-action="open-alcohol" class="mt-6 mx-auto flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+          <span class="material-symbols-outlined text-[16px]">warning</span> Ver notificación de alcohol
+        </button>
+      </section>
+    </div>
+    <!-- Right Column: Order Summary -->
+    <div class="w-full lg:w-96 flex-shrink-0">
+      <div class="sticky top-24 bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/30 p-lg">
+        <h3 class="font-headline-md text-headline-md mb-6">Resumen de Pago</h3>
+        <div class="space-y-4 font-body-md text-body-md">
+          <div class="flex justify-between items-center">
+            <span class="text-on-surface-variant">Bloque de 4 horas</span>
+            <span>$8,000</span>
+          </div>
+          <details class="group cursor-pointer">
+            <summary class="flex justify-between items-center text-on-surface-variant hover:text-primary transition-colors list-none">
+              <span class="flex items-center gap-1">Extras <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span></span>
+              <span>$4,500</span>
+            </summary>
+            <div class="pl-4 mt-2 space-y-2 text-sm text-on-surface-variant/80 border-l-2 border-surface-container-highest">
+              <div class="flex justify-between"><span>Catering</span><span>$3,000</span></div>
+              <div class="flex justify-between"><span>Decoración</span><span>$1,500</span></div>
+            </div>
+          </details>
+          <div class="flex justify-between items-center">
+            <span class="text-on-surface-variant">IVA (16%)</span>
+            <span>$2,000</span>
+          </div>
+        </div>
+        <div class="my-6 border-t border-outline-variant/50"></div>
+        <div class="flex justify-between items-end mb-2">
+          <span class="font-headline-md text-headline-md">Total</span>
+          <span class="font-display-lg text-headline-lg md:text-display-lg text-primary">$14,500</span>
+        </div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant text-center mb-6">Pago de anticipo requerido para confirmar</p>
+        <button data-action="open-alcohol" class="w-full bg-on-tertiary-container hover:bg-tertiary-container text-on-tertiary font-label-md text-label-md py-4 rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
+          Confirmar y Pagar Anticipo
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: MIS RENTAS (historial)
+     ============================================================ -->
+<section id="screen-rentas" class="screen hidden">
+  <main class="pt-20 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <div class="mb-lg">
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">Mis Rentas</h1>
+      <p class="text-on-surface-variant">Gestiona y revisa el historial de tus eventos.</p>
+    </div>
+    <!-- Segmented Control / Tabs -->
+    <div class="flex overflow-x-auto no-scrollbar gap-sm mb-lg border-b border-surface-variant pb-2">
+      <button data-tab="activas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-primary border-b-2 border-primary">Activas</button>
+      <button data-tab="en-curso" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">En curso</button>
+      <button data-tab="completadas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Completadas</button>
+      <button data-tab="canceladas" class="renta-tab whitespace-nowrap px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Canceladas</button>
+    </div>
+    <!-- Rental Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+      <!-- Card 1: Activa -->
+      <article data-tab-group="activas" class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col">
+        <div class="relative h-48 w-full bg-surface-container">
+          <img alt="Salón Las Palmas image" class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7iDzWOfHvb3XQL4kXagwpQpQ1074JW6W4EHUf7et6zXT-ZU-CvMc1bqeSfdT9wkKwUQFnk9UkzQa7xvQm8YsorZJubc55zEj1uVX8Gy6UbMU7nc3qg-AFz2UxZHiUXUM5cyPxvQledccqOexKkcSWo6W8raV_RbRkApPnOcXCIZd8mqkzaznFCBYE_-5B3uL26W_QijS_4a7uYiozapHXtb-gD4Fj_e3rA6dbUyF-sfwhs-YrGAtWxg"/>
+          <div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full border border-surface-variant">
+            <span class="font-label-sm text-label-sm text-primary flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span> Confirmada
+            </span>
+          </div>
+        </div>
+        <div class="p-md flex-1 flex flex-col">
+          <div class="flex justify-between items-start mb-sm">
+            <h3 class="font-headline-md text-[20px] leading-tight text-on-surface">Salón Las Palmas</h3>
+            <span class="font-label-md text-label-md text-primary bg-primary-fixed/30 px-2 py-0.5 rounded">Oro</span>
+          </div>
+          <div class="flex flex-col gap-xs mb-md text-on-surface-variant font-body-md text-[14px]">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">event</span>
+              <span>15 Dic 2026</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">schedule</span>
+              <span>18:00 - 22:00</span>
+            </div>
+          </div>
+          <div class="mt-auto pt-sm border-t border-surface-variant flex justify-between items-center">
+            <span class="font-label-md text-label-md text-on-surface-variant">Total</span>
+            <span class="font-headline-md text-[18px] text-on-surface">$12,450 MXN</span>
+          </div>
+          <div class="mt-md bg-surface-container-low rounded-lg p-sm text-center">
+            <span class="font-label-sm text-[11px] text-on-surface-variant flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">info</span> Calificación disponible después del evento
+            </span>
+          </div>
+        </div>
+      </article>
+      <!-- Card 2: Completada -->
+      <article data-tab-group="completadas" class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col">
+        <div class="relative h-48 w-full bg-surface-container">
+          <img alt="Jardín Encantado image" class="object-cover w-full h-full grayscale-[20%]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4BY6ltmOMY7FRF7c-OIic19AKgN4gH50KCxUWJCcY_1jhU-frUmTlwiDiOk7Uzo6VgtBXnktTOJJ_2gRxgKBM3NSS0a1Rva6K5rkdC1TJdAB58WjI9-gckkzfok5re52sQCipAg9UJfMVlil6ext46PaZnUo6KYtJqS7ZnKpMktmuNgymKKIcGwlJiGMrmYZwaJpZA6SLaw0pwhigMSfiXeW-oA-NMNVU_rPiyYdilFXf1QHO_gRKUQ"/>
+          <div class="absolute top-sm right-sm bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full border border-surface-variant">
+            <span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">history</span> Completada
+            </span>
+          </div>
+        </div>
+        <div class="p-md flex-1 flex flex-col">
+          <div class="flex justify-between items-start mb-sm">
+            <h3 class="font-headline-md text-[20px] leading-tight text-on-surface">Jardín Encantado</h3>
+          </div>
+          <div class="flex flex-col gap-xs mb-md text-on-surface-variant font-body-md text-[14px]">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">event</span>
+              <span>10 Nov 2026</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">schedule</span>
+              <span>14:00 - 20:00</span>
+            </div>
+          </div>
+          <div class="mt-auto pt-sm border-t border-surface-variant flex justify-between items-center mb-md">
+            <span class="font-label-md text-label-md text-on-surface-variant">Total</span>
+            <span class="font-headline-md text-[18px] text-on-surface">$8,900 MXN</span>
+          </div>
+          <button data-action="placeholder" class="w-full bg-surface-container-lowest border border-primary text-primary hover:bg-primary-fixed/20 font-label-md text-label-md py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">star_rate</span> Calificar
+          </button>
+        </div>
+      </article>
+    </div>
+    <!-- Empty state for tabs without rentals -->
+    <div id="rentas-vacio" class="hidden text-center py-xl text-on-surface-variant">
+      <span class="material-symbols-outlined text-5xl mb-2 block">event_busy</span>
+      <p class="font-label-md text-label-md">No hay rentas en esta categoría.</p>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: PERFIL DEL CLIENTE
+     ============================================================ -->
+<section id="screen-perfil" class="screen hidden">
+  <main class="pt-14 md:pt-20 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">
+    <!-- Profile Header -->
+    <section class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-10 mb-xxl bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container-highest">
+      <div class="relative group cursor-pointer">
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-surface-container shadow-md">
+          <img alt="Profile Avatar" class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBqYuBf0kLJF12p3yf7aYBGqN1mbUxeTTqrGy9QDI0WhRciAiF1NCm2blMe0mnY2VLdmZKqw8moStTt_TnNBiaGUdt_P0Os-Ug4br5qfRY2G0U2Os5CDlBEWxhsSQ1UmGSl0I0q769OdWRfbTKiwIw87wQAypdslwOod9X1W8L7QOFV4_fpY7c_lCbk8EU2obdCDJ-qi2s_1LvJf8-WsXm9aMlOtcQR-NVkCx7vKD2p7SVQM_j6lc-fQ"/>
+        </div>
+        <div class="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span class="material-symbols-outlined text-white">edit</span>
+          <span class="text-white font-label-sm text-label-sm mt-1">Cambiar Foto</span>
+        </div>
+      </div>
+      <div class="flex-grow text-center md:text-left flex flex-col justify-center h-full">
+        <div class="flex flex-col md:flex-row md:items-center md:space-x-4 mb-2">
+          <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2 md:mb-0">Alejandro Mendoza</h2>
+          <span class="inline-flex items-center space-x-1 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span>Identidad Verificada</span>
+          </span>
+        </div>
+        <p class="font-body-md text-body-md text-on-surface-variant flex items-center justify-center md:justify-start space-x-2 mb-1">
+          <span class="material-symbols-outlined text-[18px]">mail</span>
+          <span>alejandro.mendoza@email.com</span>
+        </p>
+        <p class="font-body-md text-body-md text-on-surface-variant flex items-center justify-center md:justify-start space-x-2">
+          <span class="material-symbols-outlined text-[18px]">phone</span>
+          <span>+52 55 1234 5678</span>
+        </p>
+      </div>
+    </section>
+    <!-- Action List -->
+    <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-highest overflow-hidden">
+      <ul class="divide-y divide-surface-container-highest">
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">person_edit</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Editar Perfil</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed group-hover:bg-secondary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">shield</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-body-lg text-body-lg text-on-surface font-medium">Verificación de Identidad</span>
+                <span class="font-label-sm text-label-sm text-secondary font-medium">Estado: Pendiente</span>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Historial de Pagos</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">notifications</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Configuración de Notificaciones</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="placeholder" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-surface-container-low transition-colors duration-200 text-left focus:outline-none focus:bg-surface-container-low group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                <span class="material-symbols-outlined">help_center</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-on-surface font-medium">Centro de Ayuda</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors duration-200">chevron_right</span>
+          </button>
+        </li>
+        <li>
+          <button data-action="logout" class="w-full flex items-center justify-between p-md md:p-lg hover:bg-error-container transition-colors duration-200 text-left focus:outline-none focus:bg-error-container group">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-on-error-container group-hover:bg-error group-hover:text-on-error transition-colors duration-200">
+                <span class="material-symbols-outlined">logout</span>
+              </div>
+              <span class="font-body-lg text-body-lg text-error font-medium">Cerrar Sesión</span>
+            </div>
+          </button>
+        </li>
+      </ul>
+    </section>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: FAVORITOS (placeholder)
+     ============================================================ -->
+<section id="screen-favoritos" class="screen hidden">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <div class="flex flex-col items-center justify-center text-center max-w-md mx-auto py-xxl min-h-[55vh]">
+      <div class="w-24 h-24 rounded-full bg-primary-fixed flex items-center justify-center mb-lg shadow-sm">
+        <span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      </div>
+      <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-md">Favoritos</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Esta sección está en construcción.</p>
+      <button data-action="placeholder" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Notificarme</button>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: CHAT (placeholder)
+     ============================================================ -->
+<section id="screen-chat" class="screen hidden">
+  <main class="pt-16 md:pt-28 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+    <div class="flex flex-col items-center justify-center text-center max-w-md mx-auto py-xxl min-h-[55vh]">
+      <div class="w-24 h-24 rounded-full bg-secondary-fixed flex items-center justify-center mb-lg shadow-sm">
+        <span class="material-symbols-outlined text-secondary text-5xl" style="font-variation-settings: 'FILL' 1;">chat</span>
+      </div>
+      <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-md">Chat</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Esta sección está en construcción.</p>
+      <button data-action="placeholder" class="bg-primary text-on-primary font-label-md text-label-md px-xl py-3 rounded-full shadow-md hover:bg-primary-container transition-all active:scale-95">Iniciar conversación</button>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     MODAL: NOTIFICACIÓN DE ALCOHOL (H-5)
+     ============================================================ -->
+<div id="alcohol-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-action="modal-close"></div>
+  <div class="relative z-10 w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-[0px_8px_30px_rgba(0,0,0,0.12)] border border-outline-variant overflow-hidden flex flex-col max-h-[90dvh] overflow-y-auto">
+    <!-- Urgent Header Band -->
+    <div class="bg-error-container px-lg py-md flex items-center gap-md border-b border-outline-variant">
+      <span class="material-symbols-outlined text-on-error-container text-[32px]">warning</span>
+      <h1 class="font-headline-md text-headline-md md:text-headline-md text-on-error-container flex-1">Atención: Permiso de alcohol no confirmado</h1>
+      <button data-action="modal-close" class="w-8 h-8 flex items-center justify-center rounded-full text-on-error-container hover:bg-on-error-container/10 transition-colors" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <!-- Content Area -->
+    <div class="p-lg flex flex-col gap-lg">
+      <div class="flex items-start gap-md bg-surface-container-low p-md rounded-lg">
+        <span class="material-symbols-outlined text-outline mt-1">info</span>
+        <p class="font-body-md text-body-md text-on-surface-variant">Según la normativa de SLRC, Sonora, para servir alcohol se requiere el permiso municipal. El permiso aún no ha sido reportado como aprobado.</p>
+      </div>
+      <!-- Options Section -->
+      <div class="flex flex-col gap-md">
+        <p class="font-label-md text-label-md text-on-surface">Seleccione una opción para su evento en 5 horas:</p>
+        <button data-action="modal-continuar" class="w-full flex items-center justify-between p-md border-2 border-primary rounded-lg bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors group">
+          <div class="flex flex-col items-start text-left">
+            <span class="font-label-md text-label-md text-on-primary font-bold">Continuar sin alcohol</span>
+            <span class="font-body-md text-body-md text-primary-fixed-dim text-sm opacity-90">Reserva se mantiene, evento sin alcohol</span>
+          </div>
+          <span class="material-symbols-outlined text-on-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+        <button data-action="modal-cancelar" class="w-full flex items-center justify-between p-md border border-outline-variant rounded-lg bg-surface-container-lowest text-error hover:bg-error-container transition-colors group">
+          <div class="flex flex-col items-start text-left">
+            <span class="font-label-md text-label-md font-bold">Cancelar reserva</span>
+            <span class="font-body-md text-body-md text-on-surface-variant text-sm">Aplica política de cancelación del proveedor</span>
+          </div>
+          <span class="material-symbols-outlined text-error">cancel</span>
+        </button>
+      </div>
+    </div>
+    <!-- Footer / Disclaimer -->
+    <div class="bg-surface-container px-lg py-md border-t border-outline-variant flex items-center gap-sm">
+      <span class="material-symbols-outlined text-outline text-[16px]">gavel</span>
+      <p class="font-label-sm text-label-sm text-on-surface-variant">La plataforma no se hace responsable por multas municipales.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed left-1/2 -translate-x-1/2 bottom-24 md:bottom-8 z-[80] bg-inverse-surface text-inverse-on-surface font-label-md text-label-md px-lg py-sm rounded-full shadow-lg whitespace-nowrap"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

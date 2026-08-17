@@ -1,0 +1,44 @@
+/* ============================================
+   FiestaExpert — SPA Cliente · Utilidades y
+   overrides extraídos de las demos originales
+   ============================================ */
+
+/* Ocultar scrollbar en carruseles / filas horizontales */
+.hide-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Clamp de 3 líneas para descripciones largas ("Leer más") */
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Material Symbols: contorno por defecto (las demos lo marcan inline) */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0;
+}
+
+body {
+  min-height: max(884px, 100dvh);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pantallas tipo sub-pantalla (Detalle / Reserva) ocultan el shell global
+   (topbar móvil, nav desktop y bottom-nav móvil) como en las demos originales */
+body.shell-hidden .shell-nav {
+  display: none !important;
+}
+
+/* Desplazamiento suave en anclas y detalles */
+html {
+  scroll-behavior: smooth;
+}
