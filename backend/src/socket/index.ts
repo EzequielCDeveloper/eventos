@@ -3,6 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { prisma } from '../config/database';
+import { registerSocketHandlers } from './handlers';
 
 /**
  * Socket.IO server initialization (D-006, D-014).
@@ -10,8 +11,8 @@ import { prisma } from '../config/database';
  * Attaches to the same HTTP server as Express. Authentication happens on
  * the handshake: the client sends `auth: { token }`, the token is
  * verified, the user is loaded (soft-delete checked) and attached to
- * `socket.data.user`. Conversation rooms / message handlers are added by
- * the realtime slice (Phase 7).
+ * `socket.data.user`. On every connection the user's conversation rooms
+ * are joined and the chat/typing/read handlers are registered (Phase 7).
  */
 export function initSocket(httpServer: HttpServer): SocketIOServer {
   const io = new SocketIOServer(httpServer, {
@@ -44,6 +45,8 @@ export function initSocket(httpServer: HttpServer): SocketIOServer {
       next(new Error('Invalid token'));
     }
   });
+
+  registerSocketHandlers(io);
 
   return io;
 }
