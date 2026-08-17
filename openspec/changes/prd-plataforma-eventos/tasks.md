@@ -88,29 +88,29 @@ Chain strategy: stacked-to-main
 
 ## Phase 7: Real-Time Chat & Notifications (Slice S5)
 
-- [ ] 7.1 Create `backend/src/socket/index.ts` — Socket.IO server init: JWT auth middleware on handshake (verify token, check deleted_at, attach user to socket.data); join rooms per conversation (conv:{id}) (D-006, UR-009.1)
-- [ ] 7.2 Create `backend/src/socket/handlers.ts` — Event handlers: message (persist to DB, broadcast to room), typing, join-conversation, leave-conversation; offline delivery via FCM fallback (D-006, BR-008.1)
-- [ ] 7.3 Create `backend/src/services/message.service.ts` — Persist messages with sender/timestamp/read_at; voice note storage (max 120s CHECK); conversation uniqueness on (client_id, provider_id, service_id); quick replies CRUD; message search (BR-008.1–BR-008.6)
-- [ ] 7.4 Create `backend/src/services/notification.service.ts` — 16 notification types across 3 channels (push/email/in_app); critical notifications ≥2 channels; status tracking: pendiente→enviada→leida; event reminders H-48 push+email, H-2 push (BR-009.1–BR-009.6, D-003)
-- [ ] 7.5 Create `backend/src/integrations/fcm.ts` — Firebase Cloud Messaging client: sendPush(token, title, body, data); handle delivery status (BR-013.4, D-003)
-- [ ] 7.6 Create `backend/src/integrations/resend.ts` — Resend email client: sendEmail(to, subject, html); track delivery (BR-013.5, D-003)
-- [ ] 7.7 Create `backend/src/routes/v1/messages.routes.ts` — GET /conversations, GET/POST /conversations/:id/messages (UR-002.10)
-- [ ] 7.8 Create `backend/src/routes/v1/notifications.routes.ts` — GET /notifications, PUT /notifications/:id/read (UR-002.11)
+- [x] 7.1 Create `backend/src/socket/index.ts` — Socket.IO server init: JWT auth middleware on handshake (verify token, check deleted_at, attach user to socket.data); join rooms per conversation (conv:{id}) (D-006, UR-009.1)
+- [x] 7.2 Create `backend/src/socket/handlers.ts` — Event handlers: message (persist to DB, broadcast to room), typing, join-conversation, leave-conversation; offline delivery via FCM fallback (D-006, BR-008.1)
+- [x] 7.3 Create `backend/src/services/message.service.ts` — Persist messages with sender/timestamp/read_at; voice note storage (max 120s CHECK); conversation uniqueness on (client_id, provider_id, service_id); quick replies CRUD; message search (BR-008.1–BR-008.6)
+- [x] 7.4 Create `backend/src/services/notification.service.ts` — 16 notification types across 3 channels (push/email/in_app); critical notifications ≥2 channels; status tracking: pendiente→enviada→leida; event reminders H-48 push+email, H-2 push (BR-009.1–BR-009.6, D-003)
+- [x] 7.5 Create `backend/src/integrations/fcm.ts` — Firebase Cloud Messaging client: sendPush(token, title, body, data); handle delivery status (BR-013.4, D-003)
+- [x] 7.6 Create `backend/src/integrations/resend.ts` — Resend email client: sendEmail(to, subject, html); track delivery (BR-013.5, D-003)
+- [x] 7.7 Create `backend/src/routes/v1/messages.routes.ts` — GET /conversations, GET/POST /conversations/:id/messages (UR-002.10)
+- [x] 7.8 Create `backend/src/routes/v1/notifications.routes.ts` — GET /notifications, PUT /notifications/:id/read (UR-002.11)
 
 ## Phase 8: Identity Verification & Admin (Slice S5 continued)
 
-- [ ] 8.1 Create `backend/src/integrations/verificamex.ts` — Verificamex REST API client: POST with API key, 10s timeout; return verification result; log metadata only (no PII) (BR-010.5, BR-013.2)
-- [ ] 8.2 Create `backend/src/services/verification.service.ts` — KYC flow: consent_logs entry before verification; call Verificamex; store metadata result; provider verified=true on success; block publish until verified (BR-010.1–BR-010.7)
-- [ ] 8.3 Create `backend/src/routes/v1/admin.routes.ts` — GET /admin/stats, PUT /admin/commission, GET/POST /admin/disputes, GET/POST /admin/moderation; all gated to role='administrador' (BR-002.4, UR-002.14)
-- [ ] 8.4 Create `backend/src/routes/v1/reviews.routes.ts` — POST /reviews, GET /services/:id/reviews; review only when payment complete AND event_date < now (UR-002.12, FR-012.3)
-- [ ] 8.5 Create `backend/src/routes/v1/favorites.routes.ts` — POST /favorites, DELETE /favorites/:id (UR-002.13)
+- [x] 8.1 Create `backend/src/integrations/verificamex.ts` — Verificamex REST API client: POST with API key, 10s timeout; return verification result; log metadata only (no PII) (BR-010.5, BR-013.2)
+- [x] 8.2 Create `backend/src/services/verification.service.ts` — KYC flow: consent_logs entry before verification; call Verificamex; store metadata result; provider verified=true on success; block publish until verified (BR-010.1–BR-010.7)
+- [x] 8.3 Create `backend/src/routes/v1/admin.routes.ts` — GET /admin/stats, PUT /admin/commission, GET/POST /admin/disputes, GET/POST /admin/moderation; all gated to role='administrador' (BR-002.4, UR-002.14)
+- [x] 8.4 Create `backend/src/routes/v1/reviews.routes.ts` — POST /reviews, GET /services/:id/reviews; review only when payment complete AND event_date < now (UR-002.12, FR-012.3)
+- [x] 8.5 Create `backend/src/routes/v1/favorites.routes.ts` — POST /favorites, DELETE /favorites/:id (UR-002.13)
 
 ## Phase 9: File Storage & Scheduled Jobs (Slice S5 final)
 
-- [ ] 9.1 Create `backend/src/services/storage.service.ts` — Local disk storage at /data/uploads/{entity}/{id}/{filename}; signed URL generation with HMAC token + expiry; Nginx serves /uploads/ (D-004, BR-013.6, UR-012)
-- [ ] 9.2 Create `backend/src/jobs/scheduled-messages.ts` — BullMQ job: process 4 automation types from scheduled_messages table (BR-008.5, D-011)
-- [ ] 9.3 Create `backend/src/jobs/event-reminders.ts` — BullMQ job: H-48 push+email, H-2 push reminders to both client and provider (BR-009.6, D-011)
-- [ ] 9.4 Create `backend/src/jobs/alcohol-h5.ts` — BullMQ job: pause reservations at permiso_alcohol until H-5 decision (BR-005.8, D-011)
+- [x] 9.1 Create `backend/src/services/storage.service.ts` — Local disk storage at /data/uploads/{entity}/{id}/{filename}; signed URL generation with HMAC token + expiry; Nginx serves /uploads/ (D-004, BR-013.6, UR-012)
+- [x] 9.2 Create `backend/src/jobs/scheduled-messages.ts` — BullMQ job: process 4 automation types from scheduled_messages table (BR-008.5, D-011)
+- [x] 9.3 Create `backend/src/jobs/event-reminders.ts` — BullMQ job: H-48 push+email, H-2 push reminders to both client and provider (BR-009.6, D-011)
+- [x] 9.4 Create `backend/src/jobs/alcohol-h5.ts` — BullMQ job: pause reservations at permiso_alcohol until H-5 decision (BR-005.8, D-011)
 
 ## Phase 10: Frontend Foundation (Slice S6)
 
