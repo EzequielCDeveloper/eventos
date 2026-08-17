@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { requireAuth } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import * as reservationService from '../../services/reservation.service';
+import * as cancellationService from '../../services/cancellation.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 
 /**
@@ -92,6 +93,17 @@ const statusChangeSchema = z
     alcohol_resolution: z.enum(['continuar_sin_alcohol', 'cancelar']).optional(),
     alcohol_status: z.enum(['confirmado', 'no_confirmado']).optional(),
     cancel_reason: z.string().max(500).optional(),
+    retention_accepted: z.boolean().optional(),
+  })
+  .strict();
+
+const cancelReservationSchema = z
+  .object({
+    reason: z.string().max(500).optional(),
+    /** Client acceptance of the provider retention policy (BR-007.3). */
+    retention_accepted: z.boolean().optional(),
+    /** Explicit canceller side; only honored for admins, else derived. */
+    cancelled_by: z.enum(['cliente', 'proveedor']).optional(),
   })
   .strict();
 
@@ -143,6 +155,7 @@ reservationsRouter.put(
       alcohol_resolution: body.alcohol_resolution,
       alcohol_status: body.alcohol_status,
       cancel_reason: body.cancel_reason,
+      retention_accepted: body.retention_accepted,
     });
     res.json({ data: updated });
   }),
@@ -159,5 +172,27 @@ reservationsRouter.get(
       req.user!,
     );
     res.json({ data: timeline });
+  }),
+);
+
+/**
+ * POST /reservations/:id/cancel — cancel + refund per BR-007 (client near/
+ * far policy, provider full refund, retention acceptance, Conekta refunds).
+ * Documented deviation: UR-002.7 lists only create/list/status/timeline, but
+ * the cancellation + refund flow (BR-007) needs its own entry point instead
+ * of overloading the raw status transition (which does not process refunds).
+ */
+reservationsRouter.post(
+  '/:id/cancel',
+  requireAuth(),
+  validate({ params: reservationParamsSchema, body: cancelReservationSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof cancelReservationSchema>;
+    const result = await cancellationService.cancelReservation(Number(req.params.id), req.user!, {
+      reason: body.reason,
+      retention_accepted: body.retention_accepted,
+      cancelled_by: body.cancelled_by,
+    });
+    res.json({ data: result });
   }),
 );

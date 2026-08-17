@@ -780,6 +780,13 @@ export interface StatusChangeInput {
   /** Marks the municipal permit as approved. */
   alcohol_status?: 'confirmado' | 'no_confirmado';
   cancel_reason?: string;
+  /**
+   * Client confirmation of the provider retention policy on a near-cancel
+   * (BR-007.3). Recorded on the `cancellations` row; near-cancellations
+   * without `retention_accepted: true` are rejected by the cancellation
+   * service before reaching the state machine.
+   */
+  retention_accepted?: boolean;
 }
 
 /**
@@ -902,7 +909,13 @@ export async function transitionStatus(
     const updated = await client.reservations.update({ where: { id: reservation.id }, data });
 
     if (target === 'cancelada') {
-      await recordCancellation(client, updated, actor, change.cancel_reason);
+      await recordCancellation(
+        client,
+        updated,
+        actor,
+        change.cancel_reason,
+        change.retention_accepted,
+      );
     }
 
     return toDetail(updated, client);
@@ -918,6 +931,7 @@ async function recordCancellation(
   reservation: reservations,
   actor: AuthUser,
   reason?: string,
+  retentionAccepted?: boolean,
 ): Promise<void> {
   const cancelledBy = actor.role === 'usuario' ? 'cliente' : 'proveedor';
   const snapshot = (reservation.cancellation_policy_snapshot ?? {}) as Record<string, unknown>;
@@ -935,7 +949,10 @@ async function recordCancellation(
         snapshot.retention_percent !== undefined
           ? money(Number(snapshot.retention_percent))
           : null,
-      retention_accepted: timing === 'cercana' ? false : null,
+      // BR-007.3: near-cancellations record whether the client accepted the
+      // retention policy; `retention_accepted: true` is enforced by the
+      // cancellation service before this write (default false when omitted).
+      retention_accepted: timing === 'cercana' ? retentionAccepted === true : null,
       reason: reason ?? null,
     },
   });
