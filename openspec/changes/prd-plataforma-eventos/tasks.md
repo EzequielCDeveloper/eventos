@@ -80,11 +80,11 @@ Chain strategy: stacked-to-main
 
 ## Phase 6: Payments & Commissions (Slice S4)
 
-- [ ] 6.1 Create `backend/src/integrations/conekta.ts` — Conekta server-side SDK client: createCharge(amount, currency='MXN', metadata), createRefund(chargeId, amount), verifyWebhook(payload, signature); MXN-only enforcement (BR-006.1, BR-006.5, BR-013.1, D-003)
-- [ ] 6.2 Create `backend/src/services/payment.service.ts` — Process payment via Conekta: anticipo/saldo/deposito_garantia types; calculate commission from latest commission_settings; store conekta_charge_id; update payment status; flexible billing models (BR-006.2–BR-006.6, BR-006.8)
-- [ ] 6.3 Create `backend/src/services/cancellation.service.ts` — Client cancel: advance non-refundable, near-cancel requires retention_accepted; provider cancel: FULL refund; refund order: advance→deposit→other; five refund reasons; Conekta refund API (BR-007.1–BR-007.6)
-- [ ] 6.4 Create `backend/src/routes/v1/payments.routes.ts` — POST /payments, GET /payments/:id, POST /payments/:id/refund (UR-002.9)
-- [ ] 6.5 Create `backend/src/routes/v1/webhooks.routes.ts` — POST /webhooks/conekta: verify signature, update payment status on charge.paid/charge.failed (BR-013.1)
+- [x] 6.1 Create `backend/src/integrations/conekta.ts` — Conekta server-side SDK client: createCharge(amount, currency='MXN', metadata), createRefund(chargeId, amount), verifyWebhook(payload, signature); MXN-only enforcement (BR-006.1, BR-006.5, BR-013.1, D-003)
+- [x] 6.2 Create `backend/src/services/payment.service.ts` — Process payment via Conekta: anticipo/saldo/deposito_garantia types; calculate commission from latest commission_settings; store conekta_charge_id; update payment status; flexible billing models (BR-006.2–BR-006.6, BR-006.8)
+- [x] 6.3 Create `backend/src/services/cancellation.service.ts` — Client cancel: advance non-refundable, near-cancel requires retention_accepted; provider cancel: FULL refund; refund order: advance→deposit→other; five refund reasons; Conekta refund API (BR-007.1–BR-007.6)
+- [x] 6.4 Create `backend/src/routes/v1/payments.routes.ts` — POST /payments, GET /payments/:id, POST /payments/:id/refund (UR-002.9)
+- [x] 6.5 Create `backend/src/routes/v1/webhooks.routes.ts` — POST /webhooks/conekta: verify signature, update payment status on charge.paid/charge.failed (BR-013.1)
 
 ## Phase 7: Real-Time Chat & Notifications (Slice S5)
 
