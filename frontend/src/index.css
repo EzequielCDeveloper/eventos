@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* FiestaExpert base styles + mockup overrides (usuario/style.css) */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: max(884px, 100dvh);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hide scrollbars in carousels / horizontal rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 3-line clamp for long descriptions ("Leer más") */
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Skeleton shimmer (mirrors mockup/shared/states.css) */
+.fe-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e0e3e6;
+}
+.fe-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: fe-shimmer 1.4s infinite;
+}
+.fe-skeleton-card {
+  height: 100%;
+  min-height: 18rem;
+}
+@keyframes fe-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
