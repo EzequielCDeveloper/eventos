@@ -67,6 +67,28 @@ const envSchema = z.object({
 
   // External services (UR-005). Placeholders allowed outside production.
   CONEKTA_API_KEY: secret('CONEKTA_API_KEY'),
+  // Webhook verification (BR-013.1): Conekta signs every webhook delivery.
+  // Two schemes are supported:
+  //   - HMAC (legacy): CONEKTA_WEBHOOK_SECRET used for `X-Conekta-Signature:
+  //     t=<ts>,v1=<hmac-sha256-hex>` computed over `<ts>.<rawBody>`.
+  //   - RSA (current official): CONEKTA_WEBHOOK_PUBLIC_KEY (PEM) used to
+  //     verify the base64 `DIGEST` header over the raw body.
+  // Both are optional in development (placeholder defaults boot); production
+  // rejects placeholders regardless of the scheme in use.
+  CONEKTA_WEBHOOK_SECRET: z
+    .string()
+    .min(1)
+    .default('ck_whsk_dev_placeholder')
+    .superRefine((value, ctx) => {
+      if (process.env.NODE_ENV === 'production' && isPlaceholder(value)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            'CONEKTA_WEBHOOK_SECRET must be set to a real value in production (placeholders are rejected)',
+        });
+      }
+    }),
+  CONEKTA_WEBHOOK_PUBLIC_KEY: z.string().min(1).optional(),
   VERIFICAMEX_API_KEY: secret('VERIFICAMEX_API_KEY'),
   FCM_SERVICE_ACCOUNT: jsonString('FCM_SERVICE_ACCOUNT'),
   RESEND_API_KEY: secret('RESEND_API_KEY'),
