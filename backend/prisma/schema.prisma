@@ -1,0 +1,1032 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model alcohol_permits {
+  id                       Int                          @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id           Int                          @unique(map: "uk_alcohol_permits_reservation") @db.UnsignedInt
+  requested                Boolean
+  status                   alcohol_permits_status       @default(lista_espera)
+  h5_decision              alcohol_permits_h5_decision?
+  consequences_notified_at DateTime?                    @db.Timestamp(0)
+  created_at               DateTime                     @default(now()) @db.Timestamp(0)
+  reservations             reservations                 @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_alcohol_permits_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model amenities {
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String              @unique(map: "uk_amenities_name") @db.VarChar(100)
+  description       String?             @db.VarChar(255)
+  service_amenities service_amenities[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model arco_requests {
+  id             Int                  @id @default(autoincrement()) @db.UnsignedInt
+  user_id        Int                  @db.UnsignedInt
+  tipo           arco_requests_tipo
+  status         arco_requests_status @default(pendiente)
+  requested_at   DateTime             @default(now()) @db.Timestamp(0)
+  deadline_at    DateTime?            @db.Date
+  resolved_at    DateTime?            @db.Timestamp(0)
+  response_notes String?              @db.Text
+  users          users                @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_arco_requests_user")
+
+  @@index([status], map: "idx_arco_requests_status")
+  @@index([user_id], map: "idx_arco_requests_user")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model audit_logs {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  actor_id    Int?     @db.UnsignedInt
+  action      String   @db.VarChar(100)
+  entity_type String   @db.VarChar(100)
+  entity_id   String?  @db.VarChar(64)
+  old_value   Json?
+  new_value   Json?
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  users       users?   @relation(fields: [actor_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_audit_logs_actor")
+
+  @@index([actor_id], map: "idx_audit_logs_actor")
+  @@index([entity_type, entity_id], map: "idx_audit_logs_entity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model availability_blocks {
+  id             Int                      @id @default(autoincrement()) @db.UnsignedInt
+  service_id     Int                      @db.UnsignedInt
+  start_datetime DateTime                 @db.DateTime(0)
+  end_datetime   DateTime                 @db.DateTime(0)
+  type           availability_blocks_type
+  services       services                 @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_availability_blocks_service")
+
+  @@index([service_id, start_datetime], map: "idx_availability_blocks_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model call_logs {
+  id               Int              @id @default(autoincrement()) @db.UnsignedInt
+  conversation_id  Int              @db.UnsignedInt
+  type             call_logs_type
+  status           call_logs_status @default(llamando)
+  started_at       DateTime?        @db.Timestamp(0)
+  ended_at         DateTime?        @db.Timestamp(0)
+  duration_seconds Int?             @db.UnsignedInt
+  conversations    conversations    @relation(fields: [conversation_id], references: [id], onUpdate: Restrict, map: "fk_call_logs_conversation")
+
+  @@index([conversation_id], map: "idx_call_logs_conversation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cancellation_policies {
+  id                       Int        @id @default(autoincrement()) @db.UnsignedInt
+  provider_id              Int        @unique(map: "uk_cancellation_policies_provider") @db.UnsignedInt
+  retention_percent        Int        @default(50) @db.UnsignedInt
+  penalty_free_window_days Int        @default(30) @db.UnsignedInt
+  deposit_refundable       Boolean    @default(true)
+  created_at               DateTime   @default(now()) @db.Timestamp(0)
+  updated_at               DateTime   @default(now()) @db.Timestamp(0)
+  users                    users      @relation(fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_cancellation_policies_provider")
+  services                 services[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cancellations {
+  id                 Int                        @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id     Int                        @db.UnsignedInt
+  cancelled_by       cancellations_cancelled_by
+  timing             cancellations_timing?
+  retention_percent  Decimal?                   @db.Decimal(5, 2)
+  retention_accepted Boolean?
+  reason             String?                    @db.VarChar(500)
+  created_at         DateTime                   @default(now()) @db.Timestamp(0)
+  reservations       reservations               @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_cancellations_reservation")
+
+  @@index([reservation_id], map: "idx_cancellations_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model commission_settings {
+  id              Int      @id @default(autoincrement()) @db.UnsignedInt
+  commission_rate Decimal  @db.Decimal(5, 2)
+  changed_by      Int      @db.UnsignedInt
+  changed_at      DateTime @default(now()) @db.Timestamp(0)
+  users           users    @relation(fields: [changed_by], references: [id], onUpdate: Restrict, map: "fk_commission_settings_changed_by")
+
+  @@index([changed_by], map: "idx_commission_settings_changed_by")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model consent_logs {
+  id                     Int                       @id @default(autoincrement()) @db.UnsignedInt
+  user_id                Int                       @db.UnsignedInt
+  consent_type           consent_logs_consent_type
+  accepted               Boolean
+  privacy_policy_version String?                   @db.VarChar(50)
+  accepted_at            DateTime                  @default(now()) @db.Timestamp(0)
+  users                  users                     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_consent_logs_user")
+
+  @@index([user_id], map: "idx_consent_logs_user")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_reports {
+  id                                       Int                     @id @default(autoincrement()) @db.UnsignedInt
+  reported_by                              Int                     @db.UnsignedInt
+  service_id                               Int                     @db.UnsignedInt
+  reason                                   String                  @db.VarChar(500)
+  status                                   content_reports_status  @default(pendiente)
+  action                                   content_reports_action?
+  handled_by                               Int?                    @db.UnsignedInt
+  handled_at                               DateTime?               @db.Timestamp(0)
+  created_at                               DateTime                @default(now()) @db.Timestamp(0)
+  users_content_reports_handled_byTousers  users?                  @relation("content_reports_handled_byTousers", fields: [handled_by], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_content_reports_handled_by")
+  users_content_reports_reported_byTousers users                   @relation("content_reports_reported_byTousers", fields: [reported_by], references: [id], onUpdate: Restrict, map: "fk_content_reports_reported_by")
+  services                                 services                @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_content_reports_service")
+
+  @@index([handled_by], map: "fk_content_reports_handled_by")
+  @@index([reported_by], map: "fk_content_reports_reported_by")
+  @@index([service_id], map: "idx_content_reports_service")
+  @@index([status], map: "idx_content_reports_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contracts {
+  id                     Int              @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id         Int              @unique(map: "uk_contracts_reservation") @db.UnsignedInt
+  status                 contracts_status @default(pendiente_firma)
+  signing_appointment_at DateTime?        @db.DateTime(0)
+  signing_location       String?          @db.VarChar(500)
+  client_confirmed_at    DateTime?        @db.Timestamp(0)
+  provider_confirmed_at  DateTime?        @db.Timestamp(0)
+  document_url           String?          @db.VarChar(500)
+  created_at             DateTime         @default(now()) @db.Timestamp(0)
+  reservations           reservations     @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_contracts_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model conversations {
+  id                                     Int         @id @default(autoincrement()) @db.UnsignedInt
+  client_id                              Int         @db.UnsignedInt
+  provider_id                            Int         @db.UnsignedInt
+  service_id                             Int?        @db.UnsignedInt
+  created_at                             DateTime    @default(now()) @db.Timestamp(0)
+  call_logs                              call_logs[]
+  users_conversations_client_idTousers   users       @relation("conversations_client_idTousers", fields: [client_id], references: [id], onUpdate: Restrict, map: "fk_conversations_client")
+  users_conversations_provider_idTousers users       @relation("conversations_provider_idTousers", fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_conversations_provider")
+  services                               services?   @relation(fields: [service_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_conversations_service")
+  messages                               messages[]
+
+  @@unique([client_id, provider_id, service_id], map: "uk_conversations_thread")
+  @@index([provider_id], map: "fk_conversations_provider")
+  @@index([service_id], map: "fk_conversations_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model dynamic_pricing_rules {
+  id               Int                                   @id @default(autoincrement()) @db.UnsignedInt
+  service_id       Int                                   @db.UnsignedInt
+  sound_package_id Int?                                  @db.UnsignedInt
+  adjustment_type  dynamic_pricing_rules_adjustment_type
+  adjustment_value Decimal                               @db.Decimal(10, 2)
+  scope            Json
+  services         services                              @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_dynamic_pricing_rules_service")
+  sound_packages   sound_packages?                       @relation(fields: [sound_package_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_dynamic_pricing_rules_sound_package")
+
+  @@index([sound_package_id], map: "fk_dynamic_pricing_rules_sound_package")
+  @@index([service_id, adjustment_type], map: "idx_dynamic_pricing_rules_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model favorites {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  client_id  Int      @db.UnsignedInt
+  service_id Int      @db.UnsignedInt
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [client_id], references: [id], onUpdate: Restrict, map: "fk_favorites_client")
+  services   services @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_favorites_service")
+
+  @@unique([client_id, service_id], map: "uk_favorites")
+  @@index([service_id], map: "fk_favorites_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model identity_verifications {
+  id                    Int                                           @id @default(autoincrement()) @db.UnsignedInt
+  user_id               Int                                           @db.UnsignedInt
+  method                identity_verifications_method
+  kyc_provider          identity_verifications_kyc_provider?
+  result                identity_verifications_result
+  estatus_lista_nominal identity_verifications_estatus_lista_nominal?
+  motivo                identity_verifications_motivo?
+  vigente               Boolean?
+  coincidencia_nombre   Boolean?
+  error_code            String?                                       @db.VarChar(32)
+  created_at            DateTime                                      @default(now()) @db.Timestamp(0)
+  users                 users                                         @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_identity_verifications_user")
+
+  @@index([user_id], map: "idx_identity_verifications_user")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inventory_slots {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  service_id Int      @db.UnsignedInt
+  slot_date  DateTime @db.Date
+  start_time DateTime @db.Time(0)
+  end_time   DateTime @db.Time(0)
+  capacity   Int      @default(1) @db.UnsignedInt
+  services   services @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_inventory_slots_service")
+
+  @@unique([service_id, slot_date, start_time, end_time], map: "uk_inventory_slots_slot")
+  @@index([service_id, slot_date], map: "idx_inventory_slots_service_date")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model invoices {
+  id            Int      @id @default(autoincrement()) @db.UnsignedInt
+  payment_id    Int      @db.UnsignedInt
+  cfdi_uuid     String?  @db.VarChar(64)
+  amount        Decimal  @db.Decimal(10, 2)
+  taxes         Decimal  @db.Decimal(10, 2)
+  retention_isr Decimal? @db.Decimal(10, 2)
+  retention_iva Decimal? @db.Decimal(10, 2)
+  net_amount    Decimal? @db.Decimal(10, 2)
+  issued_at     DateTime @default(now()) @db.Timestamp(0)
+  payments      payments @relation(fields: [payment_id], references: [id], onUpdate: Restrict, map: "fk_invoices_payment")
+
+  @@index([payment_id], map: "idx_invoices_payment")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model messages {
+  id               Int           @id @default(autoincrement()) @db.UnsignedInt
+  conversation_id  Int           @db.UnsignedInt
+  sender_id        Int           @db.UnsignedInt
+  type             messages_type
+  content          String?       @db.Text
+  audio_url        String?       @db.VarChar(500)
+  duration_seconds Int?          @db.UnsignedInt
+  created_at       DateTime      @default(now()) @db.Timestamp(0)
+  read_at          DateTime?     @db.Timestamp(0)
+  deleted_at       DateTime?     @db.Timestamp(0)
+  conversations    conversations @relation(fields: [conversation_id], references: [id], onUpdate: Restrict, map: "fk_messages_conversation")
+  users            users         @relation(fields: [sender_id], references: [id], onUpdate: Restrict, map: "fk_messages_sender")
+
+  @@index([conversation_id, created_at], map: "idx_messages_conversation")
+  @@index([sender_id], map: "idx_messages_sender")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notifications {
+  id          Int                   @id @default(autoincrement()) @db.UnsignedInt
+  user_id     Int                   @db.UnsignedInt
+  type        notifications_type
+  channel     notifications_channel
+  is_critical Boolean               @default(false)
+  status      notifications_status  @default(pendiente)
+  payload     Json?
+  sent_at     DateTime?             @db.Timestamp(0)
+  read_at     DateTime?             @db.Timestamp(0)
+  created_at  DateTime              @default(now()) @db.Timestamp(0)
+  users       users                 @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_notifications_user")
+
+  @@index([status], map: "idx_notifications_status")
+  @@index([user_id, created_at], map: "idx_notifications_user_created")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model operating_hours {
+  id                        Int      @id @default(autoincrement()) @db.UnsignedInt
+  service_id                Int      @db.UnsignedInt
+  day_of_week               Int      @db.UnsignedTinyInt
+  open_time                 DateTime @db.Time(0)
+  close_time                DateTime @db.Time(0)
+  base_block_duration_hours Int      @default(4) @db.UnsignedInt
+  extra_hours_allowed       Int      @default(0) @db.UnsignedInt
+  services                  services @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_operating_hours_service")
+
+  @@unique([service_id, day_of_week], map: "uk_operating_hours_day")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model package_members {
+  id                Int                               @id @default(autoincrement()) @db.UnsignedInt
+  package_id        Int                               @db.UnsignedInt
+  provider_id       Int                               @db.UnsignedInt
+  service_type      package_members_service_type
+  invitation_status package_members_invitation_status @default(pendiente)
+  member_price      Decimal?                          @db.Decimal(10, 2)
+  responded_at      DateTime?                         @db.Timestamp(0)
+  packages          packages                          @relation(fields: [package_id], references: [id], onUpdate: Restrict, map: "fk_package_members_package")
+  users             users                             @relation(fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_package_members_provider")
+
+  @@unique([package_id, provider_id], map: "uk_package_members")
+  @@index([provider_id], map: "idx_package_members_provider")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model packages {
+  id                 Int               @id @default(autoincrement()) @db.UnsignedInt
+  leader_provider_id Int               @db.UnsignedInt
+  status             packages_status   @default(creado)
+  closed_price       Decimal?          @db.Decimal(10, 2)
+  created_at         DateTime          @default(now()) @db.Timestamp(0)
+  updated_at         DateTime          @default(now()) @db.Timestamp(0)
+  package_members    package_members[]
+  users              users             @relation(fields: [leader_provider_id], references: [id], onUpdate: Restrict, map: "fk_packages_leader_provider")
+  reservations       reservations[]
+
+  @@index([leader_provider_id], map: "idx_packages_leader")
+  @@index([status], map: "idx_packages_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payments {
+  id                Int                   @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id    Int                   @db.UnsignedInt
+  payment_type      payments_payment_type
+  amount            Decimal               @db.Decimal(10, 2)
+  currency          String                @default("MXN") @db.Char(3)
+  status            payments_status       @default(pendiente)
+  conekta_charge_id String?               @db.VarChar(100)
+  due_date          DateTime?             @db.DateTime(0)
+  charged_at        DateTime?             @db.Timestamp(0)
+  created_at        DateTime              @default(now()) @db.Timestamp(0)
+  invoices          invoices[]
+  reservations      reservations          @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_payments_reservation")
+  refunds           refunds[]
+
+  @@index([reservation_id], map: "idx_payments_reservation")
+  @@index([status], map: "idx_payments_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model provider_blocks {
+  id                                       Int       @id @default(autoincrement()) @db.UnsignedInt
+  provider_id                              Int       @db.UnsignedInt
+  reason                                   String    @db.VarChar(500)
+  handled_by                               Int?      @db.UnsignedInt
+  blocked_at                               DateTime  @default(now()) @db.Timestamp(0)
+  unblocked_at                             DateTime? @db.Timestamp(0)
+  users_provider_blocks_handled_byTousers  users?    @relation("provider_blocks_handled_byTousers", fields: [handled_by], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_provider_blocks_handled_by")
+  users_provider_blocks_provider_idTousers users     @relation("provider_blocks_provider_idTousers", fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_provider_blocks_provider")
+
+  @@index([handled_by], map: "fk_provider_blocks_handled_by")
+  @@index([provider_id], map: "idx_provider_blocks_provider")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model quick_replies {
+  id          Int    @id @default(autoincrement()) @db.UnsignedInt
+  provider_id Int    @db.UnsignedInt
+  name        String @db.VarChar(100)
+  content     String @db.Text
+  users       users  @relation(fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_quick_replies_provider")
+
+  @@index([provider_id], map: "idx_quick_replies_provider")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model refunds {
+  id             Int            @id @default(autoincrement()) @db.UnsignedInt
+  payment_id     Int            @db.UnsignedInt
+  reservation_id Int            @db.UnsignedInt
+  amount         Decimal        @db.Decimal(10, 2)
+  reason         refunds_reason
+  status         refunds_status @default(pendiente)
+  processed_at   DateTime?      @db.Timestamp(0)
+  created_at     DateTime       @default(now()) @db.Timestamp(0)
+  payments       payments       @relation(fields: [payment_id], references: [id], onUpdate: Restrict, map: "fk_refunds_payment")
+  reservations   reservations   @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_refunds_reservation")
+
+  @@index([payment_id], map: "idx_refunds_payment")
+  @@index([reservation_id], map: "idx_refunds_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reservation_extras {
+  id             Int            @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id Int            @db.UnsignedInt
+  extra_id       Int            @db.UnsignedInt
+  quantity       Int            @default(1) @db.UnsignedInt
+  price_snapshot Decimal        @db.Decimal(10, 2)
+  service_extras service_extras @relation(fields: [extra_id], references: [id], onUpdate: Restrict, map: "fk_reservation_extras_extra")
+  reservations   reservations   @relation(fields: [reservation_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_reservation_extras_reservation")
+
+  @@index([extra_id], map: "fk_reservation_extras_extra")
+  @@index([reservation_id], map: "idx_reservation_extras_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reservation_items {
+  id                  Int             @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id      Int             @db.UnsignedInt
+  service_id          Int             @db.UnsignedInt
+  sound_package_id    Int?            @db.UnsignedInt
+  person_count        Int?            @db.UnsignedInt
+  hours               Int?            @db.UnsignedInt
+  unit_price_snapshot Decimal         @db.Decimal(10, 2)
+  reservations        reservations    @relation(fields: [reservation_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_reservation_items_reservation")
+  services            services        @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_reservation_items_service")
+  sound_packages      sound_packages? @relation(fields: [sound_package_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_reservation_items_sound_package")
+
+  @@index([sound_package_id], map: "fk_reservation_items_sound_package")
+  @@index([reservation_id], map: "idx_reservation_items_reservation")
+  @@index([service_id], map: "idx_reservation_items_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reservation_status_history {
+  id             Int                               @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id Int                               @db.UnsignedInt
+  status         reservation_status_history_status
+  changed_at     DateTime                          @default(now()) @db.Timestamp(0)
+  changed_by     Int?                              @db.UnsignedInt
+  users          users?                            @relation(fields: [changed_by], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_reservation_status_history_changed_by")
+  reservations   reservations                      @relation(fields: [reservation_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_reservation_status_history_reservation")
+
+  @@index([changed_by], map: "fk_reservation_status_history_changed_by")
+  @@index([reservation_id, changed_at], map: "idx_reservation_status_history_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reservations {
+  id                           Int                          @id @default(autoincrement()) @db.UnsignedInt
+  client_id                    Int                          @db.UnsignedInt
+  package_id                   Int?                         @db.UnsignedInt
+  status                       reservations_status          @default(creado)
+  event_date                   DateTime                     @db.Date
+  start_time                   DateTime                     @db.Time(0)
+  end_time                     DateTime                     @db.Time(0)
+  block_hours                  Int                          @db.UnsignedInt
+  extra_hours                  Int                          @default(0) @db.UnsignedInt
+  total_price                  Decimal                      @db.Decimal(10, 2)
+  base_amount                  Decimal                      @db.Decimal(10, 2)
+  extras_amount                Decimal                      @default(0.00) @db.Decimal(10, 2)
+  taxes_amount                 Decimal                      @default(0.00) @db.Decimal(10, 2)
+  commission_amount            Decimal                      @default(0.00) @db.Decimal(10, 2)
+  commission_rate              Decimal                      @default(0.00) @db.Decimal(5, 2)
+  cancellation_policy_snapshot Json?
+  created_at                   DateTime                     @default(now()) @db.Timestamp(0)
+  updated_at                   DateTime                     @default(now()) @db.Timestamp(0)
+  cancelled_at                 DateTime?                    @db.Timestamp(0)
+  completed_at                 DateTime?                    @db.Timestamp(0)
+  alcohol_permits              alcohol_permits?
+  cancellations                cancellations[]
+  contracts                    contracts?
+  payments                     payments[]
+  refunds                      refunds[]
+  reservation_extras           reservation_extras[]
+  reservation_items            reservation_items[]
+  reservation_status_history   reservation_status_history[]
+  users                        users                        @relation(fields: [client_id], references: [id], onUpdate: Restrict, map: "fk_reservations_client")
+  packages                     packages?                    @relation(fields: [package_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_reservations_package")
+  reviews                      reviews?
+  technical_disputes           technical_disputes[]
+
+  @@index([client_id], map: "idx_reservations_client")
+  @@index([event_date], map: "idx_reservations_event_date")
+  @@index([package_id], map: "idx_reservations_package")
+  @@index([status], map: "idx_reservations_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reviews {
+  id                               Int          @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id                   Int          @unique(map: "uk_reviews_reservation") @db.UnsignedInt
+  client_id                        Int          @db.UnsignedInt
+  provider_id                      Int          @db.UnsignedInt
+  rating                           Int          @db.UnsignedTinyInt
+  comment                          String?      @db.Text
+  created_at                       DateTime     @default(now()) @db.Timestamp(0)
+  users_reviews_client_idTousers   users        @relation("reviews_client_idTousers", fields: [client_id], references: [id], onUpdate: Restrict, map: "fk_reviews_client")
+  users_reviews_provider_idTousers users        @relation("reviews_provider_idTousers", fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_reviews_provider")
+  reservations                     reservations @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_reviews_reservation")
+
+  @@index([client_id], map: "fk_reviews_client")
+  @@index([provider_id, created_at], map: "idx_reviews_provider_created")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model salon_pricing {
+  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  service_id       Int      @unique(map: "uk_salon_pricing_service") @db.UnsignedInt
+  base_block_hours Int      @db.UnsignedInt
+  base_block_price Decimal  @db.Decimal(10, 2)
+  extra_hour_price Decimal  @db.Decimal(10, 2)
+  services         services @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_salon_pricing_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model scheduled_messages {
+  id           Int                             @id @default(autoincrement()) @db.UnsignedInt
+  trigger_type scheduled_messages_trigger_type
+  recipient    scheduled_messages_recipient
+  send_at      DateTime                        @db.DateTime(0)
+  status       scheduled_messages_status       @default(pendiente)
+  created_at   DateTime                        @default(now()) @db.Timestamp(0)
+
+  @@index([trigger_type, status], map: "idx_scheduled_messages_pending")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_amenities {
+  service_id Int       @db.UnsignedInt
+  amenity_id Int       @db.UnsignedInt
+  amenities  amenities @relation(fields: [amenity_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_service_amenities_amenity")
+  services   services  @relation(fields: [service_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_service_amenities_service")
+
+  @@id([service_id, amenity_id])
+  @@index([amenity_id], map: "fk_service_amenities_amenity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_event_types {
+  id                          Int                           @id @default(autoincrement()) @db.UnsignedInt
+  name                        String                        @unique(map: "uk_service_event_types_name") @db.VarChar(100)
+  is_active                   Boolean                       @default(true)
+  service_service_event_types service_service_event_types[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_extras {
+  id                 Int                  @id @default(autoincrement()) @db.UnsignedInt
+  service_id         Int                  @db.UnsignedInt
+  sound_package_id   Int?                 @db.UnsignedInt
+  name               String               @db.VarChar(150)
+  description        String               @db.Text
+  price              Decimal              @db.Decimal(10, 2)
+  image_url          String?              @db.VarChar(500)
+  reservation_extras reservation_extras[]
+  services           services             @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_service_extras_service")
+  sound_packages     sound_packages?      @relation(fields: [sound_package_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_service_extras_sound_package")
+
+  @@index([service_id], map: "idx_service_extras_service")
+  @@index([sound_package_id], map: "idx_service_extras_sound_package")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_persona_pricing {
+  id                        Int      @id @default(autoincrement()) @db.UnsignedInt
+  service_id                Int      @unique(map: "uk_service_persona_pricing_service") @db.UnsignedInt
+  price_per_person_per_hour Decimal  @db.Decimal(10, 2)
+  services                  services @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_service_persona_pricing_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_photos {
+  id         Int                   @id @default(autoincrement()) @db.UnsignedInt
+  service_id Int                   @db.UnsignedInt
+  url        String                @db.VarChar(500)
+  position   Int                   @db.UnsignedInt
+  status     service_photos_status @default(pendiente_moderacion)
+  created_at DateTime              @default(now()) @db.Timestamp(0)
+  services   services              @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_service_photos_service")
+
+  @@index([service_id, position], map: "idx_service_photos_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model service_service_event_types {
+  service_id          Int                 @db.UnsignedInt
+  event_type_id       Int                 @db.UnsignedInt
+  service_event_types service_event_types @relation(fields: [event_type_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_service_service_event_types_event_type")
+  services            services            @relation(fields: [service_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_service_service_event_types_service")
+
+  @@id([service_id, event_type_id])
+  @@index([event_type_id], map: "fk_service_service_event_types_event_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model services {
+  id                               Int                           @id @default(autoincrement()) @db.UnsignedInt
+  provider_id                      Int                           @db.UnsignedInt
+  service_type                     services_service_type
+  status                           services_status               @default(borrador)
+  title                            String                        @db.VarChar(200)
+  description                      String                        @db.Text
+  location_type                    services_location_type
+  location                         Json
+  coverage_area                    Json?
+  max_capacity                     Int                           @db.UnsignedInt
+  approval_mode                    services_approval_mode        @default(manual)
+  viaticos_per_km                  Decimal?                      @db.Decimal(10, 2)
+  deposit_amount                   Decimal?                      @db.Decimal(10, 2)
+  cancellation_policy_id           Int                           @db.UnsignedInt
+  cofepris_responsibility_accepted Boolean                       @default(false)
+  deleted_at                       DateTime?                     @db.Timestamp(0)
+  created_at                       DateTime                      @default(now()) @db.Timestamp(0)
+  updated_at                       DateTime                      @default(now()) @db.Timestamp(0)
+  availability_blocks              availability_blocks[]
+  content_reports                  content_reports[]
+  conversations                    conversations[]
+  dynamic_pricing_rules            dynamic_pricing_rules[]
+  favorites                        favorites[]
+  inventory_slots                  inventory_slots[]
+  operating_hours                  operating_hours[]
+  reservation_items                reservation_items[]
+  salon_pricing                    salon_pricing?
+  service_amenities                service_amenities[]
+  service_extras                   service_extras[]
+  service_persona_pricing          service_persona_pricing?
+  service_photos                   service_photos[]
+  service_service_event_types      service_service_event_types[]
+  cancellation_policies            cancellation_policies         @relation(fields: [cancellation_policy_id], references: [id], onUpdate: Restrict, map: "fk_services_cancellation_policy")
+  users                            users                         @relation(fields: [provider_id], references: [id], onUpdate: Restrict, map: "fk_services_provider")
+  sound_packages                   sound_packages[]
+
+  @@index([cancellation_policy_id], map: "fk_services_cancellation_policy")
+  @@index([location_type], map: "idx_services_location_type")
+  @@index([max_capacity], map: "idx_services_max_capacity")
+  @@index([provider_id], map: "idx_services_provider")
+  @@index([service_type], map: "idx_services_service_type")
+  @@index([status], map: "idx_services_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sound_packages {
+  id                    Int                     @id @default(autoincrement()) @db.UnsignedInt
+  service_id            Int                     @db.UnsignedInt
+  name                  String                  @db.VarChar(150)
+  description           String                  @db.Text
+  base_price            Decimal                 @db.Decimal(10, 2)
+  base_hours            Int                     @db.UnsignedInt
+  extra_hour_price      Decimal                 @db.Decimal(10, 2)
+  dynamic_pricing_rules dynamic_pricing_rules[]
+  reservation_items     reservation_items[]
+  service_extras        service_extras[]
+  services              services                @relation(fields: [service_id], references: [id], onUpdate: Restrict, map: "fk_sound_packages_service")
+
+  @@index([service_id], map: "idx_sound_packages_service")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model technical_disputes {
+  id             Int                       @id @default(autoincrement()) @db.UnsignedInt
+  reservation_id Int                       @db.UnsignedInt
+  reported_by    Int                       @db.UnsignedInt
+  type           technical_disputes_type   @default(tecnica)
+  status         technical_disputes_status @default(abierta)
+  resolution     String?                   @db.Text
+  created_at     DateTime                  @default(now()) @db.Timestamp(0)
+  resolved_at    DateTime?                 @db.Timestamp(0)
+  users          users                     @relation(fields: [reported_by], references: [id], onUpdate: Restrict, map: "fk_technical_disputes_reported_by")
+  reservations   reservations              @relation(fields: [reservation_id], references: [id], onUpdate: Restrict, map: "fk_technical_disputes_reservation")
+
+  @@index([reported_by], map: "fk_technical_disputes_reported_by")
+  @@index([reservation_id], map: "idx_technical_disputes_reservation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                                                 Int                          @id @default(autoincrement()) @db.UnsignedInt
+  full_name                                          String                       @db.VarChar(255)
+  email                                              String                       @unique(map: "uk_users_email") @db.VarChar(255)
+  phone                                              String                       @db.VarChar(20)
+  avatar_url                                         String?                      @db.VarChar(500)
+  role                                               users_role
+  segment                                            users_segment
+  password_hash                                      String                       @db.VarChar(255)
+  verified                                           Boolean                      @default(false)
+  notification_prefs                                 Json?
+  privacy_consent_accepted_at                        DateTime?                    @db.Timestamp(0)
+  privacy_policy_version                             String?                      @db.VarChar(50)
+  deleted_at                                         DateTime?                    @db.Timestamp(0)
+  created_at                                         DateTime                     @default(now()) @db.Timestamp(0)
+  updated_at                                         DateTime                     @default(now()) @db.Timestamp(0)
+  arco_requests                                      arco_requests[]
+  audit_logs                                         audit_logs[]
+  cancellation_policies                              cancellation_policies?
+  commission_settings                                commission_settings[]
+  consent_logs                                       consent_logs[]
+  content_reports_content_reports_handled_byTousers  content_reports[]            @relation("content_reports_handled_byTousers")
+  content_reports_content_reports_reported_byTousers content_reports[]            @relation("content_reports_reported_byTousers")
+  conversations_conversations_client_idTousers       conversations[]              @relation("conversations_client_idTousers")
+  conversations_conversations_provider_idTousers     conversations[]              @relation("conversations_provider_idTousers")
+  favorites                                          favorites[]
+  identity_verifications                             identity_verifications[]
+  messages                                           messages[]
+  notifications                                      notifications[]
+  package_members                                    package_members[]
+  packages                                           packages[]
+  provider_blocks_provider_blocks_handled_byTousers  provider_blocks[]            @relation("provider_blocks_handled_byTousers")
+  provider_blocks_provider_blocks_provider_idTousers provider_blocks[]            @relation("provider_blocks_provider_idTousers")
+  quick_replies                                      quick_replies[]
+  reservation_status_history                         reservation_status_history[]
+  reservations                                       reservations[]
+  reviews_reviews_client_idTousers                   reviews[]                    @relation("reviews_client_idTousers")
+  reviews_reviews_provider_idTousers                 reviews[]                    @relation("reviews_provider_idTousers")
+  services                                           services[]
+  technical_disputes                                 technical_disputes[]
+
+  @@index([role], map: "idx_users_role")
+  @@index([segment], map: "idx_users_segment")
+}
+
+enum scheduled_messages_trigger_type {
+  reserva_confirmada
+  evento
+  pago_pendiente
+  review
+}
+
+enum notifications_type {
+  firma_contrato
+  saldo_pendiente
+  confirmacion_pago
+  recordatorio_evento_h48
+  recordatorio_evento_h2
+  encuesta_satisfaccion
+  invitacion_paquete
+  aceptacion_invitacion
+  rechazo_invitacion
+  anticipo_recibido
+  pago_completo_recibido
+  cancelacion
+  reembolso_procesado
+  review_recibida
+  nueva_agenda_disponible
+  permiso_alcohol_h5
+}
+
+enum scheduled_messages_recipient {
+  cliente
+  ambos
+}
+
+enum call_logs_type {
+  voz
+  video
+}
+
+enum contracts_status {
+  pendiente_firma
+  firmando
+  pendiente_confirmacion
+  contrato_confirmado
+}
+
+enum cancellations_cancelled_by {
+  cliente
+  proveedor
+}
+
+enum payments_payment_type {
+  anticipo
+  saldo
+  deposito_garantia
+}
+
+enum reservation_status_history_status {
+  creado
+  invitaciones_pendientes
+  invitaciones_aceptadas
+  disponibilidad_verificada
+  disponible_para_reserva
+  pendiente_firma
+  contrato_confirmado
+  permiso_alcohol
+  pago_anticipo
+  confirmada
+  en_curso
+  completada
+  cancelada
+}
+
+enum packages_status {
+  creado
+  invitaciones_pendientes
+  invitaciones_aceptadas
+  disponibilidad_verificada
+  disponible_para_reserva
+  reservado
+  completado
+}
+
+enum services_service_type {
+  salon
+  sonido
+  servicio_persona
+}
+
+enum identity_verifications_method {
+  ine_presencial
+  kyc
+}
+
+enum arco_requests_tipo {
+  acceso
+  rectificacion
+  cancelacion
+  oposicion
+}
+
+enum consent_logs_consent_type {
+  aviso_privacidad
+  terminos_condiciones
+  cookies
+  verificacion_identidad
+}
+
+enum technical_disputes_type {
+  tecnica
+}
+
+enum notifications_channel {
+  push
+  email
+  in_app
+}
+
+enum call_logs_status {
+  llamando
+  en_curso
+  finalizada
+}
+
+enum messages_type {
+  texto
+  nota_voz
+}
+
+enum alcohol_permits_status {
+  lista_espera
+  confirmado
+  no_confirmado
+}
+
+enum cancellations_timing {
+  lejana
+  cercana
+}
+
+enum reservations_status {
+  creado
+  invitaciones_pendientes
+  invitaciones_aceptadas
+  disponibilidad_verificada
+  disponible_para_reserva
+  pendiente_firma
+  contrato_confirmado
+  permiso_alcohol
+  pago_anticipo
+  confirmada
+  en_curso
+  completada
+  cancelada
+}
+
+enum package_members_service_type {
+  sonido
+  servicio_persona
+}
+
+enum dynamic_pricing_rules_adjustment_type {
+  temporada
+  demanda
+  dia_semana
+  bloque_turno
+}
+
+enum services_status {
+  borrador
+  pendiente_verificacion
+  publicado
+  rechazado
+}
+
+enum identity_verifications_kyc_provider {
+  verificamex
+  truora
+  veriff
+}
+
+enum arco_requests_status {
+  pendiente
+  en_proceso
+  completado
+  rechazado
+}
+
+enum content_reports_status {
+  pendiente
+  resuelto
+}
+
+enum technical_disputes_status {
+  abierta
+  resuelta
+}
+
+enum scheduled_messages_status {
+  pendiente
+  enviado
+}
+
+enum alcohol_permits_h5_decision {
+  continuar_sin_alcohol
+  cancelar
+}
+
+enum refunds_reason {
+  cancelacion_proveedor
+  cancelacion_cliente
+  deposito_devolucion
+  politica_proveedor
+  permiso_alcohol_no_confirmado
+}
+
+enum package_members_invitation_status {
+  pendiente
+  aceptada
+  rechazada
+}
+
+enum availability_blocks_type {
+  mantenimiento
+  inoperacion
+  evento_privado
+}
+
+enum service_photos_status {
+  pendiente_moderacion
+  aprobada
+  rechazada
+}
+
+enum identity_verifications_result {
+  verificado
+  ine_vencido
+  ine_no_encontrado
+  datos_no_coinciden
+  error_api
+  pendiente
+}
+
+enum content_reports_action {
+  aprobar
+  advertir
+  eliminar
+}
+
+enum notifications_status {
+  pendiente
+  enviada
+  leida
+}
+
+enum refunds_status {
+  pendiente
+  procesado
+}
+
+enum payments_status {
+  pendiente
+  procesado
+  fallido
+  reembolsado
+  retenido
+  devuelto
+}
+
+enum identity_verifications_estatus_lista_nominal {
+  activo
+  vencido
+  no_encontrado
+}
+
+enum users_role {
+  usuario
+  prestador
+  administrador
+}
+
+enum services_location_type {
+  fija
+  area_servicio
+}
+
+enum identity_verifications_motivo {
+  ine_vencido
+  ine_no_encontrado
+  datos_no_coinciden
+}
+
+enum users_segment {
+  particular
+  empresa
+}
+
+enum services_approval_mode {
+  manual
+  inmediata
+}
