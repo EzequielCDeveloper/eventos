@@ -142,7 +142,7 @@ related_docs:
 
 | ID | Priority | Requirement | Acceptance Criteria | Source |
 |----|----------|-------------|---------------------|--------|
-| BR-004.1 | Must | Map all 30+ tables from database_schema.md to Sequelize/Knex models | Every table has a corresponding model | database_schema.md |
+| BR-004.1 | Must | Map all 30+ tables from database_schema.sql to Prisma models | Every table has a corresponding model | database_schema.sql, D-001 |
 | BR-004.2 | Must | Use `DECIMAL(10,2)` for all MXN monetary amounts | No floating-point for money | database_schema.md |
 | BR-004.3 | Must | Use ENUM types for closed sets (roles, statuses, payment types, notification types) | DB enums match application enums | database_schema.md |
 | BR-004.4 | Must | Use JSON columns for free-form payloads (scope, notification payload, cancellation_policy_snapshot) | JSON columns parseable by application | database_schema.md |

@@ -33,7 +33,7 @@ Chain strategy: stacked-to-main
 
 ## Phase 1: Backend Foundation & Scaffolding (Slice S1)
 
-- [ ] 1.1 Create `backend/package.json` — Node.js + Express + TypeScript + Prisma + helmet + cors + express-rate-limit + jsonwebtoken + zod + node-cron dependencies (BR-001, BR-014, D-008)
+- [ ] 1.1 Create `backend/package.json` — Node.js + Express + TypeScript + Prisma + helmet + cors + express-rate-limit + jsonwebtoken + zod + bullmq + ioredis dependencies (BR-001, BR-014, D-008, D-011)
 - [ ] 1.2 Create `backend/tsconfig.json` — strict mode, outDir dist, rootDir src, esModuleInterop (D-008)
 - [ ] 1.3 Create `backend/src/config/env.ts` — Zod-validated env vars: DATABASE_URL, JWT_SECRET, CONEKTA_API_KEY, VERIFICAMEX_API_KEY, FCM_SERVICE_ACCOUNT, RESEND_API_KEY; fail-fast on missing (UR-005, D-010)
 - [ ] 1.4 Create `backend/src/config/database.ts` — PrismaClient singleton with connection logging (BR-014.4, D-001)
@@ -108,9 +108,9 @@ Chain strategy: stacked-to-main
 ## Phase 9: File Storage & Scheduled Jobs (Slice S5 final)
 
 - [ ] 9.1 Create `backend/src/services/storage.service.ts` — Local disk storage at /data/uploads/{entity}/{id}/{filename}; signed URL generation with HMAC token + expiry; Nginx serves /uploads/ (D-004, BR-013.6, UR-012)
-- [ ] 9.2 Create `backend/src/jobs/scheduled-messages.ts` — node-cron job: process 4 automation types from scheduled_messages table (BR-008.5)
-- [ ] 9.3 Create `backend/src/jobs/event-reminders.ts` — node-cron job: H-48 push+email, H-2 push reminders to both client and provider (BR-009.6)
-- [ ] 9.4 Create `backend/src/jobs/alcohol-h5.ts` — node-cron job: pause reservations at permiso_alcohol until H-5 decision (BR-005.8)
+- [ ] 9.2 Create `backend/src/jobs/scheduled-messages.ts` — BullMQ job: process 4 automation types from scheduled_messages table (BR-008.5, D-011)
+- [ ] 9.3 Create `backend/src/jobs/event-reminders.ts` — BullMQ job: H-48 push+email, H-2 push reminders to both client and provider (BR-009.6, D-011)
+- [ ] 9.4 Create `backend/src/jobs/alcohol-h5.ts` — BullMQ job: pause reservations at permiso_alcohol until H-5 decision (BR-005.8, D-011)
 
 ## Phase 10: Frontend Foundation (Slice S6)
 

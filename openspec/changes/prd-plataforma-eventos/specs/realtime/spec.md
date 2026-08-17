@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines real-time communication for the Plataforma Eventos: Socket.IO text chat, voice/video calls (PeerJS or Agora), and notification delivery across push/email/in-app channels.
+Defines real-time communication for the Plataforma Eventos: Socket.IO text chat, voice/video calls (Agora, D-005), and notification delivery across push/email/in-app channels.
 
 ## Requirements
 
@@ -30,7 +30,7 @@ The system MUST provide real-time text chat via Socket.IO. Messages MUST be deli
 
 ### Requirement: Voice/Video Calls (UR-009.2)
 
-The system MUST support voice/video calls via PeerJS (WebRTC) or Agora. Call initiation, connection, and termination MUST be functional. Voice/video is IN SCOPE for MVP.
+The system MUST support voice/video calls via Agora (D-005). Call initiation, connection, and termination MUST be functional. Voice/video is IN SCOPE for MVP.
 
 #### Scenario: Voice call initiated
 
@@ -78,5 +78,5 @@ The system MUST support voice note upload and playback (pre-recorded, not real-t
 
 ### Design-Decision Placeholders
 
-- **Voice/Video Provider**: UQ-006 — PeerJS (WebRTC, free, self-hosted) vs Agora (managed, per-minute cost)? (Product decision)
+- **Voice/Video Provider**: UQ-006 — Resolved (D-005): Agora (managed, per-minute cost); free tier 10K min/month covers MVP.
 - **Socket.IO Auth Middleware**: UQ-009 — JWT verification on Socket.IO handshake? (Design phase)

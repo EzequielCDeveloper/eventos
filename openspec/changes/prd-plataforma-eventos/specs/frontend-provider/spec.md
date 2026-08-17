@@ -8,7 +8,7 @@ Defines the provider-facing React application: information architecture, onboard
 
 ### Requirement: Provider Information Architecture (FR-002)
 
-The system MUST provide a ProviderLayout component wrapping all provider routes. 5-tab dashboard: Hoy, Mensajes, Calendario, Anuncios, Estadísticas. Onboarding wizard (3 steps) with auto-save between steps. Onboarding resumes on app close (localStorage or API). Tax calculator accessible from dashboard. Monthly report: transactions, gross, taxes, commission, net, CFDI.
+The system MUST provide a ProviderLayout component wrapping all provider routes. 5-tab dashboard: Hoy, Mensajes, Calendario, Anuncios, Estadísticas. Onboarding wizard (3 steps) with auto-save between steps. Onboarding resumes on app close (localStorage or API). Tax calculator accessible from dashboard. Monthly report: transactions, gross, taxes, commission, net. CFDI remains deferred (out of MVP scope).
 
 #### Scenario: Dashboard tabs render
 
