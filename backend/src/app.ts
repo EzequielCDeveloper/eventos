@@ -5,6 +5,7 @@ import { env } from './config/env';
 import { v1Router } from './routes/v1';
 import { apiLimiter } from './middleware/rateLimiter';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { createUploadsGuard } from './services/storage.service';
 
 /**
  * Express application factory (D-008).
@@ -66,6 +67,12 @@ export function createApp(): Express {
 
   // Global API rate limit (BR-014.3, UR-008.3)
   app.use('/api', apiLimiter);
+
+  // Private file serving with signed-URL validation (D-004, BR-013.6).
+  // In production Nginx performs the equivalent check (see
+  // storage.service.ts); this guard keeps development behavior identical:
+  // access without a valid, unexpired signed token → 403.
+  app.use('/uploads', createUploadsGuard());
 
   // Versioned routes (BR-001.8, UR-011.1)
   app.use('/api/v1', v1Router);
