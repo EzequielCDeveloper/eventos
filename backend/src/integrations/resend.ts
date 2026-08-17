@@ -15,8 +15,9 @@ import { AppError } from '../types/api';
  * pipeline testable WITHOUT ever sending a real email:
  *
  *   - when `NODE_ENV !== 'production'`, every call routes through a local
- *     stub adapter (delivery simulated, `stub: true`) — this also covers
- *     the `.env` `re_dev_placeholder` key and any real pre-production key;
+ *     stub adapter (delivery simulated, `stub: true`) — this covers the
+ *     placeholder key in `.env.example` AND any real key present in the
+ *     gitignored `.env` (never emits a billable email from a dev smoke);
  *   - in production, a key that is not a valid Resend shape (not `re_`)
  *     fails closed instead of attempting a call.
  */

@@ -111,6 +111,7 @@ Chain strategy: stacked-to-main
 - [x] 9.2 Create `backend/src/jobs/scheduled-messages.ts` — BullMQ job: process 4 automation types from scheduled_messages table (BR-008.5, D-011)
 - [x] 9.3 Create `backend/src/jobs/event-reminders.ts` — BullMQ job: H-48 push+email, H-2 push reminders to both client and provider (BR-009.6, D-011)
 - [x] 9.4 Create `backend/src/jobs/alcohol-h5.ts` — BullMQ job: pause reservations at permiso_alcohol until H-5 decision (BR-005.8, D-011)
+- [ ] 9.5 Create `backend/src/integrations/agora.ts` + `backend/src/routes/v1/agora.routes.ts` — server-side Agora RTC token generation (appId, appCertificate, uid, channel, role, expiry) via agora-access-token; GET /api/v1/agora/token (requireAuth) (UR-009.2, D-005). Follow-up: discovered at S5 apply (no phase-7-9 task covered voice/video server side).
 
 ## Phase 10: Frontend Foundation (Slice S6)
 
