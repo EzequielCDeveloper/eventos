@@ -149,19 +149,19 @@ Chain strategy: stacked-to-main
 
 ## Phase 13: Frontend Provider Features (Slice S7)
 
-- [ ] 13.1 Create `frontend/src/features/provider/ProviderDashboard.tsx` — Hoy tab: urgent alerts, weekly summary, reminders, quick actions (FR-011.5)
-- [ ] 13.2 Create `frontend/src/features/provider/CalendarTab.tsx` — Monthly/weekly view, slot inventory, date blocking, dynamic pricing config (FR-011.6, FR-011.9)
-- [ ] 13.3 Create `frontend/src/features/provider/ListingsTab.tsx` — Edit photos, description, rules, cancellation policy (FR-011.7)
-- [ ] 13.4 Create `frontend/src/features/provider/StatsTab.tsx` — Payment history, earnings, response/acceptance rate, average rating (FR-011.8)
-- [ ] 13.5 Create `frontend/src/features/provider/OnboardingWizard.tsx` — 3-step wizard: (1) type/location/capacity, (2) photos min 5/title/description, (3) pricing/policies/cancellation/deposit; progress indicator; auto-save between steps; resume on app close (FR-011.1–FR-011.4, FR-002.3–FR-002.4)
-- [ ] 13.6 Create `frontend/src/features/provider/VerificationFlow.tsx` — KYC flow: consent → capture → result; verification badge display; client voluntary verification (FR-010.1–FR-010.4)
+- [x] 13.1 Create `frontend/src/features/provider/ProviderDashboard.tsx` — Hoy tab: urgent alerts, weekly summary, reminders, quick actions (FR-011.5)
+- [x] 13.2 Create `frontend/src/features/provider/CalendarTab.tsx` — Monthly/weekly view, slot inventory, date blocking, dynamic pricing config (FR-011.6, FR-011.9)
+- [x] 13.3 Create `frontend/src/features/provider/ListingsTab.tsx` — Edit photos, description, rules, cancellation policy (FR-011.7)
+- [x] 13.4 Create `frontend/src/features/provider/StatsTab.tsx` — Payment history, earnings, response/acceptance rate, average rating (FR-011.8)
+- [x] 13.5 Create `frontend/src/features/provider/OnboardingWizard.tsx` — 3-step wizard: (1) type/location/capacity, (2) photos min 5/title/description, (3) pricing/policies/cancellation/deposit; progress indicator; auto-save between steps; resume on app close (FR-011.1–FR-011.4, FR-002.3–FR-002.4). Wire to backend services POST + /pricing + /inventory routes.
+- [x] 13.6 Create `frontend/src/features/provider/VerificationFlow.tsx` — KYC flow: consent → capture → result; verification badge display; client voluntary verification (FR-010.1–FR-010.4). Wire to `POST /users/verify-kyc`.
 
 ## Phase 14: Frontend Admin Features (Slice S7 continued)
 
-- [ ] 14.1 Create `frontend/src/features/admin/AdminDashboard.tsx` — 5 function areas: moderation, provider management, stats, technical disputes, commission (FR-003.1–FR-003.2)
-- [ ] 14.2 Create `frontend/src/features/admin/CommissionConfig.tsx` — Set global commission rate; update commission_settings table (FR-003.3)
-- [ ] 14.3 Create `frontend/src/features/admin/ModerationPanel.tsx` — Content reports, provider blocks, service moderation (FR-003.2)
-- [ ] 14.4 Create `frontend/src/features/admin/ProviderManagement.tsx` — Provider listing, verification status, block/unblock (FR-003.2)
+- [x] 14.1 Create `frontend/src/features/admin/AdminDashboard.tsx` — 5 function areas: moderation, provider management, stats, technical disputes, commission (FR-003.1–FR-003.2) — wire to `/admin/*` endpoints that exist.
+- [x] 14.2 Create `frontend/src/features/admin/CommissionConfig.tsx` — Set global commission rate; update commission_settings table (FR-003.3)
+- [x] 14.3 Create `frontend/src/features/admin/ModerationPanel.tsx` — Content reports, provider blocks, service moderation (FR-003.2) — wire to `GET/POST /admin/moderation` + `POST /admin/moderation/:id/action`.
+- [x] 14.4 Create `frontend/src/features/admin/ProviderManagement.tsx` — Provider listing, verification status, block/unblock — wire to `GET /admin/providers` + block/unblock endpoints.
 
 ## Phase 15: Deployment & Documentation (Slice S8)
 
