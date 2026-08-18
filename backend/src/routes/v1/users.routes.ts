@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { requireAuth } from '../../middleware/auth';
+import { requireRole } from '../../middleware/requireRole';
 import { validate } from '../../middleware/validate';
 import * as authService from '../../services/auth.service';
 import { runKycVerification } from '../../services/verification.service';
+import * as servicesService from '../../services/services.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { toDateString, toISOStringOrNull } from '../../utils/datetime';
 
@@ -127,5 +129,62 @@ usersRouter.get(
         response_notes: r.response_notes,
       })),
     });
+  }),
+);
+
+// ---- Provider cancellation policy (FR-011.7) --------------------------------
+
+const cancellationPolicySchema = z
+  .object({
+    retention_percent: z.number().int().min(0).max(100).optional(),
+    penalty_free_window_days: z.number().int().min(1).max(90).optional(), // DB CHECK 1..90
+    deposit_refundable: z.boolean().optional(),
+  })
+  .strict();
+
+function serializeCancellationPolicy(p: {
+  id: number;
+  retention_percent: number;
+  penalty_free_window_days: number;
+  deposit_refundable: boolean;
+  created_at: Date;
+  updated_at: Date;
+}) {
+  return {
+    id: p.id,
+    retention_percent: p.retention_percent,
+    penalty_free_window_days: p.penalty_free_window_days,
+    deposit_refundable: p.deposit_refundable,
+    created_at: p.created_at.toISOString(),
+    updated_at: p.updated_at.toISOString(),
+  };
+}
+
+/**
+ * GET /users/me/cancellation-policy — the provider's cancellation policy
+ * (FR-011.7). Auto-created with defaults (50% retention, 30d window, deposit
+ * refundable) on first read via the same upsert used at service creation.
+ */
+usersRouter.get(
+  '/me/cancellation-policy',
+  requireRole('prestador'),
+  asyncHandler(async (req, res) => {
+    const policy = await servicesService.getProviderCancellationPolicy(req.user!.id);
+    res.json({ data: serializeCancellationPolicy(policy) });
+  }),
+);
+
+/**
+ * PUT /users/me/cancellation-policy — the provider updates its own policy
+ * (FR-011.7). Partial PATCH semantics; `updated_at` always bumps.
+ */
+usersRouter.put(
+  '/me/cancellation-policy',
+  requireRole('prestador'),
+  validate({ body: cancellationPolicySchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof cancellationPolicySchema>;
+    const policy = await servicesService.updateProviderCancellationPolicy(req.user!.id, body);
+    res.json({ data: serializeCancellationPolicy(policy) });
   }),
 );

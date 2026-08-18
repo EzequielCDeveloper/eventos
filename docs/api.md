@@ -92,11 +92,17 @@ Auth `POST /auth/*`, `GET /auth/me` — see [Authentication flow](#authenticatio
 | POST | `/users/verify-kyc` | `curp, clave_elector, nombre_completo, ocr?` | `201 { data: { verification } }` (Verificamex KYC, BR-010) |
 | POST | `/users/arco-requests` | `tipo (acceso/rectificacion/cancelacion/oposicion)` | `201 { data: { id, tipo, status, requested_at, deadline_at } }` (ARCO, BR-012) |
 | GET | `/users/arco-requests` | — | `{ data: ArcoRequest[] }` (current user, newest first) |
+| GET | `/users/me/cancellation-policy` | — | `{ data: CancellationPolicy }` (auto-created with defaults on first read; role `prestador`) |
+| PUT | `/users/me/cancellation-policy` | `retention_percent? (0..100) penalty_free_window_days? (1..90) deposit_refundable? (bool)` | `{ data: CancellationPolicy }` (partial PATCH; role `prestador`) |
 
 > KYC values are used in-flight only and **never persisted or logged** (BR-010.6).
 >
 > ARCO requests (LFPDPPP, BR-012): created with `status=pendiente` and
 > `deadline_at = now + 20 business days`; `deadline_at` is `YYYY-MM-DD`.
+>
+> Cancellation policies are one-per-provider (unique FK). The read path
+> auto-creates the policy with the defaults used at service creation (50%
+> retention, 30-day penalty-free window, deposit refundable) — FR-011.7.
 
 ### Health & version
 
@@ -118,9 +124,19 @@ Auth `POST /auth/*`, `GET /auth/me` — see [Authentication flow](#authenticatio
 
 | Method | Path | Body / query | Response |
 |--------|------|--------------|----------|
+| GET | `/services/me` | — | `{ data: ProviderServiceSummary[] }` (own services, all statuses incl. `borrador`, newest first — FR-011.7) |
 | POST | `/services` | full create aggregate: `service_type (salon/ sonido/ servicio_persona), title, description, location_type, location {lat,lng,address}, coverage_area?, max_capacity, approval_mode?, viaticos_per_km?, deposit_amount?, cofepris_responsibility_accepted?, pricing {salon?{(base_block_hours,base_block_price,extra_hour_price)}, sound_packages?[ {name,description,base_price,base_hours,extra_hour_price} ], persona?{price_per_person_per_hour}}, photos?[{url,position}], amenity_ids?, event_type_ids?` | `201 { data: Service }` (draft) |
 | PUT | `/services/:id` | partial: `title? description? location_type? location? coverage_area? max_capacity? approval_mode? viaticos_per_km? deposit_amount? cofepris_responsibility_accepted? status? (borrador/pendiente_verificacion/publicado/rechazado)` | `{ data: Service }` (publish gate checks `verified` — BR-002.5) |
 | DELETE | `/services/:id` | — | `{ data: { deleted: true } }` (soft delete) |
+| POST | `/services/:id/photos` | `url (url ≤500), position? (int ≥0)` | `201 { data: { id, url, position, status, created_at } }` (`status=pendiente_moderacion`, owner only) |
+| PUT | `/services/:id/photos/reorder` | `positions: [photoId, …]` (array order = new position) | `{ data: [{ id, position }] }` (owner only) |
+| DELETE | `/services/:id/photos/:photoId` | — | `{ data: { deleted: true } }` (hard delete, owner only) |
+
+> `GET /services/me` is the primary source for the provider dashboard
+> (FR-011.7). It is registered before `/services/:id` so the literal segment
+> wins the match; `min_price` is serialized as a two-decimal money string
+> mirroring the marketplace price selector, and `cover_photo_url` is the
+> first approved photo.
 
 ### Pricing — `/api/v1/services/:serviceId/*` (public reads; writes: `prestador` + owner)
 

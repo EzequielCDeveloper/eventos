@@ -5,6 +5,7 @@ import type {
   CreateDynamicRuleBody,
   DynamicPriceRule,
   MonthlyReport,
+  ProviderServiceSummary,
   ReservationDetail,
   ServiceDetail,
   SlotAvailabilityRow,
@@ -16,6 +17,7 @@ import type { AvailabilityBlockType } from '@/types/models';
  *
  * Wired strictly to endpoints that exist in backend/src/routes/v1/* — we
  * never invent endpoints:
+ *   - GET  /services/me              (own services, all statuses — FR-011.7)
  *   - GET  /services/:id             (public detail — includes drafts, owner-only intent)
  *   - GET  /services/:id/slots       (availability via v_slot_availability)
  *   - GET  /services/:id/blocks + POST/DELETE
@@ -29,10 +31,19 @@ export const providerKeys = {
     ['services', 'slots', String(id), from ?? '', to ?? ''] as const,
   blocks: (id: number | string) => ['services', 'blocks', String(id)] as const,
   rules: (id: number | string) => ['services', 'dynamic-rules', String(id)] as const,
+  myServices: () => ['services', 'me'] as const,
   reservations: (status?: ReservationDetail['status']) =>
     ['reservations', 'provider', status ?? 'all'] as const,
   report: (year: number, month: number) => ['provider', 'report', year, month] as const,
 };
+
+/**
+ * The provider's own services (GET /services/me) — primary source for the
+ * provider dashboard. All statuses incl. drafts, newest first.
+ */
+export function fetchMyServices(): Promise<ProviderServiceSummary[]> {
+  return apiGet<ProviderServiceSummary[]>('/services/me');
+}
 
 export function fetchService(id: number | string): Promise<ServiceDetail> {
   return apiGet<ServiceDetail>(`/services/${String(id)}`);

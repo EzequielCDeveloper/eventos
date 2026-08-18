@@ -110,6 +110,20 @@ const serviceParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+const servicePhotoParamsSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  photoId: z.coerce.number().int().positive(),
+});
+
+const addPhotoSchema = z.object({
+  url: z.string().url().max(500),
+  position: z.number().int().nonnegative().optional(),
+});
+
+const reorderPhotosSchema = z
+  .object({ positions: z.array(z.number().int().positive()).min(1) })
+  .strict();
+
 /**
  * GET /services — marketplace search (BR-001.6–BR-001.7, D-002).
  * Public: only published, non-deleted services are returned.
@@ -135,6 +149,22 @@ servicesRouter.get(
     };
     const result = await searchService.searchServices(filters, req.query);
     res.json({ data: result.items, meta: result.meta });
+  }),
+);
+
+/**
+ * GET /services/me — the authenticated provider's own services, all statuses
+ * incl. `borrador`, newest first (FR-011.7). Backend is the primary source
+ * for the provider dashboard (the frontend persisted-ID registry becomes a
+ * cache). Defined BEFORE `/services/:id` so the literal segment wins match.
+ */
+servicesRouter.get(
+  '/services/me',
+  requireAuth(),
+  requireRole('prestador'),
+  asyncHandler(async (req, res) => {
+    const items = await servicesService.listProviderServices(req.user!.id);
+    res.json({ data: items });
   }),
 );
 
@@ -229,6 +259,66 @@ servicesRouter.delete(
   validate({ params: serviceParamsSchema }),
   asyncHandler(async (req, res) => {
     await servicesService.deleteService(Number(req.params.id), req.user!.id);
+    res.json({ data: { deleted: true } });
+  }),
+);
+
+// ---- Service photos (FR-011.7) ----------------------------------------------
+
+/** POST /services/:id/photos — provider adds a photo to its own service (pendiente_moderacion). */
+servicesRouter.post(
+  '/services/:id/photos',
+  requireAuth(),
+  requireRole('prestador'),
+  validate({ params: serviceParamsSchema, body: addPhotoSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof addPhotoSchema>;
+    const photo = await servicesService.addServicePhoto(
+      Number(req.params.id),
+      req.user!.id,
+      body,
+    );
+    res.status(201).json({
+      data: {
+        id: photo.id,
+        url: photo.url,
+        position: photo.position,
+        status: photo.status,
+        created_at: photo.created_at.toISOString(),
+      },
+    });
+  }),
+);
+
+/** PUT /services/:id/photos/reorder — reorder the service's photos (array order = position). */
+servicesRouter.put(
+  '/services/:id/photos/reorder',
+  requireAuth(),
+  requireRole('prestador'),
+  validate({ params: serviceParamsSchema, body: reorderPhotosSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof reorderPhotosSchema>;
+    const updated = await servicesService.reorderServicePhotos(
+      Number(req.params.id),
+      req.user!.id,
+      body.positions,
+    );
+    res.json({ data: updated });
+  }),
+);
+
+/** DELETE /services/:id/photos/:photoId — provider removes a photo from its own service (hard delete). */
+servicesRouter.delete(
+  '/services/:id/photos/:photoId',
+  requireAuth(),
+  requireRole('prestador'),
+  validate({ params: servicePhotoParamsSchema }),
+  asyncHandler(async (req, res) => {
+    await servicesService.deleteServicePhoto(
+      Number(req.params.id),
+      Number(req.params.photoId),
+      req.user!.id,
+    );
     res.json({ data: { deleted: true } });
   }),
 );

@@ -1,5 +1,9 @@
 import { Prisma } from '@prisma/client';
-import type { services_location_type, services_service_type } from '@prisma/client';
+import type {
+  services_location_type,
+  services_service_type,
+  services_status,
+} from '@prisma/client';
 import { prisma } from '../config/database';
 import { AppError, buildPaginationMeta } from '../types/api';
 import type { PaginationParams } from '../types/api';
@@ -298,6 +302,225 @@ export async function deleteService(serviceId: number, providerId: number): Prom
   await prisma.services.update({
     where: { id: serviceId },
     data: { deleted_at: new Date(), updated_at: new Date() },
+  });
+}
+
+/** Summary row for the provider dashboard (GET /services/me, FR-011.7). */
+export interface ProviderServiceSummary {
+  id: number;
+  title: string;
+  service_type: services_service_type;
+  status: services_status;
+  cover_photo_url: string | null;
+  min_price: string | null;
+  provider_id: number;
+  max_capacity: number;
+  location: unknown;
+  created_at: string;
+}
+
+/**
+ * The authenticated provider's own services — ALL statuses incl. `borrador`,
+ * newest first (FR-011.7). This is the backend source of truth for the
+ * provider dashboard/ListingsTab; the frontend registry is only a cache.
+ * Soft-deleted services are hidden. `min_price` mirrors the marketplace
+ * price selector per service type; the cover photo is the first approved one.
+ */
+export async function listProviderServices(
+  providerId: number,
+): Promise<ProviderServiceSummary[]> {
+  const rows = await prisma.services.findMany({
+    where: { provider_id: providerId, deleted_at: null },
+    orderBy: { created_at: 'desc' },
+    include: {
+      salon_pricing: true,
+      sound_packages: true,
+      service_persona_pricing: true,
+      service_photos: {
+        where: { status: 'aprobada' },
+        orderBy: { position: 'asc' },
+        take: 1,
+      },
+    },
+  });
+
+  return rows.map((s) => {
+    let minPrice: string | null = null;
+    switch (s.service_type) {
+      case 'salon':
+        minPrice = s.salon_pricing ? s.salon_pricing.base_block_price.toFixed(2) : null;
+        break;
+      case 'sonido': {
+        const min = s.sound_packages.reduce<Prisma.Decimal | null>(
+          (acc, p) => (acc === null || p.base_price.lessThan(acc) ? p.base_price : acc),
+          null,
+        );
+        minPrice = min ? min.toFixed(2) : null;
+        break;
+      }
+      case 'servicio_persona':
+        minPrice = s.service_persona_pricing
+          ? s.service_persona_pricing.price_per_person_per_hour.toFixed(2)
+          : null;
+        break;
+    }
+    return {
+      id: s.id,
+      title: s.title,
+      service_type: s.service_type,
+      status: s.status,
+      cover_photo_url: s.service_photos[0]?.url ?? null,
+      min_price: minPrice,
+      provider_id: s.provider_id,
+      max_capacity: s.max_capacity,
+      location: s.location,
+      created_at: s.created_at.toISOString(),
+    };
+  });
+}
+
+/**
+ * Add a photo to a provider's own service (POST /services/:id/photos,
+ * FR-011.7). New rows are born `pendiente_moderacion`; moderation is an
+ * admin action. When `position` is omitted it appends to the end.
+ */
+export async function addServicePhoto(
+  serviceId: number,
+  providerId: number,
+  input: { url: string; position?: number },
+): Promise<{ id: number; url: string; position: number; status: string; created_at: Date }> {
+  await requireOwnedService(serviceId, providerId);
+  let position = input.position;
+  if (position === undefined) {
+    const last = await prisma.service_photos.findFirst({
+      where: { service_id: serviceId },
+      orderBy: { position: 'desc' },
+      select: { position: true },
+    });
+    position = last ? last.position + 1 : 0;
+  }
+  // Pair position with the (already ownership-checked) service id.
+  const photo = await prisma.service_photos.create({
+    data: { service_id: serviceId, url: input.url, position },
+  });
+  return photo;
+}
+
+/**
+ * Remove a photo from a provider's own service (DELETE
+ * /services/:id/photos/:photoId). `service_photos` has no `deleted_at`, so
+ * this hard-deletes the row after confirming it belongs to the owned service.
+ */
+export async function deleteServicePhoto(
+  serviceId: number,
+  photoId: number,
+  providerId: number,
+): Promise<void> {
+  await requireOwnedService(serviceId, providerId);
+  const photo = await prisma.service_photos.findUnique({
+    where: { id: photoId },
+    select: { id: true, service_id: true },
+  });
+  if (!photo || photo.service_id !== serviceId) {
+    throw AppError.notFound('Service photo not found');
+  }
+  await prisma.service_photos.delete({ where: { id: photo.id } });
+}
+
+/**
+ * Reorder a provider's own service photos (PUT /services/:id/photos/reorder).
+ * `positions` lists photo ids in the desired order; each becomes its array
+ * index. Every id must belong to the service (404 otherwise).
+ */
+export async function reorderServicePhotos(
+  serviceId: number,
+  providerId: number,
+  photoIds: number[],
+): Promise<Array<{ id: number; position: number }>> {
+  await requireOwnedService(serviceId, providerId);
+  const photos = await prisma.service_photos.findMany({
+    where: { service_id: serviceId },
+    select: { id: true },
+  });
+  const owned = new Set(photos.map((p) => p.id));
+  for (const photoId of photoIds) {
+    if (!owned.has(photoId)) {
+      throw AppError.notFound('Service photo does not belong to this service');
+    }
+  }
+  return Promise.all(
+    photoIds.map((photoId, index) =>
+      prisma.service_photos.update({
+        where: { id: photoId },
+        data: { position: index },
+        select: { id: true, position: true },
+      }),
+    ),
+  );
+}
+
+/** Cancellation policy row surface (FR-011.7). */
+export interface CancellationPolicyRow {
+  id: number;
+  provider_id: number;
+  retention_percent: number;
+  penalty_free_window_days: number;
+  deposit_refundable: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+/**
+ * The provider's cancellation policy (GET /users/me/cancellation-policy).
+ * Reuses the same upsert semantics as `ensureCancellationPolicy` (50%
+ * retention, 30-day penalty-free window, deposit refundable) so the policy
+ * auto-exists on first read — one policy per provider (unique FK).
+ */
+export async function getProviderCancellationPolicy(
+  providerId: number,
+): Promise<CancellationPolicyRow> {
+  return prisma.cancellation_policies.upsert({
+    where: { provider_id: providerId },
+    update: {},
+    create: { provider_id: providerId },
+  });
+}
+
+/**
+ * Upsert the provider's cancellation policy (PUT /users/me/cancellation-policy).
+ * Any transition bumps `updated_at`; the row is created with defaults when
+ * missing so the response is always complete.
+ */
+export async function updateProviderCancellationPolicy(
+  providerId: number,
+  patch: {
+    retention_percent?: number;
+    penalty_free_window_days?: number;
+    deposit_refundable?: boolean;
+  },
+): Promise<CancellationPolicyRow> {
+  const update: Prisma.cancellation_policiesUpdateInput = { updated_at: new Date() };
+  if (patch.retention_percent !== undefined) {
+    update.retention_percent = patch.retention_percent;
+  }
+  if (patch.penalty_free_window_days !== undefined) {
+    update.penalty_free_window_days = patch.penalty_free_window_days;
+  }
+  if (patch.deposit_refundable !== undefined) {
+    update.deposit_refundable = patch.deposit_refundable;
+  }
+  return prisma.cancellation_policies.upsert({
+    where: { provider_id: providerId },
+    update,
+    // On first creation an absent field falls back to the schema default
+    // (50% retention, 30-day window, deposit refundable) — mirroring
+    // `ensureCancellationPolicy`.
+    create: {
+      provider_id: providerId,
+      retention_percent: patch.retention_percent ?? 50,
+      penalty_free_window_days: patch.penalty_free_window_days ?? 30,
+      deposit_refundable: patch.deposit_refundable ?? true,
+    },
   });
 }
 

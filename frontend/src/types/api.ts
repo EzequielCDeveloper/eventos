@@ -154,6 +154,24 @@ export interface ServiceSummary {
   created_at: string;
 }
 
+/**
+ * Provider-owned service summary from GET /services/me (FR-011.7) — the
+ * backend source of truth for the provider dashboard / ListingsTab. Covers
+ * all statuses incl. drafts, missing from the public `ServiceSummary`.
+ */
+export interface ProviderServiceSummary {
+  id: number;
+  title: string;
+  service_type: ServiceType;
+  status: ServicesStatus;
+  cover_photo_url: string | null;
+  min_price: string | null;
+  provider_id: number;
+  max_capacity: number;
+  location: { lat?: number; lng?: number; address?: string } | unknown;
+  created_at: string;
+}
+
 export interface ServiceDetail {
   id: number;
   title: string;
