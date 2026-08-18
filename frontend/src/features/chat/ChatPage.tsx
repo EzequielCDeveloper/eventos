@@ -12,7 +12,9 @@ import {
   socketMarkRead,
   socketTyping,
   socketOn,
+  socketCallRejected,
   SOCKET_EVENTS,
+  type CallSignalEvent,
   type ReadReceiptEvent,
   type TypingEvent,
 } from '@/lib/socket';
@@ -22,14 +24,18 @@ import { Button } from '@/components/ui/Button';
 import { StateView, Spinner } from '@/components/common/StateView';
 import { useToast } from '@/components/ui/Toast';
 import { timeAgo, formatDuration } from '@/lib/formatters';
+import { AGORA_APP_ID } from '@/lib/constants';
 import { clsx } from 'clsx';
 import type { ConversationSummary, MessagePayload } from '@/types/api';
+import type { CallLogType } from '@/types/models';
+import CallOverlay from './CallOverlay';
 
 /**
  * Chat (FR-009.1–FR-009.6): conversation list + thread with real-time
- * Socket.IO delivery, typing presence, read receipts, and voice notes
- * (≤120s, recorded + uploaded + played back). Mirrors backend socket
- * handlers and message.routes exactly.
+ * Socket.IO delivery, typing presence, read receipts, voice notes
+ * (≤120s, recorded + uploaded + played back), and voice/video calls
+ * (UR-009.2 — Agora token + call_logs). Mirrors backend socket handlers
+ * and message.routes exactly.
  */
 export default function ChatPage() {
   const location = useLocation();
@@ -38,6 +44,53 @@ export default function ChatPage() {
 
   const initialConv = (location.state as { conversationId?: number } | null)?.conversationId;
   const [activeId, setActiveId] = useState<number | null>(initialConv ?? null);
+
+  const conversationsQuery = useConversations();
+  const conversations = conversationsQuery.data ?? [];
+
+  // Active call overlay (local caller or answered callee).
+  const [call, setCall] = useState<{
+    conversationId: number;
+    otherName: string;
+    mode: CallLogType;
+    side: 'caller' | 'callee';
+  } | null>(null);
+  // Incoming call banner (ring received while any thread is open).
+  const [incoming, setIncoming] = useState<{
+    conversationId: number;
+    mode: CallLogType;
+    callerId: number;
+  } | null>(null);
+
+  function startLocalCall(conversationId: number, mode: CallLogType) {
+    if (!AGORA_APP_ID) return;
+    const conv = conversations.find((c) => c.id === conversationId);
+    setIncoming(null);
+    setCall({
+      conversationId,
+      otherName: conv?.other_participant.full_name ?? '…',
+      mode,
+      side: 'caller',
+    });
+  }
+
+  function acceptIncoming() {
+    if (!incoming) return;
+    setCall({
+      conversationId: incoming.conversationId,
+      otherName:
+        conversations.find((c) => c.id === incoming.conversationId)?.other_participant.full_name ?? '…',
+      mode: incoming.mode,
+      side: 'callee',
+    });
+    setIncoming(null);
+  }
+
+  function rejectIncoming() {
+    if (!incoming) return;
+    socketCallRejected(incoming.conversationId);
+    setIncoming(null);
+  }
 
   // Connect the socket when authenticated.
   useEffect(() => {
@@ -74,6 +127,14 @@ export default function ChatPage() {
         if (event.conversationId === activeIdRef.current && event.userId !== user.id) {
           setTypingUser(event.isTyping ? event.userId : null);
         }
+      }),
+      socketOn<CallSignalEvent>(SOCKET_EVENTS.CALL_RING_EVENT, (event) => {
+        if (event.callerId === user.id) return;
+        setIncoming({ conversationId: event.conversationId, mode: event.type, callerId: event.callerId });
+      }),
+      socketOn<CallSignalEvent>(SOCKET_EVENTS.CALL_REJECTED_EVENT, (event) => {
+        setCall((current) => (current && current.conversationId === event.conversationId ? null : current));
+        setIncoming((current) => (current && current.conversationId === event.conversationId ? null : current));
       }),
     ];
     return () => {
@@ -120,12 +181,59 @@ export default function ChatPage() {
               currentUser={user}
               typingUser={typingUser}
               onBack={() => setActiveId(null)}
+              onStartCall={(mode) => startLocalCall(activeId, mode)}
             />
           ) : (
             <ThreadEmpty />
           )}
         </div>
       </div>
+
+      {/* Active call overlay */}
+      {call ? (
+        <CallOverlay
+          conversationId={call.conversationId}
+          conversationTitle={call.otherName}
+          otherName={call.otherName}
+          mode={call.mode}
+          side={call.side}
+          onEnd={() => setCall(null)}
+        />
+      ) : null}
+
+      {/* Incoming call banner */}
+      {incoming ? (
+        <div className="fixed bottom-24 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-xl border border-outline-variant bg-surface-container-lowest p-md shadow-lg md:bottom-6">
+          <div className="flex items-center gap-md">
+            <span className="flex h-12 w-12 shrink-0 animate-pulse items-center justify-center rounded-full bg-primary text-on-primary">
+              <Icon name={incoming.mode === 'voz' ? 'call' : 'videocam'} size={24} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-label-md text-label-md font-semibold text-on-surface">
+                {conversations.find((c) => c.id === incoming.conversationId)?.other_participant.full_name ??
+                  'Llamada entrante'}
+              </p>
+              <p className="font-body-md text-body-md text-sm text-on-surface-variant">
+                {incoming.mode === 'voz' ? 'Llamada de voz…' : 'Videollamada…'}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-sm">
+              <Button
+                variant="ghost"
+                className="text-error hover:bg-error-container"
+                size="icon"
+                onClick={rejectIncoming}
+                aria-label="Rechazar llamada"
+              >
+                <Icon name="call_end" size={20} />
+              </Button>
+              <Button size="icon" onClick={acceptIncoming} aria-label="Contestar llamada">
+                <Icon name="call" size={20} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -236,11 +344,13 @@ function Thread({
   currentUser,
   typingUser,
   onBack,
+  onStartCall,
 }: {
   conversationId: number;
   currentUser: { id: number } | null;
   typingUser: number | null;
   onBack: () => void;
+  onStartCall: (mode: CallLogType) => void;
 }) {
   const { toast } = useToast();
   const { data: conversation } = useQuery({
@@ -343,6 +453,37 @@ function Thread({
           <p className="truncate font-label-sm text-label-sm text-on-surface-variant">
             {isTypingSomeone ? 'escribiendo…' : 'Conversación con proveedor'}
           </p>
+        </div>
+        {/* Voice/video call buttons (UR-009.2). Disabled without VITE_AGORA_APP_ID. */}
+        <div className="flex shrink-0 items-center gap-xs">
+          <button
+            type="button"
+            aria-label="Llamada de voz"
+            title={
+              AGORA_APP_ID
+                ? 'Llamada de voz'
+                : 'Las llamadas de voz/video requieren configurar VITE_AGORA_APP_ID'
+            }
+            disabled={!AGORA_APP_ID}
+            onClick={() => onStartCall('voz')}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-fixed/30 disabled:pointer-events-none disabled:opacity-40"
+          >
+            <Icon name="call" size={20} />
+          </button>
+          <button
+            type="button"
+            aria-label="Videollamada"
+            title={
+              AGORA_APP_ID
+                ? 'Videollamada'
+                : 'Las llamadas de voz/video requieren configurar VITE_AGORA_APP_ID'
+            }
+            disabled={!AGORA_APP_ID}
+            onClick={() => onStartCall('video')}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-fixed/30 disabled:pointer-events-none disabled:opacity-40"
+          >
+            <Icon name="videocam" size={20} />
+          </button>
         </div>
       </div>
 

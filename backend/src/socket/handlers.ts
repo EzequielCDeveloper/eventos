@@ -14,6 +14,8 @@ import { sendPushFallback } from '../services/notification.service';
  *   offline fallback fires a raw push notification.
  * - `message:read`: mark incoming messages read and notify the room.
  * - `typing:start` / `typing:stop`: presence broadcast to the room.
+ * - `call:ring` / `call:accepted` / `call:rejected` / `call:end`: voice/video
+ *   call signaling relayed to the room (UR-009.2 — media flows over Agora).
  *
  * Room names follow `conv:{conversationId}` (D-006). Errors are delivered
  * to the emitting socket as `error` events with a human message — never
@@ -197,6 +199,31 @@ export function registerSocketHandlers(io: SocketIOServer): void {
           conversationId,
           userId: user.id,
           isTyping: event === 'typing:start',
+        });
+      });
+    }
+
+    // Voice/video call signaling (UR-009.2) — presence-style relay to the
+    // conversation room. The media itself flows through Agora (D-005); these
+    // events only tell the peer "a call is ringing / was answered / ended" so
+    // both clients can open the same channel. No call state is stored here —
+    // the call_logs endpoints on messages.routes own that.
+    for (const event of ['call:ring', 'call:accepted', 'call:rejected', 'call:end'] as const) {
+      socket.on(event, async (payload: unknown) => {
+        const body = (payload ?? {}) as Record<string, unknown>;
+        const conversationId = Number(body.conversationId);
+        if (!Number.isInteger(conversationId) || conversationId <= 0) {
+          socket.emit('error', { message: 'A valid conversationId is required' });
+          return;
+        }
+        const conversation = await requireMembership(socket, conversationId);
+        if (!conversation) return;
+        const type = event === 'call:ring' && body.type === 'video' ? 'video' : 'voz';
+        socket.to(roomName(conversationId)).emit(event, {
+          conversationId,
+          type,
+          callerId: user.id,
+          ...(event === 'call:ring' ? { callId: Number(body.callId) || null } : {}),
         });
       });
     }

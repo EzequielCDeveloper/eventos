@@ -1,4 +1,4 @@
-import type { messages_type } from '@prisma/client';
+import type { call_logs_status, call_logs_type, messages_type } from '@prisma/client';
 import { prisma } from '../config/database';
 import { AppError, type AuthUser, buildPaginationMeta, parsePagination } from '../types/api';
 import { toISOStringOrNull } from '../utils/datetime';
@@ -400,4 +400,83 @@ export async function deleteQuickReply(providerId: number, id: number): Promise<
   const owned = await prisma.quick_replies.findFirst({ where: { id, provider_id: providerId } });
   if (!owned) throw AppError.notFound('Quick reply not found');
   await prisma.quick_replies.delete({ where: { id } });
+}
+
+// ---- Voice/video call logs (UR-009.2, BR-008.5) -----------------------------
+
+export interface CallLogPayload {
+  id: number;
+  conversation_id: number;
+  type: call_logs_type;
+  status: call_logs_status;
+  started_at: string | null;
+  ended_at: string | null;
+  duration_seconds: number | null;
+}
+
+function toCallLog(row: {
+  id: number;
+  conversation_id: number;
+  type: call_logs_type;
+  status: call_logs_status;
+  started_at: Date | null;
+  ended_at: Date | null;
+  duration_seconds: number | null;
+}): CallLogPayload {
+  return {
+    id: row.id,
+    conversation_id: row.conversation_id,
+    type: row.type,
+    status: row.status,
+    started_at: toISOStringOrNull(row.started_at),
+    ended_at: toISOStringOrNull(row.ended_at),
+    duration_seconds: row.duration_seconds,
+  };
+}
+
+/**
+ * Start a voice/video call (POST /conversations/:id/calls, UR-009.2). Only a
+ * participant of the conversation may open a call. The row is born
+ * `status=llamando` with `started_at = now`; it is finalized via
+ * `updateCallLog` on hang-up.
+ */
+export async function startCall(
+  conversationId: number,
+  userId: number,
+  type: call_logs_type,
+): Promise<CallLogPayload> {
+  const conversation = await assertParticipant(conversationId, userId);
+  const row = await prisma.call_logs.create({
+    data: { conversation_id: conversation.id, type, status: 'llamando', started_at: new Date() },
+  });
+  return toCallLog(row);
+}
+
+/**
+ * Update a call in the conversation (PUT /conversations/:id/calls/:callId).
+ * Participants only. Accepts `en_curso` / `finalizada`; `finalizada` sets
+ * `ended_at = now` and, when provided, `duration_seconds`.
+ */
+export async function updateCallLog(
+  conversationId: number,
+  callId: number,
+  userId: number,
+  patch: { status: 'en_curso' | 'finalizada'; duration_seconds?: number },
+): Promise<CallLogPayload> {
+  await assertParticipant(conversationId, userId);
+  const call = await prisma.call_logs.findFirst({
+    where: { id: callId, conversation_id: conversationId },
+  });
+  if (!call) throw AppError.notFound('Call log not found');
+  const updated = await prisma.call_logs.update({
+    where: { id: call.id },
+    data: {
+      status: patch.status,
+      ...(patch.duration_seconds !== undefined
+        ? { duration_seconds: patch.duration_seconds }
+        : {}),
+      ...(patch.status === 'finalizada' ? { ended_at: new Date() } : {}),
+    },
+  });
+  return toCallLog(updated);
 }

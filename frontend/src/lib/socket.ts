@@ -27,6 +27,10 @@ export const SOCKET_EVENTS = {
   MESSAGE_READ: 'message:read',
   TYPING_START: 'typing:start',
   TYPING_STOP: 'typing:stop',
+  CALL_RING: 'call:ring',
+  CALL_ACCEPTED: 'call:accepted',
+  CALL_REJECTED: 'call:rejected',
+  CALL_END: 'call:end',
   // server → client
   CONVERSATIONS_JOINED: 'conversations:joined',
   CONVERSATION_JOINED: 'conversation:joined',
@@ -34,6 +38,10 @@ export const SOCKET_EVENTS = {
   MESSAGE_NEW: 'message:new',
   MESSAGE_SENT: 'message:sent',
   TYPING: 'typing',
+  CALL_RING_EVENT: 'call:ring',
+  CALL_ACCEPTED_EVENT: 'call:accepted',
+  CALL_REJECTED_EVENT: 'call:rejected',
+  CALL_END_EVENT: 'call:end',
   ERROR: 'error',
 } as const;
 
@@ -53,6 +61,15 @@ export interface TypingEvent {
   conversationId: number;
   userId: number;
   isTyping: boolean;
+}
+
+/** Voice/video call signaling (UR-009.2) — relayed to the conv room by the
+ *  backend; the media itself flows through Agora (D-005). */
+export interface CallSignalEvent {
+  conversationId: number;
+  type: 'voz' | 'video';
+  callerId: number;
+  callId?: number | null;
 }
 export interface SocketErrorEvent {
   message: string;
@@ -160,6 +177,29 @@ export function socketTyping(conversationId: number, typing: boolean): void {
   getSocket().emit(typing ? SOCKET_EVENTS.TYPING_START : SOCKET_EVENTS.TYPING_STOP, {
     conversationId,
   });
+}
+
+// --- Voice/video call signaling (UR-009.2, D-005) ---------------------------
+
+/** Tell the peer a call is ringing (broadcast by the backend to conv:{id}). */
+export function socketCallRing(conversationId: number, type: 'voz' | 'video', callId?: number): void {
+  getSocket().emit(SOCKET_EVENTS.CALL_RING, {
+    conversationId,
+    type,
+    ...(callId !== undefined ? { callId } : {}),
+  });
+}
+
+export function socketCallAccepted(conversationId: number): void {
+  getSocket().emit(SOCKET_EVENTS.CALL_ACCEPTED, { conversationId });
+}
+
+export function socketCallRejected(conversationId: number): void {
+  getSocket().emit(SOCKET_EVENTS.CALL_REJECTED, { conversationId });
+}
+
+export function socketCallEnd(conversationId: number): void {
+  getSocket().emit(SOCKET_EVENTS.CALL_END, { conversationId });
 }
 
 /** Subscribe to an inbound event; returns an unsubscribe function. */

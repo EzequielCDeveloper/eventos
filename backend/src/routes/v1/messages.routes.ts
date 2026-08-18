@@ -17,6 +17,8 @@ import { asyncHandler } from '../../utils/asyncHandler';
  *                                          ?page=&limit=, D-006 catch-up)
  *   POST /conversations/:id/messages     — send a text/voice-note message
  *   PUT  /conversations/:id/read         — mark incoming messages read
+ *   POST /conversations/:id/calls        — start a voice/video call log
+ *   PUT  /conversations/:id/calls/:callId — update/finalize the call log
  *   GET  /messages/search?q=             — full-text search (BR-008.6)
  *   GET/POST /quick-replies              — provider quick replies (BR-008.4)
  *   PUT/DELETE /quick-replies/:id        — edit/remove a quick reply
@@ -60,6 +62,20 @@ const quickReplyPatchSchema = z
   .object({
     name: z.string().min(1).max(100).optional(),
     content: z.string().min(1).max(2000).optional(),
+  })
+  .strict();
+
+const callParamsSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  callId: z.coerce.number().int().positive(),
+});
+
+const createCallSchema = z.object({ type: z.enum(['voz', 'video']) }).strict();
+
+const updateCallSchema = z
+  .object({
+    status: z.enum(['en_curso', 'finalizada']),
+    duration_seconds: z.number().int().min(0).optional(),
   })
   .strict();
 
@@ -130,6 +146,35 @@ messagesRouter.put(
   asyncHandler(async (req, res) => {
     const result = await messageService.markConversationRead(Number(req.params.id), req.user!);
     res.json({ data: result });
+  }),
+);
+
+/** POST /conversations/:id/calls — start a voice/video call log (UR-009.2).
+ *  Participant-only. Creates the row with `status=llamando` + `started_at`. */
+messagesRouter.post(
+  '/conversations/:id/calls',
+  validate({ params: conversationParamsSchema, body: createCallSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof createCallSchema>;
+    const call = await messageService.startCall(Number(req.params.id), req.user!.id, body.type);
+    res.status(201).json({ data: call });
+  }),
+);
+
+/** PUT /conversations/:id/calls/:callId — update/finalize a call log.
+ *  Participant-only. `finalizada` sets `ended_at`; `duration_seconds` optional. */
+messagesRouter.put(
+  '/conversations/:id/calls/:callId',
+  validate({ params: callParamsSchema, body: updateCallSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof updateCallSchema>;
+    const call = await messageService.updateCallLog(
+      Number(req.params.id),
+      Number(req.params.callId),
+      req.user!.id,
+      body,
+    );
+    res.json({ data: call });
   }),
 );
 
