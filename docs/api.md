@@ -90,8 +90,13 @@ Auth `POST /auth/*`, `GET /auth/me` — see [Authentication flow](#authenticatio
 | PUT | `/users/me` | `full_name? phone? avatar_url? (url but nullable) notification_prefs? (object)` | `{ data: { user } }` |
 | POST | `/users/verify-ine` | `document_url? notes?` | `201 { data: { verification } }` (offline/INe presencial) |
 | POST | `/users/verify-kyc` | `curp, clave_elector, nombre_completo, ocr?` | `201 { data: { verification } }` (Verificamex KYC, BR-010) |
+| POST | `/users/arco-requests` | `tipo (acceso/rectificacion/cancelacion/oposicion)` | `201 { data: { id, tipo, status, requested_at, deadline_at } }` (ARCO, BR-012) |
+| GET | `/users/arco-requests` | — | `{ data: ArcoRequest[] }` (current user, newest first) |
 
 > KYC values are used in-flight only and **never persisted or logged** (BR-010.6).
+>
+> ARCO requests (LFPDPPP, BR-012): created with `status=pendiente` and
+> `deadline_at = now + 20 business days`; `deadline_at` is `YYYY-MM-DD`.
 
 ### Health & version
 

@@ -41,6 +41,25 @@ export function toISOStringOrNull(value: Date | null | undefined): string | null
 }
 
 /**
+ * Add `count` business days (Mon–Fri) to a date, skipping weekends.
+ *
+ * Used for the LFPDPPP ARCO response deadline: a request must be answered
+ * within 20 *business* days (BR-012). Operates in UTC so the resulting
+ * DATE-truncated value does not drift with the host timezone. Public
+ * holidays are not modeled (MVP limitation).
+ */
+export function addBusinessDays(start: Date, count: number): Date {
+  const result = new Date(start);
+  let added = 0;
+  while (added < count) {
+    result.setUTCDate(result.getUTCDate() + 1);
+    const day = result.getUTCDay();
+    if (day !== 0 && day !== 6) added += 1; // skip Sunday (0) and Saturday (6)
+  }
+  return result;
+}
+
+/**
  * Lexicographic comparison of zero-padded `HH:MM[:SS]` strings. Valid for
  * the whole 24-hour range because every component is zero-padded.
  */

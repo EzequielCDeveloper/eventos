@@ -2,10 +2,16 @@ import { randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import { Prisma } from '@prisma/client';
-import type { identity_verifications_method, users_role, users_segment } from '@prisma/client';
+import type {
+  arco_requests_tipo,
+  identity_verifications_method,
+  users_role,
+  users_segment,
+} from '@prisma/client';
 import { prisma } from '../config/database';
 import { env } from '../config/env';
 import { AppError } from '../types/api';
+import { addBusinessDays } from '../utils/datetime';
 import { isTokenRevoked, revokeToken } from './tokenStore';
 
 /**
@@ -328,4 +334,56 @@ export async function requestIdentityVerification(
     result: verification.result,
     created_at: verification.created_at,
   };
+}
+
+/** LFPDPPP ARCO response deadline: 20 business days from today (BR-012). */
+const ARCO_DEADLINE_BUSINESS_DAYS = 20;
+
+/**
+ * Record an ARCO data-rights request (acceso/rectificacion/cancelacion/
+ * oposicion) for the current user (BR-012, FR-016.2). The row is born
+ * `pendiente`; resolution is an offline/admin action. The legal deadline is
+ * now + 20 *business* days, stored on the row via `deadline_at`.
+ */
+export async function createArcoRequest(
+  userId: number,
+  tipo: arco_requests_tipo,
+): Promise<{
+  id: number;
+  tipo: arco_requests_tipo;
+  status: string;
+  requested_at: Date;
+  deadline_at: Date | null;
+}> {
+  const deadline = addBusinessDays(new Date(), ARCO_DEADLINE_BUSINESS_DAYS);
+  const request = await prisma.arco_requests.create({
+    data: { user_id: userId, tipo, deadline_at: deadline },
+  });
+  return {
+    id: request.id,
+    tipo: request.tipo,
+    status: request.status,
+    requested_at: request.requested_at,
+    deadline_at: request.deadline_at,
+  };
+}
+
+/** The current user's ARCO requests, newest first (BR-012, FR-016.2). */
+export async function listArcoRequests(
+  userId: number,
+): Promise<
+  Array<{
+    id: number;
+    tipo: arco_requests_tipo;
+    status: string;
+    requested_at: Date;
+    deadline_at: Date | null;
+    resolved_at: Date | null;
+    response_notes: string | null;
+  }>
+> {
+  return prisma.arco_requests.findMany({
+    where: { user_id: userId },
+    orderBy: { requested_at: 'desc' },
+  });
 }

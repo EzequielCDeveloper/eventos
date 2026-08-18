@@ -5,6 +5,7 @@ import { validate } from '../../middleware/validate';
 import * as authService from '../../services/auth.service';
 import { runKycVerification } from '../../services/verification.service';
 import { asyncHandler } from '../../utils/asyncHandler';
+import { toDateString, toISOStringOrNull } from '../../utils/datetime';
 
 /**
  * Current-user endpoints (UR-002.2) mounted under `/api/v1/users`.
@@ -76,5 +77,55 @@ usersRouter.post(
     // production, 10s timeout) → metadata-only result row → verified flag.
     const verification = await runKycVerification(req.user!.id, body);
     res.status(201).json({ data: { verification } });
+  }),
+);
+
+// ---- ARCO data rights (BR-012, FR-016.2) ------------------------------------
+
+const createArcoRequestSchema = z
+  .object({
+    tipo: z.enum(['acceso', 'rectificacion', 'cancelacion', 'oposicion']),
+  })
+  .strict();
+
+/**
+ * POST /users/arco-requests — submit an ARCO request (LFPDPPP, BR-012).
+ * `deadline_at` is now + 20 business days; `status` starts `pendiente` and
+ * resolution is an offline/admin action.
+ */
+usersRouter.post(
+  '/arco-requests',
+  validate({ body: createArcoRequestSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof createArcoRequestSchema>;
+    const request = await authService.createArcoRequest(req.user!.id, body.tipo);
+    res.status(201).json({
+      data: {
+        id: request.id,
+        tipo: request.tipo,
+        status: request.status,
+        requested_at: request.requested_at.toISOString(),
+        deadline_at: request.deadline_at ? toDateString(request.deadline_at) : null,
+      },
+    });
+  }),
+);
+
+/** GET /users/arco-requests — the current user's ARCO requests, newest first. */
+usersRouter.get(
+  '/arco-requests',
+  asyncHandler(async (req, res) => {
+    const requests = await authService.listArcoRequests(req.user!.id);
+    res.json({
+      data: requests.map((r) => ({
+        id: r.id,
+        tipo: r.tipo,
+        status: r.status,
+        requested_at: r.requested_at.toISOString(),
+        deadline_at: r.deadline_at ? toDateString(r.deadline_at) : null,
+        resolved_at: toISOStringOrNull(r.resolved_at),
+        response_notes: r.response_notes,
+      })),
+    });
   }),
 );
