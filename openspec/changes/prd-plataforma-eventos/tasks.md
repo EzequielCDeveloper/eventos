@@ -165,17 +165,17 @@ Chain strategy: stacked-to-main
 
 ## Phase 15: Deployment & Documentation (Slice S8)
 
-- [ ] 15.1 Create `docker-compose.yml` — Production: backend (build ./backend, env vars, depends_on db healthy), db (mariadb:10.6, healthcheck, schema init), nginx (alpine, ports 80/443, volumes for dist/nginx.conf/certs) (UR-006.1–UR-006.3, D-010)
-- [ ] 15.2 Create `docker-compose.dev.yml` — Development override: hot-reload volumes, dev env vars, exposed backend port (UR-006.6)
-- [ ] 15.3 Create `backend/Dockerfile` — Multi-stage: build (node:20-alpine, npm ci, prisma generate, tsc) → production (node:20-alpine, non-root user, copy dist, expose 3000) (UR-006.7)
-- [ ] 15.4 Create `frontend/Dockerfile` — Multi-stage: build (node:20-alpine, npm ci, npm run build) → production (nginx:alpine, copy dist) (UR-006.7)
-- [ ] 15.5 Create `nginx.conf` — Reverse proxy: / → SPA (try_files), /api/* → backend:3000, /socket.io/ → WebSocket upgrade; security headers (X-Content-Type-Options, X-Frame-Options, CSP, HSTS); gzip; /uploads/ static serve (UR-006.3, UR-008.2, D-010)
-- [ ] 15.6 Create `.env.example` — Document all env vars: JWT_SECRET, DATABASE_URL, CONEKTA_API_KEY, VERIFICAMEX_API_KEY, FCM_SERVICE_ACCOUNT, RESEND_API_KEY, VITE_API_URL, VITE_CONEKTA_PUBLIC_KEY (UR-005.1–UR-005.4)
-- [ ] 15.7 Create `.github/workflows/ci.yml` — GitHub Actions: push/PR → lint → type-check → Docker build; push to main → build → SSH deploy (UR-007.1–UR-007.5)
-- [ ] 15.8 Create `scripts/backup.sh` — Daily mysqldump via cron → compressed backup → retention 7 daily + 4 weekly (UR-010.4, D-010)
-- [ ] 15.9 Create `scripts/deploy.sh` — Deploy script: docker compose pull → docker compose up -d → prisma migrate deploy → healthcheck (UR-007.4, UR-007.5, D-010)
-- [ ] 15.10 Create `docs/api.md` — API reference: endpoint catalog, request/response shapes, auth flow, error codes (UR-001, UR-002, BR-003)
-- [ ] 15.11 Create `docs/setup.md` — Local development setup: prerequisites, env vars, docker compose up, database setup (UR-006.6)
+- [x] 15.1 Create `docker-compose.yml` — Production: backend (build ./backend, env vars, depends_on db healthy), db (mariadb:10.6, healthcheck, schema init), nginx (alpine, ports 80/443, volumes for dist/nginx.conf/certs) (UR-006.1–UR-006.3, D-010)
+- [x] 15.2 Create `docker-compose.dev.yml` — Development override: hot-reload volumes, dev env vars, exposed backend port (UR-006.6)
+- [x] 15.3 Create `backend/Dockerfile` — Multi-stage: build (node:20-alpine, npm ci, prisma generate, tsc) → production (node:20-alpine, non-root user, copy dist, expose 3000) (UR-006.7)
+- [x] 15.4 Create `frontend/Dockerfile` — Multi-stage: build (node:20-alpine, npm ci, npm run build) → production (nginx:alpine, copy dist) (UR-006.7)
+- [x] 15.5 Create `nginx.conf` — Reverse proxy: / → SPA (try_files), /api/* → backend:3000, /socket.io/ → WebSocket upgrade; security headers (X-Content-Type-Options, X-Frame-Options, CSP, HSTS); gzip; /uploads/ static serve (UR-006.3, UR-008.2, D-010)
+- [x] 15.6 Create `.env.example` — Document all env vars: JWT_SECRET, DATABASE_URL, CONEKTA_API_KEY, VERIFICAMEX_API_KEY, FCM_SERVICE_ACCOUNT, RESEND_API_KEY, VITE_API_URL, VITE_CONEKTA_PUBLIC_KEY (UR-005.1–UR-005.4)
+- [x] 15.7 Create `.github/workflows/ci.yml` — GitHub Actions: push/PR → lint → type-check → Docker build; push to main → build → SSH deploy (UR-007.1–UR-007.5)
+- [x] 15.8 Create `scripts/backup.sh` — Daily mysqldump via cron → compressed backup → retention 7 daily + 4 weekly (UR-010.4, D-010)
+- [x] 15.9 Create `scripts/deploy.sh` — Deploy script: docker compose pull → docker compose up -d → prisma migrate deploy → healthcheck (UR-007.4, UR-007.5, D-010)
+- [x] 15.10 Create `docs/api.md` — API reference: endpoint catalog, request/response shapes, auth flow, error codes (UR-001, UR-002, BR-003)
+- [x] 15.11 Create `docs/setup.md` — Local development setup: prerequisites, env vars, docker compose up, database setup (UR-006.6)
 
 ## Key Learnings
 
