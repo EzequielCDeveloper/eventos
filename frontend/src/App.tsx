@@ -31,9 +31,21 @@ const ChatPage = lazy(() => import('@/features/chat/ChatPage'));
 const NotificationCenter = lazy(() => import('@/features/notifications/NotificationCenter'));
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
 
-// S7 shells — present now for routing, full features later.
-const ProviderShell = lazy(() => import('@/features/provider/ProviderShell'));
-const AdminShell = lazy(() => import('@/features/admin/AdminShell'));
+// Provider features (Slice S7 — Hoy, Calendario, Anuncios, Estadísticas,
+// onboarding + KYC) and admin panel (Slice S7 — 5 function areas).
+const ProviderDashboard = lazy(() => import('@/features/provider/ProviderDashboard'));
+const CalendarTab = lazy(() => import('@/features/provider/CalendarTab'));
+const ListingsTab = lazy(() => import('@/features/provider/ListingsTab'));
+const StatsTab = lazy(() => import('@/features/provider/StatsTab'));
+const OnboardingWizard = lazy(() => import('@/features/provider/OnboardingWizard'));
+const VerificationFlow = lazy(() => import('@/features/provider/VerificationFlow'));
+
+const AdminDashboard = lazy(() => import('@/features/admin/AdminDashboard'));
+const ModerationPanel = lazy(() => import('@/features/admin/ModerationPanel'));
+const ProviderManagement = lazy(() => import('@/features/admin/ProviderManagement'));
+const AdminStats = lazy(() => import('@/features/admin/AdminStats'));
+const AdminDisputes = lazy(() => import('@/features/admin/AdminDisputes'));
+const CommissionConfig = lazy(() => import('@/features/admin/CommissionConfig'));
 
 function LazyFallback() {
   return (
@@ -119,7 +131,7 @@ export default function App() {
               />
             </Route>
 
-            {/* Provider layout (S7 shell) */}
+            {/* Provider layout (Slice S7 — real tabs) */}
             <Route
               path="/provider/*"
               element={
@@ -128,10 +140,17 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="*" element={withSuspense(<ProviderShell />)} />
+              <Route index element={withSuspense(<ProviderDashboard />)} />
+              <Route path="messages" element={withSuspense(<ChatPage />)} />
+              <Route path="calendar" element={withSuspense(<CalendarTab />)} />
+              <Route path="listings" element={withSuspense(<ListingsTab />)} />
+              <Route path="stats" element={withSuspense(<StatsTab />)} />
+              <Route path="onboarding" element={withSuspense(<OnboardingWizard />)} />
+              <Route path="verification" element={withSuspense(<VerificationFlow />)} />
+              <Route path="*" element={<Navigate to="/provider" replace />} />
             </Route>
 
-            {/* Admin layout (S7 shell) */}
+            {/* Admin layout (Slice S7 — 5 function areas) */}
             <Route
               path="/admin/*"
               element={
@@ -140,7 +159,13 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="*" element={withSuspense(<AdminShell />)} />
+              <Route index element={withSuspense(<AdminDashboard />)} />
+              <Route path="moderation" element={withSuspense(<ModerationPanel />)} />
+              <Route path="providers" element={withSuspense(<ProviderManagement />)} />
+              <Route path="stats" element={withSuspense(<AdminStats />)} />
+              <Route path="disputes" element={withSuspense(<AdminDisputes />)} />
+              <Route path="commission" element={withSuspense(<CommissionConfig />)} />
+              <Route path="*" element={<Navigate to="/admin" replace />} />
             </Route>
 
             {/* Role-aware fallback */}
