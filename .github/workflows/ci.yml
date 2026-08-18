@@ -1,0 +1,103 @@
+# GitHub Actions CI/CD (UR-007, D-010).
+#
+# - Every push/PR: type-check the backend and frontend (strict tsc; eslint is
+#   not configured in this repo — tsc noUnusedLocals/noUnusedParameters is the
+#   lint gate) and verify that both Docker images build.
+# - Push to main: additionally deploy to the VPS over SSH (deploy.sh drives
+#   `docker compose up -d`, `prisma migrate deploy`, healthcheck).
+#
+# Secrets required for deployment (repo → Settings → Secrets and variables):
+#   VPS_HOST, VPS_USER, SSH_PRIVATE_KEY, VPS_APP_DIR
+#   (and the .env file must already exist on the server — never in git).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend typecheck
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run typecheck
+
+  frontend:
+    name: Frontend typecheck + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VITE_API_URL: ""
+      VITE_CONEKTA_PUBLIC_KEY: ""
+      VITE_AGORA_APP_ID: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # `npm run build` = tsc --noEmit && vite build (verifies both).
+      - run: npm run build
+
+  docker:
+    name: Docker build (backend + frontend images)
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: eventos-backend:ci
+      - name: Build frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: eventos-frontend:ci
+
+  deploy:
+    name: Deploy to VPS
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [docker]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_APP_DIR }}
+            git pull --ff-only
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh
