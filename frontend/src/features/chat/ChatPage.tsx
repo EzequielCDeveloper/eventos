@@ -300,7 +300,7 @@ function Thread({
       const file = new File([recording.blob], `nota-voz-${Date.now()}.webm`, {
         type: recording.blob.type || 'audio/webm',
       });
-      const { url } = await uploadFile(file, 'conversations');
+      const { url } = await uploadFile(file, 'conversations', conversationId);
       socketSendVoice(conversationId, url, Math.min(recording.seconds, 120));
     } catch {
       toast('No se pudo subir la nota de voz.', undefined, 'error');

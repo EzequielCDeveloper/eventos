@@ -244,7 +244,10 @@ export default function OnboardingWizard() {
   const agregarArchivo = async (file: File) => {
     setUpdatingFile(true);
     try {
-      const { url } = await uploadFile(file, 'services');
+      // Photos are uploaded in step 2, before the service row is created on
+      // step 3, so there is no service id yet — `0` is the pre-creation
+      // bucket used by the backend (uploadFile docs).
+      const { url } = await uploadFile(file, 'services', 0);
       if (draft.fotos.length >= 20) {
         toast('Máximo 20 fotos por anuncio.');
         return;
@@ -252,13 +255,7 @@ export default function OnboardingWizard() {
       patch({ fotos: [...draft.fotos, url] });
       toast('Foto subida correctamente.');
     } catch (e) {
-      // POST /uploads is not mounted by the backend yet (S5/S7 gap) — fail
-      // closed with guidance instead of a silent no-op (see S6 notes).
-      toast(
-        'Subida no disponible aún',
-        'El endpoint de subida no está activo. Usa una URL de imagen por ahora.',
-        'warning',
-      );
+      toast('No se pudo subir la foto.', String(e), 'error');
       void e;
     } finally {
       setUpdatingFile(false);

@@ -27,11 +27,11 @@ import { AppError } from '../types/api';
  *   `/uploads/services/42/photo.jpg?token=<hmac-hex>&expires=<epoch-seconds>`
  *   token = HMAC-SHA256(SIGNED_URL_SECRET, `${path}.${expires}`)
  *
- * Allowed types (D-012): images jpeg/png/webp ≤5MB, voice audio mpeg/ogg
- * ≤10MB (120s of audio).
+ * Allowed types (D-012): images jpeg/png/webp ≤5MB, voice audio mpeg/ogg/webm
+ * ≤10MB (120s of audio; webm is the MediaRecorder default in Chromium).
  */
 
-const ENTITY_ALLOWLIST = new Set(['services', 'conversations', 'contracts']);
+export const ENTITY_ALLOWLIST = new Set(['services', 'conversations', 'contracts']);
 
 const ALLOWED_MIME: Record<string, { ext: string; maxBytes: number; kind: string }> = {
   'image/jpeg': { ext: 'jpg', maxBytes: 5 * 1024 * 1024, kind: 'photo' },
@@ -39,6 +39,9 @@ const ALLOWED_MIME: Record<string, { ext: string; maxBytes: number; kind: string
   'image/webp': { ext: 'webp', maxBytes: 5 * 1024 * 1024, kind: 'photo' },
   'audio/mpeg': { ext: 'mp3', maxBytes: 10 * 1024 * 1024, kind: 'voice_note' },
   'audio/ogg': { ext: 'ogg', maxBytes: 10 * 1024 * 1024, kind: 'voice_note' },
+  // MediaRecorder's default output in Chromium; without it the voice-note
+  // upload route (UR-009.4) rejects every real recording (D-012 extension).
+  'audio/webm': { ext: 'webm', maxBytes: 10 * 1024 * 1024, kind: 'voice_note' },
 };
 
 export interface SavedUpload {

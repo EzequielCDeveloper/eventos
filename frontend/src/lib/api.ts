@@ -190,17 +190,25 @@ export function apiDelete<T = { deleted: true }>(
 }
 
 /**
- * Multipart upload helper (D-012). Backend validates MIME/size and returns
- * the stored path — the caller composes the message/detail payload from it.
- * NOTE: the uploads HTTP endpoint is not yet mounted by the backend routes;
- * this helper fails closed with a clear error until it lands (see S5 notes).
+ * File upload helper (D-012, BR-013.6). Sends the raw file bytes with their
+ * Content-Type to `POST /uploads?entity=...&entityId=...` (resolves to
+ * `/api/v1/uploads` through the axios baseURL). The backend validates
+ * entity/MIME/size via `saveUpload` and returns a short-lived signed URL the
+ * caller embeds in messages or service photo lists.
+ *
+ * `entityId` is the numeric id of the owning conversation/service/contract.
+ * Pass `0` when uploading provider photos before the service row exists
+ * (pre-creation bucket — see OnboardingWizard step 2 vs step 3).
  */
-export async function uploadFile(file: File, entity: 'conversations' | 'services' | 'contracts'): Promise<{ url: string }> {
-  const form = new FormData();
-  form.append('file', file);
-  form.append('entity', entity);
-  const response = await api.post<{ data: { url: string } }>('/uploads', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+export async function uploadFile(
+  file: File,
+  entity: 'conversations' | 'services' | 'contracts',
+  entityId: number,
+): Promise<{ url: string; expires: number }> {
+  const response = await api.post<{ data: { url: string; expires: number } }>('/uploads', file, {
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+    params: { entity, entityId },
+    timeout: 60_000,
   });
   return response.data.data;
 }

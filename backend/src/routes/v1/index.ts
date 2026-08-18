@@ -16,6 +16,7 @@ import { adminRouter } from './admin.routes';
 import { reviewsRouter } from './reviews.routes';
 import { favoritesRouter } from './favorites.routes';
 import { agoraRouter } from './agora.routes';
+import { uploadsRouter } from './uploads.routes';
 
 /**
  * Version 1 router (BR-001, UR-011). Mounted under `/api/v1` in app.ts.
@@ -36,6 +37,7 @@ import { agoraRouter } from './agora.routes';
  *   - `/reviews/*`      → reviewsRouter (post-payment review, UR-002.12)
  *   - `/favorites/*`    → favoritesRouter (add/remove, UR-002.13)
  *   - `/agora/*`        → agoraRouter (RTC token for voice/video, UR-009.2, task 9.5)
+ *   - `/uploads`        → uploadsRouter (signed file upload, BR-013.6/D-012, task 9.5 follow-up)
  */
 export const v1Router: Router = Router();
 
@@ -56,6 +58,7 @@ v1Router.use('/admin', adminRouter);
 v1Router.use(reviewsRouter);
 v1Router.use(favoritesRouter);
 v1Router.use(agoraRouter);
+v1Router.use(uploadsRouter);
 
 v1Router.get('/version', (_req, res) => {
   res.json({ data: { version: 'v1' } });

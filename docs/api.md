@@ -275,12 +275,33 @@ conversations on connect (D-006, BR-008.1).
 
 ## Uploads & signed URLs (BR-013.6, D-004)
 
+### POST `/api/v1/uploads` (auth) — store a file
+
+| Method | Path | Body / query | Response |
+|--------|------|--------------|----------|
+| POST | `/uploads` | body = raw file bytes; `Content-Type: image/jpeg\|png\|webp, audio/mpeg\|ogg\|webm`; query `entity (services\|conversations\|contracts), entityId (int ≥ 0)` | `201 { data: { url, expires } }` (short-lived signed URL) |
+
+`entityId` `0` is the documented pre-creation bucket used by the provider
+onboarding wizard (photos are uploaded in step 2, before the service row is
+created in step 3); chat voice notes pass the real conversation id. Files are
+written to `UPLOAD_DIR` and served only through the signed URL guard below.
+
+```bash
+# Voice note (Chromium MediaRecorder → webm) or service photo
+curl -s -X POST http://localhost:3000/api/v1/uploads \
+  -H 'Authorization: Bearer <accessToken>' \
+  -H 'Content-Type: image/jpeg' \
+  --data-binary @foto.jpg \
+  '?entity=services&entityId=0'
+# → 201 { "data": { "url": "/uploads/services/0/<uuid>.jpg?token=...&expires=...", "expires": 1724000000 } }
+```
+
 Files live at `UPLOAD_DIR` (`/data/uploads` by default; a named volume in the
 compose stack). `signUrl()` returns
 `/uploads/<entity>/<id>/<uuid>.<ext>?token=<hmac-hex>&expires=<epoch-seconds>`.
 The backend (and in production the proxying Nginx path) validates the HMAC-SHA256
 token + expiry before serving; missing/expired/invalid → `403 FORBIDDEN`.
-Allowed uploads: `image/jpeg|png|webp` ≤5MB, `audio/mpeg|ogg` ≤10MB (D-012).
+Allowed uploads: `image/jpeg|png|webp` ≤5MB, `audio/mpeg|ogg|webm` ≤10MB (D-012).
 Allowed entities: `services`, `conversations`, `contracts`.
 
 > Note: uploads are validated in-app (`createUploadsGuard`) because Nginx
