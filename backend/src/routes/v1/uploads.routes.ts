@@ -4,7 +4,12 @@ import { z } from 'zod';
 import { requireAuth } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import { asyncHandler } from '../../utils/asyncHandler';
-import { saveUpload, signUrl, ENTITY_ALLOWLIST } from '../../services/storage.service';
+import {
+  ENTITY_ALLOWLIST,
+  relocateUpload,
+  saveUpload,
+  signUrl,
+} from '../../services/storage.service';
 import { AppError } from '../../types/api';
 
 /**
@@ -40,6 +45,16 @@ const uploadQuerySchema = z
       errorMap: () => ({ message: `entity must be one of: ${[...ENTITY_ALLOWLIST].join(', ')}` }),
     }),
     entityId: z.coerce.number().int().min(0, 'entityId must be a non-negative integer'),
+  })
+  .strict();
+
+const relocateSchema = z
+  .object({
+    from_url: z.string().min(1).max(800),
+    to_entity: z.enum([...ENTITY_ALLOWLIST] as [string, ...string[]], {
+      errorMap: () => ({ message: `to_entity must be one of: ${[...ENTITY_ALLOWLIST].join(', ')}` }),
+    }),
+    to_id: z.number().int().positive(),
   })
   .strict();
 
@@ -88,5 +103,28 @@ uploadsRouter.post(
 
     const { url, expires } = signUrl(saved.urlPath);
     res.status(201).json({ data: { url, expires } });
+  }),
+);
+
+/**
+ * POST /uploads/relocate — move a pre-creation upload (`<entity>/0/<file>`)
+ * into its final owned path and re-sign it (work-unit C: onboarding photo
+ * TTL). The onboarding wizard uploads service photos before the service row
+ * exists (`entityId=0`); once `POST /services` returns the real id this route
+ * migrates each file to `/services/<id>/<file>` and returns the raw storage
+ * path to persist plus a fresh signed URL to render. The persisted photos pay
+ * NO query string — the backend re-signs long-lived URLs on every read.
+ */
+uploadsRouter.post(
+  '/uploads/relocate',
+  validate({ body: relocateSchema }),
+  asyncHandler(async (req, res) => {
+    const body = req.body as z.infer<typeof relocateSchema>;
+    const relocated = await relocateUpload({
+      fromUrl: body.from_url,
+      toEntity: body.to_entity as 'services' | 'conversations' | 'contracts',
+      toId: body.to_id,
+    });
+    res.json({ data: relocated });
   }),
 );

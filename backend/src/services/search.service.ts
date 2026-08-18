@@ -7,6 +7,7 @@ import type {
 import { prisma } from '../config/database';
 import { buildPaginationMeta, parsePagination, type PaginationMeta } from '../types/api';
 import { toDateString, toTimeString } from '../utils/datetime';
+import { signedPhotoUrl } from './storage.service';
 
 /**
  * Service search & read service (BR-001.6, BR-001.7, BR-004.9, D-002).
@@ -108,7 +109,9 @@ function toRow(row: SearchRow): ServiceSummary {
     coverage_area: row.coverage_area,
     max_capacity: Number(row.max_capacity),
     price: toMoney(row.price),
-    main_photo_url: row.main_photo_url,
+    // Photos are stored as raw paths; re-sign a fresh long-lived URL on read
+    // so marketplace cards never 403 (work-unit C TTL fix).
+    main_photo_url: row.main_photo_url ? signedPhotoUrl(row.main_photo_url) : null,
     avg_rating:
       row.avg_rating === null || row.avg_rating === undefined
         ? null
@@ -412,7 +415,8 @@ export async function getServiceById(id: number): Promise<ServiceDetail | null> 
     },
     photos: service.service_photos.map((p) => ({
       id: p.id,
-      url: p.url,
+      // Re-sign the stored raw path (work-unit C TTL fix).
+      url: signedPhotoUrl(p.url),
       position: p.position,
       status: p.status,
     })),

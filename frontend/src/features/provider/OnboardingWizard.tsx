@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { apiPost, apiPut, uploadFile } from '@/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiPost, apiPut, relocateUpload, uploadFile } from '@/lib/api';
+import { addServicePhoto, providerKeys } from './providerApi';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -115,13 +116,14 @@ const TYPE_META: Record<
 export default function OnboardingWizard() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const addProviderService = useProviderServicesStore((s) => s.add);
 
   const [draft, setDraft] = useState<OnboardingDraft>(loadDraft);
   const [photoUrl, setPhotoUrl] = useState('');
   const [policiesOk, setPoliciesOk] = useState(false);
   const [updatingFile, setUpdatingFile] = useState(false);
-  const [published, setPublished] = useState<{ id: number } | null>(null);
+  const [published, setPublished] = useState<{ id: number; photoFailures?: number } | null>(null);
   const savingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Autoguardado entre pasos (FR-002.3): cada cambio persiste el borrador.
@@ -149,8 +151,15 @@ export default function OnboardingWizard() {
       const body = buildServiceBody(draft);
       const created = await apiPost<{ id: number }>('/services', body);
       addProviderService(created.id);
+
+      // Photos were uploaded to the pre-creation bucket (`services/0`) before
+      // the service row existed. Relocate each file to `/services/<id>/…` and
+      // persist the RAW path (the backend re-signs long-lived URLs at read).
+      // Failures don't block creation — the listing still exists without them.
+      const failures = await persistWizardPhotos(created.id, draft.fotos);
+      void queryClient.invalidateQueries({ queryKey: providerKeys.myServices() });
       localStorage.removeItem(STORAGE_KEY);
-      return created;
+      return { id: created.id, photoFailures: failures };
     },
   });
 
@@ -220,6 +229,16 @@ export default function OnboardingWizard() {
     if (!guardarPaso(draft.paso)) return;
     if (draft.paso === 3) {
       submitService.mutate(undefined, {
+        onSuccess: (result) => {
+          setPublished({ id: result.id, photoFailures: result.photoFailures });
+          if (result.photoFailures > 0) {
+            toast(
+              `El anuncio se creó, pero ${result.photoFailures} foto(s) no pudieron migrarse. Agrégalas desde "Anuncios".`,
+              undefined,
+              'warning',
+            );
+          }
+        },
         onError: (e) => toast('No pudimos publicar el servicio.', String(e), 'error'),
       });
     } else {
@@ -402,6 +421,12 @@ export default function OnboardingWizard() {
               Estado actual: <Badge variant="secondary">Borrador</Badge>. Para publicarlo en el
               marketplace tu identidad debe estar verificada (BR-010.1).
             </p>
+            {published.photoFailures && published.photoFailures > 0 ? (
+              <p className="max-w-md rounded-lg bg-tertiary-container/30 px-md py-sm font-label-sm text-label-sm text-on-tertiary">
+                {published.photoFailures} foto(s) no pudieron migrarse al anuncio. Agrégalas o
+                reordénalas desde <strong>Anuncios → Editar</strong>.
+              </p>
+            ) : null}
             <div className="flex flex-wrap items-center justify-center gap-sm">
               <Button
                 loading={sendToReview.isPending}
@@ -616,7 +641,8 @@ export default function OnboardingWizard() {
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
                   {draft.fotos.length >= MIN_PHOTOS
                     ? '¡Listo! Mínimo cumplido.'
-                    : `Mínimo ${MIN_PHOTOS} fotos requeridas.`}
+                    : `Mínimo ${MIN_PHOTOS} fotos requeridas.`}{' '}
+                  Las fotos se mueven a tu anuncio al publicarlo y se re-firman para no caducar.
                 </p>
               </div>
             </div>
@@ -741,10 +767,10 @@ function buildServiceBody(draft: OnboardingDraft) {
     max_capacity: Number(draft.capacidad),
     approval_mode: draft.aprobacion,
     deposit_amount: draft.deposito !== '' ? Number(draft.deposito) : undefined,
-    photos:
-      draft.fotos.length > 0
-        ? draft.fotos.map((url, position) => ({ url, position }))
-        : undefined,
+    // Photos are NOT sent here: they are uploaded to the pre-creation
+    // `services/0` bucket (step 2) and relocated into `/services/<id>/…`
+    // right after creation (see `persistWizardPhotos`) so the persisted urls
+    // never expire (work-unit C TTL fix).
   };
 
   if (draft.tipo === 'salon') {
@@ -783,4 +809,31 @@ function buildServiceBody(draft: OnboardingDraft) {
       },
     },
   };
+}
+
+/**
+ * Relocate the pre-creation uploads (`/uploads/services/0/<file>`) into the
+ * real service directory and persist the RAW path via POST /services/:id/photos.
+ * Returns how many photos failed to persist (non-fatal — the listing still
+ * exists). Idempotent per photo: a failure doesn't retry or rollback.
+ *
+ * Why: the signed URL returned by uploadFile expires (1h default TTL). Persisting
+ * it would 403 once expired; instead we move the file to `/services/<id>/…` and
+ * the backend re-signs a fresh long-lived URL on every read (work-unit C).
+ */
+async function persistWizardPhotos(serviceId: number, fotos: string[]): Promise<number> {
+  let failures = 0;
+  for (let position = 0; position < fotos.length; position += 1) {
+    const url = fotos[position];
+    // Only relocate uploads routed through the pre-creation bucket; external
+    // https:// image URLs are persisted as-is (position already handled).
+    if (!/\/uploads\/services\/0\//i.test(url)) continue;
+    try {
+      const { path } = await relocateUpload(url, 'services', serviceId);
+      await addServicePhoto(serviceId, path, position);
+    } catch {
+      failures += 1;
+    }
+  }
+  return failures;
 }

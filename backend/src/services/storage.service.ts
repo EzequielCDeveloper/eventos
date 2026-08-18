@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { copyFile, mkdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RequestHandler } from 'express';
 import { env } from '../config/env';
@@ -149,6 +149,115 @@ export function verifySignedUrl(currentUrl: string): boolean {
   const b = Buffer.from(token);
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
+}
+
+// ---- Long-lived photo URLs (Work Unit C: TTL follow-up) ---------------------
+//
+// service_photos.url stores the RAW storage path (no signed query) so the
+// backend can re-sign a FRESH URL on every read with a long TTL. Persisting an
+// expiring signed URL (the upload response default 1h) would make listing
+// photos 403 after expiry; re-signing at read/serve time removes that class of
+// bug entirely (onboarding used the pre-creation `services/0` bucket, see
+// `POST /uploads/relocate`).
+
+/** How long a handed-out signed photo URL stays valid (refreshed on every read). */
+export const PHOTO_URL_TTL_SECONDS = 30 * 24 * 3600; // 30 days
+
+/**
+ * Reduce a possibly-signed `/uploads/...` (or bare `/...`) URL to the raw
+ * storage path that `signUrl` signs (`/services/42/<uuid>.jpg`). Safe for
+ * rows written before this fix (which stored the full signed URL).
+ */
+export function rawPathOf(url: string): string {
+  try {
+    const pathname = new URL(url, 'http://local').pathname;
+    return pathname.startsWith('/uploads') ? pathname.slice('/uploads'.length) : pathname;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Re-sign a photo's stored raw path with a long-lived URL for the current
+ * read. Accepts either a raw path or a (possibly expired) signed URL.
+ */
+export function signedPhotoUrl(url: string): string {
+  return signUrl(rawPathOf(url), PHOTO_URL_TTL_SECONDS).url;
+}
+
+/**
+ * Relocate a file from the pre-creation bucket (`/<entity>/0/<file>`) into its
+ * final owned path (`/<entity>/<toId>/<file>`) and return both the raw path
+ * (to persist) and a fresh signed URL (to render immediately).
+ *
+ * Guards: the source must be a currently-valid signed URL, and its path must
+ * live under `/<entity>/0/` — this endpoint is only for the onboarding
+ * "upload before the row exists" flow, never arbitrary file moves.
+ */
+export async function relocateUpload(input: {
+  fromUrl: string;
+  toEntity: 'services' | 'conversations' | 'contracts';
+  toId: number;
+}): Promise<{ path: string; url: string; expires: number }> {
+  if (!ENTITY_ALLOWLIST.has(input.toEntity)) {
+    throw new AppError({
+      statusCode: 400,
+      code: 'VALIDATION_ERROR',
+      message: `Upload entity must be one of: ${[...ENTITY_ALLOWLIST].join(', ')}`,
+    });
+  }
+  if (!verifySignedUrl(input.fromUrl)) {
+    throw new AppError({
+      statusCode: 403,
+      code: 'FORBIDDEN',
+      message: 'Source signed URL is missing, expired or invalid (BR-013.6)',
+    });
+  }
+  const fromPath = rawPathOf(input.fromUrl);
+  const fileMatch = /^\/([^/]+)\/0\/([^/]+)$/.exec(fromPath);
+  if (!fileMatch) {
+    throw new AppError({
+      statusCode: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'Only files in the pre-creation bucket (<entity>/0/<file>) can be relocated',
+    });
+  }
+  const [, fromEntity, fileName] = fileMatch;
+  if (fromEntity !== input.toEntity) {
+    throw new AppError({
+      statusCode: 400,
+      code: 'VALIDATION_ERROR',
+      message: `Relocation must stay within the same entity (got ${fromEntity})`,
+    });
+  }
+  const toPath = `/${input.toEntity}/${input.toId}/${fileName}`;
+  const fromDisk = path.join(env.UPLOAD_DIR, fromPath.replace(/^\/+/, ''));
+  const toDisk = path.join(env.UPLOAD_DIR, input.toEntity, String(input.toId), fileName);
+
+  await mkdir(path.dirname(toDisk), { recursive: true });
+  let moved = false;
+  try {
+    await rename(fromDisk, toDisk);
+    moved = true;
+  } catch {
+    // Cross-device move (`rename` fails across mounts) → copy + unlink.
+    try {
+      await copyFile(fromDisk, toDisk);
+      await unlink(fromDisk);
+      moved = true;
+    } catch {
+      moved = false;
+    }
+  }
+  if (!moved) {
+    throw new AppError({
+      statusCode: 404,
+      code: 'NOT_FOUND',
+      message: 'Source upload file not found',
+    });
+  }
+  const { url, expires } = signUrl(toPath);
+  return { path: toPath, url, expires };
 }
 
 /** Resolve a `/uploads/...` request path to disk, staying inside UPLOAD_DIR. */

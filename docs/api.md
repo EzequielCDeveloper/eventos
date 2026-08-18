@@ -128,6 +128,7 @@ Auth `POST /auth/*`, `GET /auth/me` — see [Authentication flow](#authenticatio
 | POST | `/services` | full create aggregate: `service_type (salon/ sonido/ servicio_persona), title, description, location_type, location {lat,lng,address}, coverage_area?, max_capacity, approval_mode?, viaticos_per_km?, deposit_amount?, cofepris_responsibility_accepted?, pricing {salon?{(base_block_hours,base_block_price,extra_hour_price)}, sound_packages?[ {name,description,base_price,base_hours,extra_hour_price} ], persona?{price_per_person_per_hour}}, photos?[{url,position}], amenity_ids?, event_type_ids?` | `201 { data: Service }` (draft) |
 | PUT | `/services/:id` | partial: `title? description? location_type? location? coverage_area? max_capacity? approval_mode? viaticos_per_km? deposit_amount? cofepris_responsibility_accepted? status? (borrador/pendiente_verificacion/publicado/rechazado)` | `{ data: Service }` (publish gate checks `verified` — BR-002.5) |
 | DELETE | `/services/:id` | — | `{ data: { deleted: true } }` (soft delete) |
+| GET | `/services/:id/photos` | — | `{ data: ServicePhoto[] }` (**owner-only** — ALL photos incl. `pendiente_moderacion`, re-signed, FR-011.7) |
 | POST | `/services/:id/photos` | `url (url ≤500), position? (int ≥0)` | `201 { data: { id, url, position, status, created_at } }` (`status=pendiente_moderacion`, owner only) |
 | PUT | `/services/:id/photos/reorder` | `positions: [photoId, …]` (array order = new position) | `{ data: [{ id, position }] }` (owner only) |
 | DELETE | `/services/:id/photos/:photoId` | — | `{ data: { deleted: true } }` (hard delete, owner only) |
@@ -223,6 +224,8 @@ completada, cancelada`.
 | GET | `/conversations/:id/messages` | `after? (cursor id) page? limit?` | `{ data: Message[], meta }` |
 | POST | `/conversations/:id/messages` | `type (texto/nota_voz), content? (≤5000), audio_url? (url ≤500), duration_seconds? (1..120)` | `201 { data }` (voice ≤120s, BR-008.2) |
 | PUT | `/conversations/:id/read` | — | `{ data }` (mark read) |
+| POST | `/conversations/:id/calls` | `type (voz/video)` | `201 { data: CallLog }` (UR-009.2 — starts `llamando`, `started_at=now`) |
+| PUT | `/conversations/:id/calls/:callId` | `status (en_curso/finalizada), duration_seconds? (int ≥0)` | `{ data: CallLog }` (`finalizada` sets `ended_at`) |
 | GET | `/messages/search` | `q, page? limit?` | `{ data: Message[], meta }` (BR-008.6) |
 | GET | `/quick-replies` | — | `{ data: Item[] }` (provider) |
 | POST | `/quick-replies` | `name, content` | `201 { data }` (provider) |
@@ -287,13 +290,18 @@ or soft-deleted user → connection rejected.
 | client → server | `message` | `{ conversationId, type: "texto"\|"nota_voz", content? audioUrl? durationSeconds? }` |
 | client → server | `typing:start` / `typing:stop` | `{ conversationId }` |
 | client → server | `message:read` | `{ conversationId }` |
+| client → server | `call:ring` | `{ conversationId, type (voz/video), callId? }` (UR-009.2) |
+| client → server | `call:accepted` / `call:rejected` / `call:end` | `{ conversationId }` |
 | server → client | `conversations:joined` | `{ conversationIds }` |
 | server → client | `message:new` / `message:sent` | message payload |
 | server → client | `typing` | `{ conversationId, userId, isTyping }` |
+| server → client | `call:ring` / `call:accepted` / `call:rejected` / `call:end` | `{ conversationId, type, callerId, callId? }` (relayed to the room) |
 | server → client | `conversation:joined` / `conversation:left` / `error` | per event |
 
 Rooms are named `conv:{conversationId}`; the server auto-joins the user's
-conversations on connect (D-006, BR-008.1).
+conversations on connect (D-006, BR-008.1). Call events are presence-style
+signaling only — the media flows over Agora (D-005, UR-009.2); the
+`call_logs` row is owned by the caller via the REST endpoints above.
 
 ## Uploads & signed URLs (BR-013.6, D-004)
 
@@ -302,11 +310,19 @@ conversations on connect (D-006, BR-008.1).
 | Method | Path | Body / query | Response |
 |--------|------|--------------|----------|
 | POST | `/uploads` | body = raw file bytes; `Content-Type: image/jpeg\|png\|webp, audio/mpeg\|ogg\|webm`; query `entity (services\|conversations\|contracts), entityId (int ≥ 0)` | `201 { data: { url, expires } }` (short-lived signed URL) |
+| POST | `/uploads/relocate` | `from_url (signed /uploads/<entity>/0/<file>), to_entity, to_id (int > 0)` | `{ data: { path, url, expires } }` (moves pre-creation file → owned dir) |
 
 `entityId` `0` is the documented pre-creation bucket used by the provider
 onboarding wizard (photos are uploaded in step 2, before the service row is
 created in step 3); chat voice notes pass the real conversation id. Files are
 written to `UPLOAD_DIR` and served only through the signed URL guard below.
+
+`POST /uploads/relocate` migrates a pre-creation upload into its final owned
+path (e.g. `/services/42/<uuid>.jpg`). The returned `path` is the **RAW storage
+path** — persist that (photos stored raw), and the backend re-signs a fresh
+long-lived URL on every read. `from_url` must be currently valid (unexpired
+signed URL) and live under `<entity>/0/`; the destination must be the same
+entity.
 
 ```bash
 # Voice note (Chromium MediaRecorder → webm) or service photo
@@ -326,6 +342,14 @@ token + expiry before serving; missing/expired/invalid → `403 FORBIDDEN`.
 Allowed uploads: `image/jpeg|png|webp` ≤5MB, `audio/mpeg|ogg|webm` ≤10MB (D-012).
 Allowed entities: `services`, `conversations`, `contracts`.
 
+> **Photo URLs never expire (work-unit C).** `service_photos.url` stores the RAW
+> storage path (no signed query). Every read (`GET /services`, `/services/:id`,
+> `/services/me`, `/favorites`, `/services/:id/photos`) re-signs each photo with
+> a fresh 30-day signed URL (`signedPhotoUrl`), so listing photos keep rendering
+> after the 1h upload URL would have 403'd. The onboarding wizard uploads to the
+> `0` bucket, then moves each file via `/uploads/relocate` and persists only the
+> raw path.
+
 > Note: uploads are validated in-app (`createUploadsGuard`) because Nginx
 > `secure_link` only computes MD5 and would reject the HMAC-SHA256 tokens the
 > backend signs — the proxy forwards `/uploads/` to the backend for validation.
@@ -335,8 +359,11 @@ Allowed entities: `services`, `conversations`, `contracts`.
 - `POST /reservations/:id/cancel`, `GET /payments/reports/monthly`,
   `GET /notifications/unread`, `GET /favorites`, `GET /reviews/:id`,
   `POST /packages/:id/availability`, `GET /messages/search`,
-  `GET /quick-replies` exist in addition to the original UR-002 catalog where a
-  product flow needed a dedicated entry point — each is annotated in the source.
+  `GET /quick-replies`, `GET /services/:id/photos` (owner-only, all statuses),
+  `POST /conversations/:id/calls` + `PUT .../calls/:callId`,
+  `POST /uploads/relocate` exist in addition to the original UR-002 catalog
+  where a product flow needed a dedicated entry point — each is annotated in
+  the source.
 - `GET /api/v1/health` returns a **raw** `{ status, db }` object (no envelope)
   so Docker/uptime probes can parse it trivially.
 - Admin routes are role-gated at the router level (BR-002.4): non-admins get

@@ -4,6 +4,7 @@ import { requireAuth } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import { prisma } from '../../config/database';
 import { AppError } from '../../types/api';
+import { signedPhotoUrl } from '../../services/storage.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 
 /**
@@ -90,7 +91,10 @@ favoritesRouter.get(
           max_capacity: row.services.max_capacity,
           location: row.services.location,
           provider: row.services.users,
-          photo: row.services.service_photos[0] ?? null,
+          // Re-sign the stored raw photo path long-lived (work-unit C).
+          photo: row.services.service_photos[0]
+            ? { ...row.services.service_photos[0], url: signedPhotoUrl(row.services.service_photos[0].url) }
+            : null,
         },
       })),
     });
