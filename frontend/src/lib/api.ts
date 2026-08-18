@@ -213,6 +213,25 @@ export async function uploadFile(
   return response.data.data;
 }
 
+/**
+ * Relocate a pre-creation upload into its final owned path, returning the
+ * RAW storage path to persist (photos stored raw; the backend re-signs
+ * long-lived URLs at read time) plus a fresh signed URL to render now.
+ * Used after POST /services returns the real id (onboarding) and when
+ * adding a photo to an existing service (ListingsTab).
+ */
+export async function relocateUpload(
+  fromUrl: string,
+  toEntity: 'services' | 'conversations' | 'contracts',
+  toId: number,
+): Promise<{ path: string; url: string; expires: number }> {
+  return apiPost<{ path: string; url: string; expires: number }>('/uploads/relocate', {
+    from_url: fromUrl,
+    to_entity: toEntity,
+    to_id: toId,
+  });
+}
+
 // Expose the raw client for webhook-free advanced cases.
 export { redirect };
 export type { AxiosResponse };

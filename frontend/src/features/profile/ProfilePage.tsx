@@ -1,30 +1,37 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/authStore';
 import { apiPost, apiPut, ApiError } from '@/lib/api';
 import { Icon } from '@/components/ui/Icon';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Input, Textarea } from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { useToast } from '@/components/ui/Toast';
+import { Spinner } from '@/components/common/StateView';
 import { APP_NAME } from '@/lib/constants';
+import { arcoKeys, ARCO_STATUS_LABELS, ARCO_TIPO_LABELS, createArcoRequest, fetchArcoRequests } from './profileApi';
+import { formatDateShort } from '@/lib/formatters';
 import type { MeResponse } from '@/types/api';
 import type { SafeUser } from '@/types/models';
+import type { ArcoRequestTipo } from '@/types/models';
 
 const CONSENT_KEY = 'fiestaexpert-consent';
 const COOKIE_KEY = 'fiestaexpert-cookie';
 
 /**
  * Profile (FR-016 + profile actions): edit profile, identity badge, ARCO
- * rights form, notification center access, logout, and first-use privacy
+ * rights form (servers-backed — POST/GET /users/arco-requests, BR-012 /
+ * FR-016.2), notification center access, logout, and first-use privacy
  * consent + cookie banner (FR-016.1 / FR-016.6).
  */
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const setSession = useAuthStore((s) => s.setSession);
   const logout = useAuthStore((s) => s.logout);
@@ -46,11 +53,16 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [saving, setSaving] = useState(false);
 
-  // ARCO form
-  const [arcoDerecho, setArcoDerecho] = useState('acceso');
-  const [arcoCorreo, setArcoCorreo] = useState(user?.email ?? '');
-  const [arcoMotivo, setArcoMotivo] = useState('');
+  // ARCO form (server-backed, BR-012 / FR-016.2)
+  const [arcoDerecho, setArcoDerecho] = useState<ArcoRequestTipo>('acceso');
+  const [arcoSaving, setArcoSaving] = useState(false);
   const [arcoError, setArcoError] = useState<string | null>(null);
+  const arcoQuery = useQuery({
+    queryKey: arcoKeys.list,
+    queryFn: fetchArcoRequests,
+    enabled: arcoOpen,
+  });
+  const arcoRequests = arcoQuery.data ?? [];
 
   if (!user) return null;
 
@@ -68,16 +80,26 @@ export default function ProfilePage() {
     }
   }
 
-  function handleArcoSubmit() {
+  async function handleArcoSubmit() {
     setArcoError(null);
-    if (!arcoCorreo.trim() || !arcoMotivo.trim()) {
-      setArcoError('Completa el correo y la descripción de tu solicitud.');
-      return;
+    setArcoSaving(true);
+    try {
+      const created = await createArcoRequest(arcoDerecho);
+      const deadline = created.deadline_at
+        ? ` Te contactaremos a más tardar el ${formatDateShort(created.deadline_at)}.`
+        : '';
+      toast(
+        `Solicitud ARCO (${ARCO_TIPO_LABELS[arcoDerecho]}) registrada.${deadline}`,
+        undefined,
+        'success',
+      );
+      void queryClient.invalidateQueries({ queryKey: arcoKeys.list });
+    } catch (error) {
+      const msg = error instanceof ApiError ? error.message : 'No se pudo registrar la solicitud.';
+      setArcoError(msg);
+    } finally {
+      setArcoSaving(false);
     }
-    setArcoOpen(false);
-    // No dedicated ARCO endpoint is exposed by the backend yet (arco_requests
-    // table exists); the request is recorded client-side for now.
-    toast(`Solicitud ARCO (${arcoDerecho}) enviada. Te contactaremos en 15 días hábiles.`, undefined, 'success');
   }
 
   function acceptConsent() {
@@ -225,29 +247,60 @@ export default function ProfilePage() {
 
       {/* ARCO dialog */}
       <Dialog open={arcoOpen} onOpenChange={setArcoOpen}>
-        <DialogContent title="Derechos ARCO">
+        <DialogContent title="Derechos ARCO" className="max-w-xl">
           <div className="flex flex-col gap-md">
             <p className="font-body-md text-body-md text-on-surface-variant">
               Ejerce tus derechos de acceso, rectificación, cancelación u oposición sobre tus datos personales conforme
-              a la LFPDPPP.
+              a la LFPDPPP. Tu solicitud queda registrada y atendemos en un plazo máximo de 20 días hábiles.
             </p>
             <label className="block font-label-md text-label-md text-on-surface">Derecho a ejercer</label>
             <Select
               value={arcoDerecho}
-              onValueChange={setArcoDerecho}
-              options={[
-                { value: 'acceso', label: 'Acceso' },
-                { value: 'rectificacion', label: 'Rectificación' },
-                { value: 'cancelacion', label: 'Cancelación' },
-                { value: 'oposicion', label: 'Oposición' },
-              ]}
+              onValueChange={(v) => setArcoDerecho(v as ArcoRequestTipo)}
+              options={(Object.keys(ARCO_TIPO_LABELS) as ArcoRequestTipo[]).map((value) => ({
+                value,
+                label: ARCO_TIPO_LABELS[value],
+              }))}
             />
-            <Input label="Correo de contacto" type="email" value={arcoCorreo} onChange={(e) => setArcoCorreo(e.target.value)} placeholder="tu@correo.com" />
-            <Textarea label="Descripción de tu solicitud" value={arcoMotivo} onChange={(e) => setArcoMotivo(e.target.value)} placeholder="Detalla tu solicitud..." />
             {arcoError ? (
               <p className="font-label-sm text-label-sm text-error font-semibold">{arcoError}</p>
             ) : null}
-            <Button size="lg" onClick={handleArcoSubmit}>Enviar solicitud</Button>
+            <Button size="lg" onClick={() => void handleArcoSubmit()} loading={arcoSaving}>
+              Enviar solicitud
+            </Button>
+
+            <div className="mt-xs border-t border-outline-variant pt-md">
+              <h4 className="mb-sm font-label-md text-label-md text-on-surface">Mis solicitudes</h4>
+              {arcoQuery.isLoading ? (
+                <Spinner />
+              ) : arcoRequests.length === 0 ? (
+                <p className="font-body-md text-body-md text-sm text-on-surface-variant">
+                  Aún no has enviado solicitudes ARCO.
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-sm">
+                  {arcoRequests.map((r) => (
+                    <li
+                      key={r.id}
+                      className="flex items-center justify-between gap-sm rounded-lg bg-surface-container-low px-md py-sm"
+                    >
+                      <div>
+                        <p className="font-body-md text-body-md text-on-surface font-semibold">
+                          {ARCO_TIPO_LABELS[r.tipo]}
+                        </p>
+                        <p className="font-label-sm text-label-sm text-on-surface-variant">
+                          Enviada {formatDateShort(r.requested_at)} ·
+                          plazo {r.deadline_at ? formatDateShort(r.deadline_at) : '—'}
+                        </p>
+                      </div>
+                      <Badge variant={r.status === 'completado' ? 'success' : 'outline'}>
+                        {ARCO_STATUS_LABELS[r.status]}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

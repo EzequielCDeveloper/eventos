@@ -5,6 +5,7 @@ import { requireRole } from '../../middleware/requireRole';
 import { validate } from '../../middleware/validate';
 import * as searchService from '../../services/search.service';
 import * as servicesService from '../../services/services.service';
+import { signedPhotoUrl } from '../../services/storage.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { parseISODate } from '../../utils/datetime';
 
@@ -265,6 +266,27 @@ servicesRouter.delete(
 
 // ---- Service photos (FR-011.7) ----------------------------------------------
 
+/**
+ * GET /services/:id/photos — ALL photos of the provider's own service (any
+ * moderation status), ordered by position. The marketplace detail only shows
+ * approved photos; the owner needs the full set to manage the gallery.
+ * Placed here (before the POST/PUT/DELETE photo routes) with the literal
+ * match winning over nothing conflicting.
+ */
+servicesRouter.get(
+  '/services/:id/photos',
+  requireAuth(),
+  requireRole('prestador'),
+  validate({ params: serviceParamsSchema }),
+  asyncHandler(async (req, res) => {
+    const photos = await servicesService.listServicePhotos(
+      Number(req.params.id),
+      req.user!.id,
+    );
+    res.json({ data: photos });
+  }),
+);
+
 /** POST /services/:id/photos — provider adds a photo to its own service (pendiente_moderacion). */
 servicesRouter.post(
   '/services/:id/photos',
@@ -281,7 +303,8 @@ servicesRouter.post(
     res.status(201).json({
       data: {
         id: photo.id,
-        url: photo.url,
+        // The row stores the raw path; return a fresh long-lived URL (work-unit C).
+        url: signedPhotoUrl(photo.url),
         position: photo.position,
         status: photo.status,
         created_at: photo.created_at.toISOString(),

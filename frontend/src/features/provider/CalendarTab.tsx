@@ -12,7 +12,7 @@ import {
   fetchSlots,
   providerKeys,
 } from './providerApi';
-import { useProviderServicesStore } from './providerServices';
+import { useProviderServiceIds } from './providerServices';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
@@ -81,7 +81,7 @@ function basePriceOf(service?: ServiceDetail): number {
 export default function CalendarTab() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const knownIds = useProviderServicesStore((s) => s.ids);
+  const { ids: knownIds } = useProviderServiceIds();
 
   const [cursor, setCursor] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState<string | null>(fmtYMD(new Date()));

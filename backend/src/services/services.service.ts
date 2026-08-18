@@ -7,6 +7,7 @@ import type {
 import { prisma } from '../config/database';
 import { AppError, buildPaginationMeta } from '../types/api';
 import type { PaginationParams } from '../types/api';
+import { rawPathOf, signedPhotoUrl } from './storage.service';
 
 /**
  * Services domain service (BR-001, BR-002.5, BR-004, D-008).
@@ -211,7 +212,10 @@ export async function createService(input: CreateServiceInput): Promise<{ id: nu
       await tx.service_photos.createMany({
         data: input.photos.map((photo) => ({
           service_id: service.id,
-          url: photo.url,
+          // Persist the RAW storage path (drop any signed query/prefix) so
+          // reads can re-sign a fresh long-lived URL — persisting the 1h
+          // signed upload URL would 403 after expiry (work-unit C).
+          url: rawPathOf(photo.url),
           position: photo.position,
         })),
       });
@@ -369,7 +373,8 @@ export async function listProviderServices(
       title: s.title,
       service_type: s.service_type,
       status: s.status,
-      cover_photo_url: s.service_photos[0]?.url ?? null,
+      // Re-sign the stored raw path so dashboard covers never go stale.
+      cover_photo_url: s.service_photos[0] ? signedPhotoUrl(s.service_photos[0].url) : null,
       min_price: minPrice,
       provider_id: s.provider_id,
       max_capacity: s.max_capacity,
@@ -377,6 +382,38 @@ export async function listProviderServices(
       created_at: s.created_at.toISOString(),
     };
   });
+}
+
+export interface ServicePhotoPayload {
+  id: number;
+  url: string;
+  position: number;
+  status: string;
+  created_at: string;
+}
+
+/**
+ * All photos of a provider's own service (GET /services/:id/photos,
+ * FR-011.7 — photo management). Unlike the marketplace detail (approved
+ * photos only), the owner sees every status incl. `pendiente_moderacion`
+ * so they can add/remove/reorder the gallery. Re-signed long-lived (work-unit C).
+ */
+export async function listServicePhotos(
+  serviceId: number,
+  providerId: number,
+): Promise<ServicePhotoPayload[]> {
+  await requireOwnedService(serviceId, providerId);
+  const rows = await prisma.service_photos.findMany({
+    where: { service_id: serviceId },
+    orderBy: { position: 'asc' },
+  });
+  return rows.map((p) => ({
+    id: p.id,
+    url: signedPhotoUrl(p.url),
+    position: p.position,
+    status: p.status,
+    created_at: p.created_at.toISOString(),
+  }));
 }
 
 /**
@@ -399,9 +436,11 @@ export async function addServicePhoto(
     });
     position = last ? last.position + 1 : 0;
   }
-  // Pair position with the (already ownership-checked) service id.
+  // Pair position with the (already ownership-checked) service id. The stored
+  // url is the RAW path (signed query stripped) — reads re-sign long-lived
+  // URLs via `signedPhotoUrl` (work-unit C TTL fix).
   const photo = await prisma.service_photos.create({
-    data: { service_id: serviceId, url: input.url, position },
+    data: { service_id: serviceId, url: rawPathOf(input.url), position },
   });
   return photo;
 }

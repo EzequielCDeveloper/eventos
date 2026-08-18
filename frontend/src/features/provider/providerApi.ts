@@ -1,6 +1,8 @@
-import { apiDelete, apiGet, apiPost } from '@/lib/api';
+import { apiDelete, apiGet, apiPost, apiPut } from '@/lib/api';
 import type {
   AvailabilityBlock,
+  CancellationPolicy,
+  CancellationPolicyPatch,
   CreateBlockBody,
   CreateDynamicRuleBody,
   DynamicPriceRule,
@@ -22,6 +24,8 @@ import type { AvailabilityBlockType } from '@/types/models';
  *   - GET  /services/:id/slots       (availability via v_slot_availability)
  *   - GET  /services/:id/blocks + POST/DELETE
  *   - GET  /services/:id/dynamic-rules + POST/DELETE
+ *   - POST/DELETE /services/:id/photos + PUT /services/:id/photos/reorder
+ *   - GET/PUT /users/me/cancellation-policy (FR-011.7)
  *   - GET  /reservations?status=     (actor-scoped — provider sees their own)
  *   - GET  /payments/reports/monthly (per-provider tax report, BR-006.8)
  */
@@ -32,6 +36,8 @@ export const providerKeys = {
   blocks: (id: number | string) => ['services', 'blocks', String(id)] as const,
   rules: (id: number | string) => ['services', 'dynamic-rules', String(id)] as const,
   myServices: () => ['services', 'me'] as const,
+  photos: (id: number | string) => ['services', 'photos', String(id)] as const,
+  cancellationPolicy: () => ['users', 'me', 'cancellation-policy'] as const,
   reservations: (status?: ReservationDetail['status']) =>
     ['reservations', 'provider', status ?? 'all'] as const,
   report: (year: number, month: number) => ['provider', 'report', year, month] as const,
@@ -88,6 +94,65 @@ export function deleteDynamicRule(
   ruleId: number,
 ): Promise<{ deleted: true }> {
   return apiDelete<{ deleted: true }>(`/services/${String(id)}/dynamic-rules/${ruleId}`);
+}
+
+// ---- Service photos (FR-011.7) ----------------------------------------------
+// `addServicePhoto` stores the RAW storage path (work-unit C TTL fix): the
+// caller uploads via uploadFile → relocateUpload, then passes `path` here.
+
+export interface ServicePhoto {
+  id: number;
+  url: string;
+  position: number;
+  status: string;
+  created_at: string;
+}
+
+export interface ServicePhotoAddResult extends ServicePhoto {}
+
+/** All photos of the provider's own service (any moderation status, FR-011.7). */
+export function fetchServicePhotos(id: number | string): Promise<ServicePhoto[]> {
+  return apiGet<ServicePhoto[]>(`/services/${String(id)}/photos`);
+}
+
+export function addServicePhoto(
+  id: number | string,
+  url: string,
+  position?: number,
+): Promise<ServicePhotoAddResult> {
+  return apiPost<ServicePhotoAddResult>(`/services/${String(id)}/photos`, {
+    url,
+    ...(position !== undefined ? { position } : {}),
+  });
+}
+
+export function deleteServicePhoto(
+  id: number | string,
+  photoId: number,
+): Promise<{ deleted: true }> {
+  return apiDelete<{ deleted: true }>(`/services/${String(id)}/photos/${photoId}`);
+}
+
+/** `positions` lists photo ids in the desired order (array index = position). */
+export function reorderServicePhotos(
+  id: number | string,
+  positions: number[],
+): Promise<Array<{ id: number; position: number }>> {
+  return apiPut<Array<{ id: number; position: number }>>(`/services/${String(id)}/photos/reorder`, {
+    positions,
+  });
+}
+
+// ---- Provider cancellation policy (FR-011.7) --------------------------------
+
+export function fetchCancellationPolicy(): Promise<CancellationPolicy> {
+  return apiGet<CancellationPolicy>('/users/me/cancellation-policy');
+}
+
+export function updateCancellationPolicy(
+  patch: CancellationPolicyPatch,
+): Promise<CancellationPolicy> {
+  return apiPut<CancellationPolicy>('/users/me/cancellation-policy', patch);
 }
 
 /**

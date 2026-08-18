@@ -5,6 +5,9 @@
  * payloads returned by the REST API (backend/src/services/*).
  */
 import type {
+  ArcoRequestStatus,
+  ArcoRequestTipo,
+  CallLogType,
   CancelledBy,
   ContractStatus,
   MessageType,
@@ -413,6 +416,64 @@ export interface QuickReply {
   provider_id: number;
   name: string;
   content: string;
+}
+
+// ---------------------------------------------------------------------------
+// Voice/video calls (backend message.service call logs — UR-009.2)
+// ---------------------------------------------------------------------------
+
+export interface CallLog {
+  id: number;
+  conversation_id: number;
+  type: CallLogType;
+  status: 'llamando' | 'en_curso' | 'finalizada';
+  started_at: string | null;
+  ended_at: string | null;
+  duration_seconds: number | null;
+}
+
+// ---------------------------------------------------------------------------
+// Provider cancellation policy (backend users.routes — FR-011.7)
+// ---------------------------------------------------------------------------
+
+export interface CancellationPolicy {
+  id: number;
+  retention_percent: number;
+  penalty_free_window_days: number;
+  deposit_refundable: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CancellationPolicyPatch {
+  retention_percent?: number;
+  penalty_free_window_days?: number;
+  deposit_refundable?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// ARCO data rights (backend users.routes — BR-012, FR-016.2)
+// ---------------------------------------------------------------------------
+
+export interface ArcoRequest {
+  id: number;
+  tipo: ArcoRequestTipo;
+  status: ArcoRequestStatus;
+  requested_at: string;
+  deadline_at: string | null;
+  resolved_at: string | null;
+  response_notes: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Global commission (backend admin.routes — BR-002.4)
+// ---------------------------------------------------------------------------
+
+/** GET /admin/commission — the latest rate (seed default 10% when no row). */
+export interface AdminCommission {
+  commission_rate: number;
+  changed_by?: number | null;
+  created_at?: string | null;
 }
 
 // ---------------------------------------------------------------------------

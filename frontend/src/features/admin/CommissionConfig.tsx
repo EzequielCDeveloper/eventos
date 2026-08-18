@@ -1,42 +1,69 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { setCommission } from './adminApi';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { adminKeys, fetchCommission, setCommission } from './adminApi';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
+import { Spinner } from '@/components/common/StateView';
 import { useToast } from '@/components/ui/Toast';
 import { money } from '@/lib/formatters';
 import { clsx } from 'clsx';
 
 /**
- * Comisión global (FR-003.3) — set the platform commission rate via
- * PUT /admin/commission (backend inserts a new commission_settings row; the
- * latest row governs NEW reservations, D-007).
+ * Comisión global (FR-003.3) — read the current platform commission from
+ * GET /admin/commission (latest commission_settings row; seed default 10%
+ * when none exists) and update it via PUT /admin/commission (backend inserts
+ * a new row; the latest row governs NEW reservations, D-007).
  */
-const DEFAULT_RATE = 15;
+const FALLBACK_RATE = 10;
 
 function loadSavedRate(): number {
   try {
     const raw = localStorage.getItem('fiestaexpert-admin-commission');
-    if (raw === null) return DEFAULT_RATE;
+    if (raw === null) return FALLBACK_RATE;
     const n = Number(raw);
-    return Number.isFinite(n) && n > 0 && n <= 100 ? n : DEFAULT_RATE;
+    return Number.isFinite(n) && n > 0 && n <= 100 ? n : FALLBACK_RATE;
   } catch {
-    return DEFAULT_RATE;
+    return FALLBACK_RATE;
   }
 }
 
 export default function CommissionConfig() {
   const { toast } = useToast();
   const [rate, setRate] = useState<number>(loadSavedRate());
-  const [history, setHistory] = useState<Array<{ rate: number; at: string }>>([{ rate: loadSavedRate(), at: 'inicio' }]);
+  const [history, setHistory] = useState<Array<{ rate: number; at: string; origin: string }>>([
+    { rate: loadSavedRate(), at: 'inicio', origin: 'local' },
+  ]);
+
+  const commissionQuery = useQuery({
+    queryKey: adminKeys.commission,
+    queryFn: fetchCommission,
+  });
+
+  // Backend is the source of truth once loaded (falls back to the saved/local
+  // value while loading or if the API returns no row).
+  useEffect(() => {
+    const backendRate = Number(commissionQuery.data?.commission_rate);
+    if (Number.isFinite(backendRate) && backendRate >= 0 && backendRate <= 100) {
+      setRate(backendRate);
+      setHistory((h) =>
+        h[0]?.origin === 'backend'
+          ? h
+          : [{ rate: backendRate, at: 'backend', origin: 'backend' }, ...h],
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commissionQuery.data]);
 
   const saveQ = useMutation({
     mutationFn: () => setCommission({ commission_rate: rate }),
     onSuccess: (updated) => {
       const saved = Number(updated.commission_rate);
       localStorage.setItem('fiestaexpert-admin-commission', String(saved));
-      setHistory((h) => [...h, { rate: saved, at: new Date().toLocaleString('es-MX') }]);
+      setHistory((h) => [
+        { rate: saved, at: new Date().toLocaleString('es-MX'), origin: 'local' },
+        ...h,
+      ]);
       toast('Comisión actualizada.', 'La nueva tasa aplica a partir de nuevas reservas.');
     },
     onError: (e) => toast('No se pudo actualizar la comisión.', String(e), 'error'),
@@ -60,9 +87,14 @@ export default function CommissionConfig() {
       <div className="grid grid-cols-1 gap-lg lg:grid-cols-2">
         <Card>
           <CardContent className="flex flex-col gap-lg">
-            <div>
-              <p className="mb-xs font-label-md text-label-md text-on-surface-variant">Tasa actual</p>
-              <h4 className="font-display-lg text-[36px] leading-none text-primary">{rate}%</h4>
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="mb-xs font-label-md text-label-md text-on-surface-variant">Tasa actual</p>
+                <h4 className="font-display-lg text-[36px] leading-none text-primary">
+                  {commissionQuery.isLoading ? '…' : `${rate}%`}
+                </h4>
+              </div>
+              {commissionQuery.isLoading ? <Spinner /> : null}
             </div>
             <div>
               <label htmlFor="commission-slider" className="mb-sm block font-label-md text-label-md text-on-surface">
@@ -117,19 +149,26 @@ export default function CommissionConfig() {
                   key={`${h.rate}-${i}`}
                   className={clsx(
                     'flex items-center justify-between rounded-lg bg-surface-container-low px-md py-sm',
-                    i === history.length - 1 && 'ring-1 ring-primary/30',
+                    i === 0 && 'ring-1 ring-primary/30',
                   )}
                 >
                   <span className="font-body-md text-body-md text-on-surface">{h.rate}%</span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant">
-                    {h.at === 'inicio' ? 'Tasa inicial' : h.at}
+                    {h.at === 'inicio'
+                      ? 'Tasa inicial'
+                      : h.origin === 'backend'
+                        ? 'Valor actual (backend)'
+                        : h.origin === 'local'
+                          ? 'Guardado en este navegador'
+                          : h.at}
                   </span>
                 </div>
               ))}
             </div>
             <p className="font-label-sm text-label-sm text-on-surface-variant">
               El historial completo vive en la tabla <code>commission_settings</code> del backend;
-              solo mostramos la tasa actual aplicada por el panel.
+              cargamos la tasa vigente desde <code>GET /admin/commission</code> (default de siembra:
+              10%).
             </p>
           </CardContent>
         </Card>

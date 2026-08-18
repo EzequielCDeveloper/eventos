@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut } from '@/lib/api';
 import type {
+  AdminCommission,
   AdminCommissionUpdate,
   AdminProvider,
   AdminStats,
@@ -92,6 +93,11 @@ export function openDispute(body: CreateDisputeBody): Promise<{ id: number }> {
 
 export function resolveDispute(disputeId: number, body: ResolveDisputeBody): Promise<{ id: number }> {
   return apiPost<{ id: number }>(`/admin/disputes/${disputeId}/resolve`, body);
+}
+
+/** Current global commission rate (GET /admin/commission — latest row, seed 10%). */
+export function fetchCommission(): Promise<AdminCommission> {
+  return apiGet<AdminCommission>('/admin/commission');
 }
 
 export function setCommission(body: SetCommissionBody): Promise<AdminCommissionUpdate> {
