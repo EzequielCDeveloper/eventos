@@ -446,3 +446,174 @@ export interface CancelReservationBody {
   retention_accepted?: boolean;
   cancelled_by?: CancelledBy;
 }
+
+// ---------------------------------------------------------------------------
+// Provider reports (backend payment.service providerMonthlyReport)
+// ---------------------------------------------------------------------------
+
+export interface MonthlyReport {
+  provider_id: number;
+  year: number;
+  month: number;
+  transactions: number;
+  gross: string;
+  taxes: string;
+  commission: string;
+  net: string;
+}
+
+// ---------------------------------------------------------------------------
+// Identity verification / KYC (backend verification.service, users.routes)
+// ---------------------------------------------------------------------------
+
+export type IdentityVerificationResult =
+  | 'verificado'
+  | 'ine_vencido'
+  | 'ine_no_encontrado'
+  | 'datos_no_coinciden'
+  | 'pendiente';
+
+export interface VerificationResult {
+  id: number;
+  user_id: number;
+  method: 'kyc';
+  kyc_provider: 'verificamex';
+  result: IdentityVerificationResult;
+  estatus_lista_nominal: string | null;
+  motivo: string | null;
+  vigente: boolean | null;
+  coincidencia_nombre: boolean | null;
+  created_at: string;
+  user_verified: boolean;
+}
+
+/** POST /users/verify-kyc payload (backend kycSchema — values used in flight only). */
+export interface KycBody {
+  curp: string;
+  clave_elector: string;
+  nombre_completo: string;
+  ocr?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Inventory (backend inventory.service / inventory.routes)
+// ---------------------------------------------------------------------------
+
+export interface AvailabilityBlock {
+  id: number;
+  start_datetime: string;
+  end_datetime: string;
+  type: 'mantenimiento' | 'inoperacion' | 'evento_privado';
+}
+
+export interface CreateBlockBody {
+  start_datetime: string; // ISO 8601 with offset
+  end_datetime: string;
+  type: 'mantenimiento' | 'inoperacion' | 'evento_privado';
+}
+
+export interface DynamicPriceRule {
+  id: number;
+  adjustment_type: 'temporada' | 'demanda' | 'dia_semana' | 'bloque_turno';
+  adjustment_value: string;
+  scope: unknown;
+  sound_package_id: number | null;
+}
+
+export interface CreateDynamicRuleBody {
+  adjustment_type: DynamicPriceRule['adjustment_type'];
+  adjustment_value: number;
+  scope: Record<string, unknown>;
+  sound_package_id?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Admin (backend admin.routes — 5 function areas, BR-002.4)
+// ---------------------------------------------------------------------------
+
+export interface AdminStats {
+  users: { total: number; providers: number; providers_verified: number };
+  services: { total: number; by_status: Record<string, number> };
+  reservations: { total: number; by_status: Record<string, number> };
+  payments: { processed: number; total_amount: string };
+  moderation: { pending_reports: number };
+  disputes: { open: number };
+}
+
+export interface AdminCommissionUpdate {
+  id: number;
+  commission_rate: string;
+  changed_by: number;
+  changed_at: string;
+}
+
+export interface SetCommissionBody {
+  commission_rate: number; // 0.01–100
+}
+
+export interface ModerationReport {
+  id: number;
+  service_id: number;
+  reported_by: number;
+  reporter: { id: number; full_name: string } | null;
+  service: {
+    id: number;
+    title: string;
+    service_type: ServiceType;
+    status: ServicesStatus;
+  } | null;
+  reason: string;
+  status: 'pendiente' | 'resuelto';
+  action: string | null;
+  handled_by: number | null;
+  handled_at: string | null;
+  created_at: string;
+}
+
+export interface ModerationActionBody {
+  action: 'aprobar' | 'advertir' | 'eliminar';
+}
+
+export interface AdminProvider {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string;
+  verified: boolean;
+  segment: UserSegment;
+  deleted_at: string | null;
+  created_at: string;
+  active_block: { id: number; reason: string | null; blocked_at: string } | null;
+  stats: { services: number; reviews: number };
+}
+
+export interface BlockProviderBody {
+  reason: string;
+}
+
+export interface Dispute {
+  id: number;
+  reservation_id: number;
+  type: string;
+  status: 'abierta' | 'resuelta';
+  resolution: string | null;
+  reported_by: number;
+  reporter: { id: number; full_name: string } | null;
+  reservation: {
+    id: number;
+    event_date: string | null;
+    status: string;
+    total_price: string;
+  } | null;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+export interface CreateDisputeBody {
+  reservation_id: number;
+  type: 'tecnica';
+}
+
+export interface ResolveDisputeBody {
+  resolution: string;
+}
