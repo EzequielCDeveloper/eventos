@@ -15,7 +15,7 @@ import { asyncHandler } from '../../utils/asyncHandler';
  *
  * Gated to exactly the 5 admin functions:
  *   1. Stats            — GET  /admin/stats
- *   2. Commission       — PUT  /admin/commission
+ *   2. Commission       — GET/PUT /admin/commission
  *   3. Technical disputes — GET/POST /admin/disputes, POST /admin/disputes/:id/resolve
  *   4. Moderation       — GET /admin/moderation, POST /admin/moderation/:id/action
  *   5. Provider mgmt    — GET /admin/providers, POST /admin/providers/:id/block,
@@ -29,6 +29,13 @@ import { asyncHandler } from '../../utils/asyncHandler';
 export const adminRouter: Router = Router();
 
 adminRouter.use(requireAuth(), requireRole('administrador'));
+
+/**
+ * Fallback commission rate when no `commission_settings` row exists yet.
+ * Mirrors the seed default (10.00% — BR-006.2, `prisma/seed.ts`); the latest
+ * row governs new reservations (D-007).
+ */
+const DEFAULT_COMMISSION_RATE = 10;
 
 const idParamsSchema = z.object({ id: z.coerce.number().int().positive() });
 
@@ -139,6 +146,32 @@ adminRouter.get(
         moderation: { pending_reports: pendingModeration },
         disputes: { open: openDisputes },
       },
+    });
+  }),
+);
+
+/**
+ * GET /admin/commission — read the current global commission rate (BR-002.4
+ * #5). The latest `commission_settings` row governs new reservations
+ * (D-007); when none exists yet the seed default (10.00%) is returned.
+ * `commission_rate` is returned as a number (the PUT response keeps the
+ * two-decimal money string it always returned).
+ */
+adminRouter.get(
+  '/commission',
+  asyncHandler(async (_req, res) => {
+    const settings = await prisma.commission_settings.findFirst({
+      orderBy: [{ changed_at: 'desc' }, { id: 'desc' }],
+    });
+    res.json({
+      data: settings
+        ? {
+            // `commission_settings` timestamps rows with `changed_at`.
+            commission_rate: Number(settings.commission_rate),
+            changed_by: settings.changed_by,
+            created_at: settings.changed_at.toISOString(),
+          }
+        : { commission_rate: DEFAULT_COMMISSION_RATE },
     });
   }),
 );

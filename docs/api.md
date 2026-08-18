@@ -242,6 +242,7 @@ completada, cancelada`.
 | Method | Path | Body / query | Response |
 |--------|------|--------------|----------|
 | GET | `/admin/stats` | — | `{ data: { users, services, reservations, payments, moderation, disputes } }` |
+| GET | `/admin/commission` | — | `{ data: { commission_rate, changed_by, created_at } }` (latest row; seed default 10.00% when none exists) |
 | PUT | `/admin/commission` | `commission_rate (0.01..100)` | `{ data: { id, commission_rate, changed_by, changed_at } }` |
 | GET | `/admin/disputes` | `status? (abierta/resuelta) page? limit?` | `{ data, meta }` |
 | POST | `/admin/disputes` | `reservation_id, type (default tecnica)` | `201 { data }` |
