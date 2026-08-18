@@ -1,0 +1,7 @@
+# Keep the Docker build context lean (UR-006.7) and never bake secrets in.
+node_modules
+dist
+.env
+.env.*
+*.tsbuildinfo
+*.log

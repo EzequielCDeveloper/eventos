@@ -1,0 +1,77 @@
+# Development override for docker-compose.yml (UR-006.6, D-010).
+#
+# Hot-reload stack for local work:
+#   - backend: TypeScript source is bind-mounted and re-run by tsx watch on
+#     every change; the debug port is exposed directly on :3000.
+#   - frontend: Vite dev server on :5173 with HMR. VITE_API_URL points the
+#     browser at http://localhost:3000 (the exposed backend) so no Vite proxy
+#     is needed inside the container.
+#   - nginx: excluded in dev (profiles). The backend and Vite server are hit
+#     directly.
+#
+# Usage:
+#   cp .env.example .env   # fill DB_ROOT_PASSWORD / DB_PASSWORD
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Recommended alternative: keep the two dev servers on the host
+# (`cd backend && npm run dev`, `cd frontend && npm run dev`) and use this
+# file only for `db` + `redis`:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up db redis
+# The host Vite proxy (vite.config.ts) then forwards /api,/uploads,/socket.io
+# to localhost:3000.
+
+services:
+  backend:
+    build:
+      context: ./backend
+    command: sh -c "npx prisma generate && npm run dev"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: mysql://eventos_app:${DB_PASSWORD:-eventos_app_dev_pw}@db:3306/${DB_DATABASE:-eventos_db}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-me
+      SIGNED_URL_SECRET: dev-signed-url-secret
+      UPLOAD_DIR: /data/uploads
+      # Development placeholders (fail-fast only applies in production).
+      CONEKTA_API_KEY: ck_dev_placeholder
+      CONEKTA_WEBHOOK_SECRET: ck_whsk_dev_placeholder
+      VERIFICAMEX_API_KEY: vmx_dev_placeholder
+      FCM_SERVICE_ACCOUNT: '{"type":"service_account","project_id":"placeholder"}'
+      RESEND_API_KEY: re_dev_placeholder
+      AGORA_APP_ID: agora_dev_placeholder
+      AGORA_APP_CERTIFICATE: agora_cert_placeholder
+    ports:
+      - "3000:3000"
+    volumes:
+      # Hot reload: host source on top of the image, but keep the container's
+      # node_modules (built for alpine/musl — see bcrypt) via a named volume.
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      # Same-origin via the host port is not available here, so point the
+      # client at the exposed backend (:3000). REST + Socket.IO both derive
+      # from this origin. Relative `/uploads` signed URLs are a dev-only gap
+      # in this mode (they work in the host-run flow which uses the Vite proxy).
+      VITE_API_URL: http://localhost:3000/api/v1
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+  # Nginx is not used in local development (direct ports instead). Assigning a
+  # profile here prevents it from starting with the default `up`.
+  nginx:
+    profiles: ["disabled-in-dev"]
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:

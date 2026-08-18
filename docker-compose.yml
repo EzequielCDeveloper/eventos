@@ -1,0 +1,105 @@
+# Production stack for Plataforma Eventos / FiestaExpert (D-010, UR-006).
+#
+# Single-VPS deployment: backend (Node + Express + Socket.IO + BullMQ),
+# MariaDB 10.6, Redis 7 (job queue) and an Nginx reverse proxy that serves
+# the SPA and proxies /api|/socket.io|/uploads to the backend.
+#
+# Usage:
+#   cp .env.example .env   # then fill real values
+#   docker compose up -d   # or ./scripts/deploy.sh
+#
+# Secrets are read from the root .env (auto-loaded by Docker Compose); the
+# backend also receives that file via env_file. DATABASE_URL/REDIS_URL are
+# overridden below to point at the compose service names instead of localhost.
+
+name: eventos
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: eventos-backend:latest
+    # BullMQ gracefully disables the scheduled jobs when Redis is absent, but
+    # the compose stack always provides it so reminders/jobs actually run.
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://eventos_app:${DB_PASSWORD}@db:3306/${DB_DATABASE:-eventos_db}
+      REDIS_URL: redis://redis:6379
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      # Shared volume so the backend can persist/write uploads and serve them
+      # back through the signed-URL guard (D-004, BR-013.6).
+      - uploads_data:/data/uploads
+    ports:
+      # Not exposed to the public in production (Nginx proxies); mapped only
+      # if you want to curl the backend directly on the VPS.
+      - "127.0.0.1:${BACKEND_PORT:-3000}:3000"
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      # GET /api/v1/health returns 200 when the DB answers (BR-014.1).
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  db:
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${DB_DATABASE:-eventos_db}
+      MYSQL_USER: eventos_app
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      # Official MariaDB image ships /usr/local/bin/healthcheck.sh.
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      # SPA built on the host/CI. Build it: `docker build -t eventos-frontend ./frontend`
+      # then export the dist (see scripts/deploy.sh) — or run `npm run build`
+      # inside frontend/ and commit the produced dist.
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # TLS: place Cloudflare Origin CA or Let's Encrypt certs here
+      # (fullchain.pem + privkey.pem). See docs/setup.md.
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  redis_data:
+  uploads_data:

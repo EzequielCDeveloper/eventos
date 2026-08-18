@@ -1,0 +1,28 @@
+# Root ignores — never commit secrets, TLS certs or local artifacts (UR-008.1).
+
+# Environment files (never commit real credentials).
+.env
+.env.*
+!.env.example
+
+# TLS certificates used by nginx (Cloudflare Origin CA / Let's Encrypt).
+certs/
+
+# Database backups produced by scripts/backup.sh.
+backups/
+*.sql.gz
+
+# Build output (each service also ignores its own dist).
+frontend/dist/
+backend/dist/
+
+# Local data dirs.
+/data/
+/uploads/
+
+# Logs.
+*.log
+npm-debug.log*
+
+# OS / editor.
+.DS_Store
